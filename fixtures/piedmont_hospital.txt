@@ -1,0 +1,1 @@
+visit101	patient999	facility1	Some Facility	1234 Fake Street	Fake City	AL	30309-1281	Smith	John	1234 Smith Lane	Atlanta	GA	35219-1281	M	MALE	50	08/31/1970	555-384-1281	1970	31	AUGUST	02/26/2015	UHC	Emergency	ED	Emegency Medicine	18374625	PAH EMERGENCY DEPT	Z9382731	785.1	Palpitations
