@@ -1,36 +1,32 @@
 import java.net.URI
 
-import meta.piedmont.Utilization
-import scopt.OptionParser
 import org.apache.spark._
 import org.apache.spark.streaming._
+import scopt.OptionParser
 
-/**
- * Created by nathan on 5/23/15.
- */
 object App {
   case class Config(in: java.net.URI=new java.net.URI("in"), out: java.net.URI=new java.net.URI("out"),
                      separator: String="|", client: String="", inputType: String="")
 
   def main (args: Array[String]): Unit = {
     val optionParser = new OptionParser[Config]("Baldur") {
-      opt[java.net.URI]('i', "in") required() valueName("<input_directory>") action { (x, c) =>
+      opt[java.net.URI]('i', "in") required() valueName "<input_directory>" action { (x, c) =>
         c.copy(in = x)
       }
 
-      opt[java.net.URI]('o', "out") required() valueName("<output_directory>") action { (x, c) =>
+      opt[java.net.URI]('o', "out") required() valueName "<output_directory>" action { (x, c) =>
         c.copy(out = x)
       }
 
-      opt[String]('s', "separator") valueName("<separator>") action { (x, c) =>
+      opt[String]('s', "separator") valueName "<separator>" action { (x, c) =>
         c.copy(separator = x)
       }
 
-      opt[String]('c', "client") required() valueName("<client_key>") action { (x, c) =>
+      opt[String]('c', "client") required() valueName "<client_key>" action { (x, c) =>
         c.copy(client = x)
       }
 
-      opt[String]("type") required() valueName("<input_type>") action { (x, c) =>
+      opt[String]("type") required() valueName "<input_type>" action { (x, c) =>
         c.copy(inputType = x)
       }
     }
@@ -44,7 +40,7 @@ object App {
         val separator = streamingContext.sparkContext.broadcast(config.separator)
 
         val clientInputMeta = getClientInputMeta(config.client, config.inputType)
-        if (clientInputMeta == None) {
+        if (clientInputMeta.isEmpty) {
           val client = config.client
           val inputType = config.inputType
           throw new IllegalArgumentException(f"Metadata for parsing files of type $inputType%s for client $client%s not found")
@@ -52,7 +48,7 @@ object App {
 
         val fieldsMeta = streamingContext.sparkContext.broadcast(clientInputMeta.get)
 
-        val lines = streamingContext.textFileStream(config.in.getPath())
+        val lines = streamingContext.textFileStream(config.in.getPath)
 
         val cleansedLines = lines
           .map(line => line.split(separator.value))
@@ -82,7 +78,7 @@ object App {
           })
           .cache()
 
-        cleansedLines.saveAsTextFiles(config.out.getPath() + "/" + config.client, "txt")
+        cleansedLines.saveAsTextFiles(config.out.getPath + "/" + config.client, "txt")
 
         fieldsMeta.value.zipWithIndex foreach (fieldMeta => {
           cleansedLines.foreachRDD(rdd => {
@@ -115,10 +111,10 @@ object App {
   }
 
   def createSparkConf(): SparkConf = {
-    return new SparkConf().setAppName("Utilization Cleansing")
+    new SparkConf().setAppName("Utilization Cleansing")
   }
 
   def createInputStreamingContext(sparkConf: SparkConf, uri: URI, duration: Duration): StreamingContext = {
-    return new StreamingContext(sparkConf, duration)
+    new StreamingContext(sparkConf, duration)
   }
 }
