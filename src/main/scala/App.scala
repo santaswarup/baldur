@@ -135,14 +135,6 @@ object App {
     }
   }
 
-  def createProducer[K, V](config: ProducerConfig): Producer[K, V] = {
-    new Producer[K, V](config)
-  }
-
-  def writeToKafka[K, V](producer: Producer[K, V], topic: String, key: K, message: V) = {
-    producer.send(new KeyedMessage(topic, key, message))
-  }
-
   def createSparkConf(): SparkConf = {
     new SparkConf().setAppName("Utilization Cleansing")
   }
