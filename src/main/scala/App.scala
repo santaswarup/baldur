@@ -6,6 +6,8 @@ import org.apache.spark.streaming._
 import scopt.OptionParser
 import kafka.producer.{ProducerConfig, KeyedMessage, Producer}
 
+import scala.util.parsing.json.JSON
+
 object App {
   case class Config(in: java.net.URI=new java.net.URI("in"), out: java.net.URI=new java.net.URI("out"),
                      separator: String="|", client: String="", inputType: String="", brokerList: String="localhost:9092")
@@ -91,30 +93,31 @@ object App {
 
         cleansedLines.saveAsTextFiles(config.out.getPath + "/" + config.client, "txt")
 
-        fieldsMeta.value.zipWithIndex foreach (fieldMeta => {
-          cleansedLines.foreachRDD(rdd => {
-            val stats = rdd.groupBy(x => {
-              if (x.length > fieldMeta._2)
-                x(fieldMeta._2)
-              else
-                None
-            }).filter(x => x._1 != None).countByKey()
+        val count = cleansedLines.count()
 
-            stats.map(stat => println(stat._1 + ": " + stat._2))
+        val indexOfAge = fieldsMeta.value.indexWhere(x => x match {
+          case ("age", _) =>
+            true
+          case _ =>
+            false
+        })
 
-            val producer: Producer[String, String] = {
-              if (ProducerObject.isCached) {
-                ProducerObject.getCachedProducer.asInstanceOf[Producer[String, String]]
-              } else {
+        cleansedLines.foreachRDD(rdd => {
+          val producer: Producer[String, String] = {
+            if (ProducerObject.isCached) {
+              ProducerObject.getCachedProducer.asInstanceOf[Producer[String, String]]
+            } else {
 
-                val producer = new Producer[String, String](new ProducerConfig(producerConfig.value))
-                ProducerObject.cacheProducer(producer)
-                producer
-              }
+              val producer = new Producer[String, String](new ProducerConfig(producerConfig.value))
+              ProducerObject.cacheProducer(producer)
+              producer
             }
+          }
 
-            stats.foreach(stat => producer.send(new KeyedMessage("baldur.stats", stat._1 + ": " + stat._2)))
-          })
+          val averageAge = rdd.map(x => x(indexOfAge).asInstanceOf[Int])
+            .reduce((a, b) => a + b)
+
+          producer.send(new KeyedMessage("baldur.stats", "{ \"averageAge\": " + averageAge.toString + ", \"records\": " + rdd.count().toString + "}"))
         })
 
         streamingContext.start()
