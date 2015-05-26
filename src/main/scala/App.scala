@@ -1,5 +1,6 @@
 import java.net.URI
 
+import meta.piedmont.Utilization
 import scopt.OptionParser
 import org.apache.spark._
 import org.apache.spark.streaming._
@@ -9,7 +10,7 @@ import org.apache.spark.streaming._
  */
 object App {
   case class Config(in: java.net.URI=new java.net.URI("in"), out: java.net.URI=new java.net.URI("out"),
-                     separator: String="|", client: String="")
+                     separator: String="|", client: String="", inputType: String="")
 
   def main (args: Array[String]): Unit = {
     val optionParser = new OptionParser[Config]("Baldur") {
@@ -28,6 +29,10 @@ object App {
       opt[String]('c', "client") required() valueName("<client_key>") action { (x, c) =>
         c.copy(client = x)
       }
+
+      opt[String]("type") required() valueName("<input_type>") action { (x, c) =>
+        c.copy(inputType = x)
+      }
     }
 
     optionParser.parse(args, Config()) match {
@@ -37,45 +42,15 @@ object App {
         val streamingContext = createInputStreamingContext(sparkConf, config.in, Minutes(1));
 
         val separator = streamingContext.sparkContext.broadcast(config.separator)
-        val fieldsMeta = streamingContext.sparkContext.broadcast(Array(
-          ("hospital_account_id", "string"),
-          ("patient_id", "string"),
-          ("facility_id", "string"),
-          ("facility_name", "string"),
-          ("facility_address", "string"),
-          ("facility_city", "string"),
-          ("facility_state", "string"),
-          ("facility_zip", "string"),
-          ("last_name", "string"),
-          ("first_name", "string"),
-          ("patient_address", "string"),
-          ("patient_city", "string"),
-          ("patient_state", "string"),
-          ("patient_zip", "string"),
-          ("sex", "string"),
-          ("sex_description", "string"),
-          ("age", "int"),
-          ("dob", "date", "dd/MM/yyyy"),
-          ("home_phone", "string"),
-          ("birth_year", "int"),
-          ("birth_day", "int"),
-          ("birth_month", "string"),
-          ("discharge_date", "date", "dd/MM/yyyy"),
-          ("payor_id", "string"),
-          ("payor_name", "string"),
-          ("patient_type", "string"),
-          ("patient_type_short", "string"),
-          ("visit_type", "string"),
-          ("department_id", "string"),
-          ("department_name", "string"),
-          ("patient_email", "string"),
-          ("patient_id_extra", "string"),
-          ("primary_dx_id", "string"),
-          ("primary_dx_description", "string"),
-          ("secondary_dx_ids", "string"),
-          ("primary_procedure_id", "string"),
-          ("secondary_procedures", "string"),
-          ("final_drg_cd", "string")))
+
+        val clientInputMeta = getClientInputMeta(config.client, config.inputType)
+        if (clientInputMeta == None) {
+          val client = config.client
+          val inputType = config.inputType
+          throw new IllegalArgumentException(f"Metadata for parsing files of type $inputType%s for client $client%s not found")
+        }
+
+        val fieldsMeta = streamingContext.sparkContext.broadcast(clientInputMeta.get)
 
         val lines = streamingContext.textFileStream(config.in.getPath())
 
@@ -95,6 +70,8 @@ object App {
                 Clean.date(fieldValue, format)
               case (fieldValue, (_, "float")) =>
                 Clean.float(fieldValue)
+              case (fieldValue, (_, "skip")) =>
+                fieldValue
               case _ =>
                 throw new Error("Metadata not understood")
             })
@@ -123,6 +100,17 @@ object App {
         streamingContext.awaitTermination()
       case None =>
         sys.exit(1)
+    }
+  }
+
+  def getClientInputMeta(client: String, inputType: String): Option[Seq[Product]] = {
+    (client, inputType) match {
+      case ("piedmont", "utilization") =>
+        Some(meta.piedmont.Utilization.mapping())
+      case ("piedmont", "physician") =>
+        Some(meta.piedmont.PhysicianOffice.mapping())
+      case _ =>
+        None
     }
   }
 
