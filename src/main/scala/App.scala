@@ -53,8 +53,6 @@ object App {
         val cleansedLines = lines
           .map(line => line.split(separator.value))
           .map(fields => {
-            println("fields")
-            fields.zip(fieldsMeta.value).foreach(field => println(field._1 + " " + field._2))
             val cleansedFields = fields.zip(fieldsMeta.value).map({
               case (fieldValue, (_, "string")) =>
                 Clean.string(fieldValue)
