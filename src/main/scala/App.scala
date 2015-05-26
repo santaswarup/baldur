@@ -1,12 +1,14 @@
 import java.net.URI
+import java.util.Properties
 
 import org.apache.spark._
 import org.apache.spark.streaming._
 import scopt.OptionParser
+import kafka.producer.{ProducerConfig, KeyedMessage, Producer}
 
 object App {
   case class Config(in: java.net.URI=new java.net.URI("in"), out: java.net.URI=new java.net.URI("out"),
-                     separator: String="|", client: String="", inputType: String="")
+                     separator: String="|", client: String="", inputType: String="", brokerList: String="localhost:9092")
 
   def main (args: Array[String]): Unit = {
     val optionParser = new OptionParser[Config]("Baldur") {
@@ -29,13 +31,24 @@ object App {
       opt[String]("type") required() valueName "<input_type>" action { (x, c) =>
         c.copy(inputType = x)
       }
+
+      opt[String]("metadata.broker.list") valueName "<server:port>" action { (x, c) =>
+        c.copy(brokerList = x)
+      }
     }
 
     optionParser.parse(args, Config()) match {
       case Some(config) =>
         val sparkConf = createSparkConf()
 
-        val streamingContext = createInputStreamingContext(sparkConf, config.in, Minutes(1));
+        val streamingContext = createInputStreamingContext(sparkConf, config.in, Seconds(30));
+
+        val producerProperties = new Properties()
+        producerProperties.setProperty("client.id", "Baldur")
+        producerProperties.setProperty("metadata.broker.list", config.brokerList)
+        producerProperties.setProperty("serializer.class", "kafka.serializer.StringEncoder")
+
+        val producerConfig = streamingContext.sparkContext.broadcast(producerProperties)
 
         val separator = streamingContext.sparkContext.broadcast(config.separator)
 
@@ -86,7 +99,21 @@ object App {
               else
                 None
             }).filter(x => x._1 != None).countByKey()
-            stats.foreach(stat => println(stat._1 + ": " + stat._2))
+
+            stats.map(stat => println(stat._1 + ": " + stat._2))
+
+            val producer: Producer[String, String] = {
+              if (ProducerObject.isCached) {
+                ProducerObject.getCachedProducer.asInstanceOf[Producer[String, String]]
+              } else {
+
+                val producer = new Producer[String, String](new ProducerConfig(producerConfig.value))
+                ProducerObject.cacheProducer(producer)
+                producer
+              }
+            }
+
+            stats.foreach(stat => producer.send(new KeyedMessage("baldur.stats", stat._1 + ": " + stat._2)))
           })
         })
 
@@ -106,6 +133,14 @@ object App {
       case _ =>
         None
     }
+  }
+
+  def createProducer[K, V](config: ProducerConfig): Producer[K, V] = {
+    new Producer[K, V](config)
+  }
+
+  def writeToKafka[K, V](producer: Producer[K, V], topic: String, key: K, message: V) = {
+    producer.send(new KeyedMessage(topic, key, message))
   }
 
   def createSparkConf(): SparkConf = {
