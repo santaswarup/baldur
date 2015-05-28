@@ -115,7 +115,7 @@ object App {
           }
 
           val averageAge = rdd.map(x => x(indexOfAge).asInstanceOf[Int])
-            .reduce((a, b) => a + b)
+            .fold(0)((a, b) => a + b)
 
           producer.send(new KeyedMessage("baldur.stats", "{ \"averageAge\": " + averageAge.toString + ", \"records\": " + rdd.count().toString + "}"))
         })
