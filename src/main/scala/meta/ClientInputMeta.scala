@@ -5,4 +5,5 @@ package meta
  */
 trait ClientInputMeta {
   def mapping(): Seq[scala.Product]
+  def delimiter: String = "\t"
 }
