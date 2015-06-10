@@ -5,8 +5,6 @@ import meta.ClientInputMeta
 import org.apache.spark._
 import org.apache.spark.streaming._
 
-import kafka.producer.{ProducerConfig, KeyedMessage, Producer}
-
 object App {
 
   def main (args: Array[String]): Unit = {
@@ -25,22 +23,22 @@ object App {
     // Client document structure
     val clientInputMeta = getClientInputMeta(config.client, config.inputType)
     val separator = streamingContext.sparkContext.broadcast(clientInputMeta.delimiter)
-    val fieldsMeta = streamingContext.sparkContext.broadcast(clientInputMeta.mapping)
+    val fieldsMapping = streamingContext.sparkContext.broadcast(clientInputMeta.mapping)
+    val clientKey = streamingContext.sparkContext.broadcast(clientInputMeta.ClientKey)
 
     // Begin streaming
     val cleansedLines = streamingContext
       .textFileStream(config.in.getPath)
       .map(line => line.split(separator.value))
       .map(fields => {
-        val cleansedFields = fields.zip(fieldsMeta.value).map(Clean.byType)
-        cleansedFields foreach (x => println(x))
-
+        val cleansedFields = fields.zip(fieldsMapping.value).map(Clean.byType)
         cleansedFields
       })
       .cache()
 
-    cleansedLines.map(rdd => rdd.mkString("\t")).saveAsTextFiles(config.out.getPath + "/" + config.client, "txt")
-    cleansedLines.foreachRDD(rdd => StatsReporter.processRDD(rdd, fieldsMeta.value, ProducerObject.get(producerConfig)))
+    //cleansedLines.map(rdd => rdd.mkString("\t")).saveAsTextFiles(config.out.getPath + "/" + config.client, "txt")
+    cleansedLines.foreachRDD(rdd => StatsReporter.processRDD(rdd, fieldsMapping.value, producerConfig))
+    cleansedLines.foreachRDD(rdd => CleansedDataFormatter.processRDD(rdd, fieldsMapping.value, producerConfig, clientKey.value))
 
     streamingContext.start()
     streamingContext.awaitTermination()

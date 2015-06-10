@@ -15,6 +15,8 @@ libraryDependencies ++= Seq("com.github.scopt" %% "scopt" % "3.3.0",
     exclude("javax.mail", "mail")
     exclude("jline", "jline"),
   "org.apache.spark" %% "spark-core" % "1.3.1",
-  "org.apache.spark" % "spark-streaming_2.10" % "1.3.1")
+  "org.apache.spark" % "spark-streaming_2.10" % "1.3.1",
+  "com.typesafe.play" %% "play-json" % "2.3.4")
 
-resolvers += Resolver.sonatypeRepo("public")
+resolvers ++= Seq(Resolver.sonatypeRepo("public"),
+  "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/")
