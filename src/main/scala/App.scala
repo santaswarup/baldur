@@ -13,7 +13,7 @@ object App {
     val sparkConf = createSparkConf()
     val streamingContext = createInputStreamingContext(sparkConf, config.in, Seconds(config.interval));
 
-    val outputTopic = sparkConf.get(OutputTopicKey, "cleansed_encounters")
+    val outputTopic = sparkConf.get(OutputTopicKey, "unidentified_encounters")
 
     // Set up Kafka producer
     val producerProperties = new Properties()
