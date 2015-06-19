@@ -5,7 +5,7 @@ import play.api.libs.json._
 import java.util.{Properties, Date}
 
 object CleansedDataFormatter {
-  def processRDD(rdd: RDD[Array[Any]], mapping: Seq[Product], producerConfig: Broadcast[Properties], clientKey: String): Unit = {
+  def processRDD(rdd: RDD[Array[Any]], mapping: Seq[Product], producerConfig: Broadcast[Properties], clientKey: String, outputTopic: String): Unit = {
 
     val fieldNames = mapping.map {
       case (fieldName: String, fieldType) => fieldName
@@ -32,7 +32,7 @@ object CleansedDataFormatter {
         val partitionKey = row(zipIndex)._2
         val producer = ProducerObject.get(producerConfig)
         //println("KEY: " + clientKey + partitionKey + " VALUE:" + jsonRowString)
-        producer.send(new KeyedMessage("baldur.activity", clientKey + partitionKey, jsonRowString))
+        producer.send(new KeyedMessage(outputTopic, clientKey + partitionKey, jsonRowString))
       })
   }
 }

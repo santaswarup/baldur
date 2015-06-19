@@ -6,11 +6,14 @@ import org.apache.spark._
 import org.apache.spark.streaming._
 
 object App {
+  val OutputTopicKey = "spark.app.topic.activity"
 
   def main (args: Array[String]): Unit = {
     val config = BaldurConfig.getConfig(args)
     val sparkConf = createSparkConf()
     val streamingContext = createInputStreamingContext(sparkConf, config.in, Seconds(config.interval));
+
+    val outputTopic = sparkConf.get(OutputTopicKey, "identified_encounters")
 
     // Set up Kafka producer
     val producerProperties = new Properties()
@@ -38,7 +41,7 @@ object App {
 
     //cleansedLines.map(rdd => rdd.mkString("\t")).saveAsTextFiles(config.out.getPath + "/" + config.client, "txt")
     cleansedLines.foreachRDD(rdd => StatsReporter.processRDD(rdd, fieldsMapping.value, producerConfig))
-    cleansedLines.foreachRDD(rdd => CleansedDataFormatter.processRDD(rdd, fieldsMapping.value, producerConfig, clientKey.value))
+    cleansedLines.foreachRDD(rdd => CleansedDataFormatter.processRDD(rdd, fieldsMapping.value, producerConfig, clientKey.value, outputTopic))
 
     streamingContext.start()
     streamingContext.awaitTermination()
