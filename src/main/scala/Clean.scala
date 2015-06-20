@@ -1,5 +1,5 @@
-import java.text.SimpleDateFormat
-import java.util.Date
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 
 /**
  * Cleanser
@@ -41,7 +41,7 @@ object Clean {
     x.toInt
   }
 
-  def date(x: String, format: String="dd/MM/yyyy"): Date = {
-    new SimpleDateFormat(format).parse(x)
+  def date(x: String, format: String="dd/MM/yyyy"): DateTime = {
+    DateTime.parse(x, DateTimeFormat.forPattern(format))
   }
 }
