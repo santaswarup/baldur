@@ -27,6 +27,7 @@ object App {
     val fieldsMapping = sc.broadcast(clientInputMeta.mapping)
     val clientKey = sc.broadcast(clientInputMeta.ClientKey)
     val delimiter = clientInputMeta.delimiter.replace("|", "\\|")
+    val customerId = 1 // TODO: Make this be based off of the client key
 
     // Begin streaming
     val cleansedLines = sc
@@ -47,7 +48,7 @@ object App {
       .cache()
 
     StatsReporter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig)
-    CleansedDataFormatter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig, clientKey.value, outputTopic, config.source, config.sourceType, config.in.getPath)
+    CleansedDataFormatter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig, customerId, outputTopic, config.source, config.sourceType, config.in.getPath)
   }
 
   def getClientInputMeta(client: String, source: String, overrideDelimiter: Option[String]): ClientInputMeta = {
