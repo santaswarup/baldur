@@ -1,15 +1,14 @@
-import kafka.producer.{ProducerConfig, Producer}
-import java.util.Properties
-
+import scala.collection.JavaConversions._
+import org.apache.kafka.clients.producer._
 import org.apache.spark.broadcast.Broadcast
 
 object ProducerObject {
-  private var producerOpt: Option[Producer[String, String]] = None
+  private var producer: Option[KafkaProducer[String, String]] = None
 
-  def get(properties: Broadcast[Properties]): Producer[String, String] = producerOpt match {
-    case Some(producerOpt) => producerOpt
+  def get(properties: Map[String, Object]): KafkaProducer[String, String] = producer match {
+    case Some(producer) => producer
     case None =>
-      producerOpt = Some(new Producer[String, String](new ProducerConfig(properties.value)))
-      producerOpt.get
+      producer = Some(new KafkaProducer[String, String](properties))
+      producer.get
   }
 }

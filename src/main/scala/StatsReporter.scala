@@ -1,11 +1,11 @@
 import java.util.Properties
 
-import kafka.producer.KeyedMessage
+import org.apache.kafka.clients.producer._
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.rdd.RDD
 
 object StatsReporter {
-  def processRDD(rdd: RDD[Array[Any]], mapping: Seq[Product], producerConfig: Broadcast[Properties]): Unit = {
+  def processRDD(rdd: RDD[Array[Any]], mapping: Seq[Product], producerConfig: Map[String, String]): Unit = {
 
     val indexOfAge = mapping.indexWhere(x => x match {
       case ("age", _) =>
@@ -15,12 +15,16 @@ object StatsReporter {
     })
 
     val averageAge = rdd.map(x => {
+      if (x.length < indexOfAge)
+        throw new Error("row too skinny:\n"+x.length+" "+x(0))
       x(indexOfAge).asInstanceOf[Int]
     })
       .fold(0)((a, b) => a + b)
 
     val producer = ProducerObject.get(producerConfig)
 
-    producer.send(new KeyedMessage("baldur.stats", "{ \"averageAge\": " + averageAge.toString + ", \"records\": " + rdd.count().toString + "}"))
+    val jsonStr = "{ \"averageAge\": " + averageAge.toString + ", \"records\": " + rdd.count().toString + "}"
+    println("SENDING JSON: "+jsonStr)
+    producer.send(new ProducerRecord[String, String]("baldur.stats", jsonStr))
   }
 }

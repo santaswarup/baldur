@@ -7,55 +7,63 @@ import org.apache.spark.streaming._
 
 object App {
   val OutputTopicKey = "spark.app.topic.activity"
+  val StringSerializer = "org.apache.kafka.common.serialization.StringSerializer"
 
   def main (args: Array[String]): Unit = {
     val config = BaldurConfig.getConfig(args)
     val sparkConf = createSparkConf()
-    val streamingContext = createInputStreamingContext(sparkConf, config.in, Seconds(config.interval));
+    val sc = new SparkContext(sparkConf)
 
     val outputTopic = sparkConf.get(OutputTopicKey, "unidentified_encounters")
 
     // Set up Kafka producer
-    val producerProperties = new Properties()
-    producerProperties.setProperty("client.id", "Baldur")
-    producerProperties.setProperty("metadata.broker.list", config.brokerList)
-    producerProperties.setProperty("serializer.class", "kafka.serializer.StringEncoder")
-
-    val producerConfig = streamingContext.sparkContext.broadcast(producerProperties)
+    val kafkaProducerConfig = Map("client.id" -> "Baldur",
+      "bootstrap.servers" -> config.brokerList,
+      "key.serializer" -> StringSerializer,
+      "value.serializer" -> StringSerializer)
 
     // Client document structure
-    val clientInputMeta = getClientInputMeta(config.client, config.inputType)
-    val separator = streamingContext.sparkContext.broadcast(clientInputMeta.delimiter)
-    val fieldsMapping = streamingContext.sparkContext.broadcast(clientInputMeta.mapping)
-    val clientKey = streamingContext.sparkContext.broadcast(clientInputMeta.ClientKey)
+    val clientInputMeta = getClientInputMeta(config.client, config.source, config.delimiter)
+    val fieldsMapping = sc.broadcast(clientInputMeta.mapping)
+    val clientKey = sc.broadcast(clientInputMeta.ClientKey)
+    val delimiter = clientInputMeta.delimiter.replace("|", "\\|")
 
     // Begin streaming
-    val cleansedLines = streamingContext
-      .textFileStream(config.in.getPath)
-      .map(line => line.split(separator.value))
+    val cleansedLines = sc
+      .textFile(config.in.getPath)
+      .map(line => line.split(delimiter))
       .map(fields => {
-        val cleansedFields = fields.zip(fieldsMapping.value).map(Clean.byType)
-        cleansedFields
+        try {
+          val cleansedFields = fields.zip(fieldsMapping.value).map(Clean.byType)
+          cleansedFields
+        } catch {
+          case err: Throwable =>
+            val fieldsStr = fields.mkString(",")
+            throw new Error(
+              f"Cleansing row failed:\n${fieldsStr}\n",
+              err)
+        }
       })
       .cache()
 
-    //cleansedLines.map(rdd => rdd.mkString("\t")).saveAsTextFiles(config.out.getPath + "/" + config.client, "txt")
-    cleansedLines.foreachRDD(rdd => StatsReporter.processRDD(rdd, fieldsMapping.value, producerConfig))
-    cleansedLines.foreachRDD(rdd => CleansedDataFormatter.processRDD(rdd, fieldsMapping.value, producerConfig, clientKey.value, outputTopic))
-
-    streamingContext.start()
-    streamingContext.awaitTermination()
+    StatsReporter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig)
+    CleansedDataFormatter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig, clientKey.value, outputTopic, config.source, config.sourceType, config.in.getPath)
   }
 
-  def getClientInputMeta(client: String, inputType: String): ClientInputMeta = {
-    (client, inputType) match {
-      case ("piedmont", "utilization") =>
+  def getClientInputMeta(client: String, source: String, overrideDelimiter: Option[String]): ClientInputMeta = {
+    val inputMeta = (client, source) match {
+      case ("piedmont", "hb") =>
         meta.piedmont.Utilization
-      case ("piedmont", "physician") =>
+      case ("piedmont", "pb") =>
         meta.piedmont.PhysicianOffice
       case _ =>
-        throw new IllegalArgumentException(f"Metadata for parsing files of type ${inputType} for client ${client} not found")
+        throw new IllegalArgumentException(f"Metadata for parsing files of type ${source} for client ${client} not found")
     }
+
+    if (overrideDelimiter.isDefined)
+      inputMeta.delimiter = overrideDelimiter.get
+
+    inputMeta
   }
 
   def createSparkConf(): SparkConf = {
@@ -65,5 +73,4 @@ object App {
   def createInputStreamingContext(sparkConf: SparkConf, uri: URI, duration: Duration): StreamingContext = {
     new StreamingContext(sparkConf, duration)
   }
-
 }

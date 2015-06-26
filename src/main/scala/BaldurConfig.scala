@@ -4,11 +4,13 @@ import scopt.OptionParser
 object BaldurConfig {
 
   case class Config(in: java.net.URI=new java.net.URI("in"),
-                    out: java.net.URI=new java.net.URI("out"),
-                    client: String="",
-                    inputType: String="",
-                    brokerList: String="localhost:9092",
-                    interval: Int=30)
+    out: java.net.URI=new java.net.URI("out"),
+    client: String="",
+    brokerList: String="localhost:9092",
+    interval: Int=30,
+    source: String="",
+    sourceType: String="",
+    delimiter: Option[String]=None)
 
   def getConfig(args: Array[String]) : Config = {
     //Define options
@@ -25,16 +27,28 @@ object BaldurConfig {
         c.copy(client = x)
       }
 
-      opt[String]("type") required() valueName "<input_type>" action { (x, c) =>
-        c.copy(inputType = x)
-      }
-
       opt[String]("metadata.broker.list") valueName "<server:port>" action { (x, c) =>
         c.copy(brokerList = x)
       }
 
       opt[Int]('i', "interval") valueName "<spark_streaming_batch_interval_seconds>" action { (x, c) =>
         c.copy(interval = x)
+      }
+
+      opt[String]("source") required() valueName "<source>" action { (x, c) =>
+        c.copy(source = x)
+      }
+
+      opt[String]("source-type") required() valueName "<source_type>" action { (x, c) =>
+        c.copy(sourceType = x)
+      }
+
+      opt[String]("delimiter") valueName "<delimiter>" action { (x, c) =>
+        if (x.length() > 0) {
+          c.copy(delimiter = Some(x))
+        } else {
+          c.copy(delimiter = None)
+        }
       }
     }
 

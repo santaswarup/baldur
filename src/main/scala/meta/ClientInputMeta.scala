@@ -5,7 +5,7 @@ package meta
  */
 trait ClientInputMeta extends ClientSpec {
   def mapping(): Seq[scala.Product]
-  def delimiter: String = "\t"
+  var delimiter: String = "\t"
 }
 
 abstract class ClientSpec {
