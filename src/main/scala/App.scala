@@ -23,7 +23,7 @@ object App {
       "value.serializer" -> StringSerializer)
 
     // Client document structure
-    val clientInputMeta = getClientInputMeta(config.client, config.source, config.delimiter)
+    val clientInputMeta = getClientInputMeta(config.client, config.source, config.sourceType, config.delimiter)
     val fieldsMapping = sc.broadcast(clientInputMeta.mapping)
     val clientKey = sc.broadcast(clientInputMeta.ClientKey)
     val delimiter = clientInputMeta.delimiter.replace("|", "\\|")
@@ -51,11 +51,11 @@ object App {
     CleansedDataFormatter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig, customerId, outputTopic, config.source, config.sourceType, config.in.getPath)
   }
 
-  def getClientInputMeta(client: String, source: String, overrideDelimiter: Option[String]): ClientInputMeta = {
-    val inputMeta = (client, source) match {
-      case ("piedmont", "hb") =>
+  def getClientInputMeta(client: String, source: String, sourceType: String, overrideDelimiter: Option[String]): ClientInputMeta = {
+    val inputMeta = (client, source, sourceType) match {
+      case ("piedmont", "epic", "hospital") =>
         meta.piedmont.Utilization
-      case ("piedmont", "pb") =>
+      case ("piedmont", "epic", "physician office") =>
         meta.piedmont.PhysicianOffice
       case _ =>
         throw new IllegalArgumentException(f"Metadata for parsing files of type ${source} for client ${client} not found")
