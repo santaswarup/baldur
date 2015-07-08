@@ -24,7 +24,7 @@ object CleansedDataFormatter {
             case (key, value: Int) => (key, JsNumber(value))
             case (key, value: Float) => (key, JsNumber(BigDecimal.valueOf(value)))
             case (key, value: DateTime) => (key, JsString(ISODateTimeFormat.basicDate().print(value)))
-          }.toMap[String, JsValue] ++ Map("customerId" -> JsNumber(customerId), "source" -> JsString(source), "sourceType" -> JsString(sourceType), "sourceDescription" -> JsString(sourceDescription))
+          }.toMap[String, JsValue] ++ Map("customerId" -> JsNumber(customerId), "source" -> JsString(source), "sourceType" -> JsString(sourceType), "sourceDescription" -> JsString(sourceDescription), "personType" -> JsString("c"))
 
           if (jsonRow("zip5").as[String].contains("-")) {
             val parts = jsonRow("zip5").as[String].split("-")

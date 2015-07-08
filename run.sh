@@ -7,6 +7,6 @@ spark-submit --master $3 \
   -i $1 \
   -o $2 \
   -c piedmont \
-  --source-type epic \
-  --source hb \
+  --source-type hospital \
+  --source epic \
   --metadata.broker.list "az-datahub-01.ecosmart.local:9092,az-datahub-02.ecosmart.local:9092,az-datahub-03.ecosmart.local:9092"
