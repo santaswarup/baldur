@@ -8,7 +8,7 @@ import meta.ClientInputMeta
 object Utilization extends ClientInputMeta with Piedmont {
   override def mapping(): Seq[Product] = wrapRefArray(Array(
     ("sourceRecordId", "string"),
-    ("sourcePatientId", "string"),
+    ("sourcePersonId", "string"),
     ("facilityId", "string"),
     ("facilityName", "string"),
     ("facilityAddress", "string"),
