@@ -1,5 +1,4 @@
 import java.net.URI
-import java.util.Properties
 
 import meta.ClientInputMeta
 import org.apache.spark._
@@ -54,7 +53,7 @@ object App {
   def getClientInputMeta(client: String, source: String, sourceType: String, overrideDelimiter: Option[String]): ClientInputMeta = {
     val inputMeta = (client, source, sourceType) match {
       case ("piedmont", "epic", "hospital") =>
-        meta.piedmont.Utilization
+        meta.piedmont.Hospital
       case ("piedmont", "epic", "physician office") =>
         meta.piedmont.PhysicianOffice
       case _ =>

@@ -3,9 +3,9 @@ package meta.piedmont
 import meta.ClientInputMeta
 
 /**
- * Piedmont Utilization
+ * Piedmont Hospital
  */
-object Utilization extends ClientInputMeta with Piedmont {
+object Hospital extends ClientInputMeta with Piedmont {
   override def mapping(): Seq[Product] = wrapRefArray(Array(
     ("sourceRecordId", "string"),
     ("sourcePersonId", "string"),
