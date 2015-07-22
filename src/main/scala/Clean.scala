@@ -1,5 +1,3 @@
-import scala.collection.convert._
-
 import org.joda.time.DateTime
 import org.joda.time.format._
 
@@ -8,8 +6,12 @@ import org.joda.time.format._
  */
 object Clean {
   private val byTypeFn = (fieldValue: String, fieldMeta: Product) => fieldMeta match {
-    case (_, "string") =>
-      Clean.string(fieldValue)
+    case (fieldName, "string") =>
+      try {
+        Clean.string(fieldValue)
+      } catch {
+        case err: Throwable => throw new Error(f"${fieldName} is not handled properly like a String: ${fieldValue}")
+      }
     case (fieldName, "int") =>
       try {
         Clean.int(fieldValue)
