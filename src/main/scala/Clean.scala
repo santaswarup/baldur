@@ -10,13 +10,13 @@ object Clean {
       try {
         Clean.string(fieldValue)
       } catch {
-        case err: Throwable => throw new Error(f"${fieldName} is not handled properly like a String: ${fieldValue}")
+        case err: Throwable => throw new Error(f"${fieldName} is not handled properly like a String: ${fieldValue}",err)
       }
     case (fieldName, "int") =>
       try {
         Clean.int(fieldValue)
       } catch {
-        case err: Throwable => throw new Error(f"${fieldName} is not an integer: ${fieldValue}")
+        case err: Throwable => throw new Error(f"${fieldName} is not an integer: ${fieldValue}",err)
       }
     case (fieldName, "date") =>
       try {
@@ -67,11 +67,19 @@ object Clean {
   }
 
   def float(x: String): Float = {
-     myToFloat(x).get
+     x match {
+       case "" => null
+       case _ => myToFloat(x).get
+     }
+
+
   }
 
   def int(x: String): Int = {
-     myToInt(x).get
+    x match {
+      case "" => null
+      case _ => myToInt(x).get
+    }
   }
 
 
