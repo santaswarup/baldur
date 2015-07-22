@@ -50,7 +50,7 @@ object Clean {
     cleansed
   }
 
-  def toInt(s: String): Option[Int] = {
+  def myToInt(s: String): Option[Int] = {
     try {
       Some(s.toInt)
     } catch {
@@ -58,7 +58,7 @@ object Clean {
     }
   }
 
-  def toFloat(s: String): Option[Float] = {
+  def myToFloat(s: String): Option[Float] = {
     try {
       Some(s.toFloat)
     } catch {
@@ -67,11 +67,11 @@ object Clean {
   }
 
   def float(x: String): Float = {
-    Some(x.toFloat).get
+     myToFloat(x).get
   }
 
   def int(x: String): Int = {
-    Some(x.toInt).get
+     myToInt(x).get
   }
 
 
