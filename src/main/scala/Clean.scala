@@ -64,8 +64,6 @@ object Clean {
     }
   }
 
-
-
   def date(x: String, format: Option[String]=None): DateTime = {
     val formatter = format match {
       case Some(format) =>
