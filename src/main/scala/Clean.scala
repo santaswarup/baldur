@@ -50,13 +50,31 @@ object Clean {
     cleansed
   }
 
+  def toInt(s: String): Option[Int] = {
+    try {
+      Some(s.toInt)
+    } catch {
+      case e: Exception => None
+    }
+  }
+
+  def toFloat(s: String): Option[Float] = {
+    try {
+      Some(s.toFloat)
+    } catch {
+      case e: Exception => None
+    }
+  }
+
   def float(x: String): Float = {
-    x.toFloat
+    Some(x.toFloat).get
   }
 
   def int(x: String): Int = {
-    x.toInt
+    Some(x.toInt).get
   }
+
+
 
   def date(x: String, format: Option[String]=None): DateTime = {
     val formatter = format match {
