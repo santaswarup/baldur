@@ -17,6 +17,7 @@ object StatsReporter {
       if (x.length < indexOfAge)
         throw new Error("row too skinny:\n"+x.length+" "+x(0))
       y match {
+        case "None" => -1
         case "" => -1
         case _ => y.toInt
       }
