@@ -18,7 +18,7 @@ object StatsReporter {
         throw new Error("row too skinny:\n"+x.length+" "+x(0))
       y match {
         case "" => -1
-        case _ => y.toInt
+        case _ => y.asInstanceOf[Int]
       }
     }).filter(x => x >= 0)
       .fold(0)((a, b) => a + b)
