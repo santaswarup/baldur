@@ -51,20 +51,26 @@ object Clean {
   }
 
   def float(x: String): Any = {
-     x match {
+    val y = string(x)
+
+    y match {
        case "" => None
        case _ => x.toFloat
      }
   }
 
   def int(x: String): Any = {
-    x match {
+    val y = string(x)
+
+    y match {
       case "" => None
       case _ => x.toInt
     }
   }
 
   def date(x: String, format: Option[String]=None): DateTime = {
+    val y = string(x)
+
     val formatter = format match {
       case Some(format) =>
         new DateTimeFormatterBuilder().append(null,
@@ -72,7 +78,7 @@ object Clean {
       case None =>
         dateTimeFormatter
     }
-    DateTime.parse(x, formatter)
+    DateTime.parse(y, formatter)
   }
 
   val dateParsers = Array(DateTimeFormat.forPattern("yyyy/MM/dd").getParser(),

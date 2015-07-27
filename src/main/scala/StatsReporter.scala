@@ -1,7 +1,4 @@
-import java.util.Properties
-
 import org.apache.kafka.clients.producer._
-import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.rdd.RDD
 
 object StatsReporter {
