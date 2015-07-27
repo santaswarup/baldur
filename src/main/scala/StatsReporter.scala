@@ -12,10 +12,15 @@ object StatsReporter {
     })
 
     val averageAge = rdd.map(x => {
+      val y = x.toString
+
       if (x.length < indexOfAge)
         throw new Error("row too skinny:\n"+x.length+" "+x(0))
-      x(indexOfAge).asInstanceOf[Int]
-    })
+      y match {
+        case "" => -1
+        case _ => x.asInstanceOf[Int]
+      }
+    }).filter(x => x >= 0)
       .fold(0)((a, b) => a + b)
 
     val producer = ProducerObject.get(producerConfig)
