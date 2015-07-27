@@ -12,7 +12,7 @@ object StatsReporter {
     })
 
     val averageAge = rdd.map(x => {
-      val y = x.toString
+      val y = x.asInstanceOf[String]
 
       if (x.length < indexOfAge)
         throw new Error("row too skinny:\n"+x.length+" "+x(0))
