@@ -48,7 +48,20 @@ object Hospital extends ClientInputMeta with Piedmont {
 
   override def mapping(map: Map[String, Any]): ActivityOutput = {
 
+    val zipInput = getStringOptValue(map, "zip5")
+
+    val zip5: Option[String] = containsHyphen(zipInput) match {
+      case true => Some(zipInput.get.split("-")(0))
+      case false => zipInput
+    }
+
+    val zip4: Option[String] = containsHyphen(zipInput) match {
+      case true => Some(zipInput.get.split("-")(1))
+      case false => zipInput
+    }
+
     ActivityOutput(
+      //Person
       customerId = 1,
       messageType = "utilization",
       source = "epic",
@@ -56,9 +69,28 @@ object Hospital extends ClientInputMeta with Piedmont {
       personType = "c",
       sourcePersonId = getStringValue(map, "sourcePersonId"),
       sourceRecordId = getStringValue(map, "sourceRecordId"),
-      trackingDate = getDateValue(map, "dischargeDate")
+      trackingDate = getDateValue(map, "dischargeDate"),
+      firstName = getStringOptValue(map, "firstName"),
+      lastName = getStringOptValue(map, "lastName"),
+      address1 = getStringOptValue(map, "address1"),
+      city = getStringOptValue(map, "city"),
+      state = getStringOptValue(map, "state"),
+      zip5 = zip5,
+      zip4 = zip4,
+      sex = getStringOptValue(map, "sex"),
+      age = getIntOptValue(map, "age"),
+      dob = getDateOptValue(map, "dob"),
+      emails = getListOptValue(map, "patientEmail"),
+      phoneNumbers = getListOptValue(map, "homePhone"),
+
+      dischargedAt = getDateOptValue(map, "dischargeDate")
     )
+  }
 
-
+  def containsHyphen(str: Option[String]): Boolean = {
+    str match {
+      case None => false
+      case Some(x) => Some(x).get.contains("-")
+    }
   }
 }

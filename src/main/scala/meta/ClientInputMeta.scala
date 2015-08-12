@@ -46,6 +46,18 @@ trait ClientInputMeta extends ClientSpec {
       .map { case (key, value) => value }.head.toString.toInt
   }
 
+  def getSetValue(map: Map[String, Any], columnName: String, delimiter: String = ","): Set[String] = {
+    map
+      .filter { case (key, value) => key.equals(columnName) }
+      .map { case (key, value) => value }.head.toString.split(delimiter).toSet
+  }
+
+  def getListValue(map: Map[String, Any], columnName: String, delimiter: String = ","): List[String] = {
+    map
+      .filter { case (key, value) => key.equals(columnName) }
+      .map { case (key, value) => value }.head.toString.split(delimiter).toList
+  }
+
   def getStringOptValue(map: Map[String, Any], columnName: String): Option[String] = {
     Some(map
       .filter { case (key, value) => key.equals(columnName) }
@@ -80,6 +92,18 @@ trait ClientInputMeta extends ClientSpec {
     Some(map
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value }.head.toString.toInt)
+  }
+
+  def getSetOptValue(map: Map[String, Any], columnName: String, delimiter: String = ","): Option[Set[String]] = {
+    Some(map
+      .filter { case (key, value) => key.equals(columnName) }
+      .map { case (key, value) => value }.head.toString.split(delimiter).toSet)
+  }
+
+  def getListOptValue(map: Map[String, Any], columnName: String, delimiter: String = ","): Option[List[String]] = {
+    Some(map
+      .filter { case (key, value) => key.equals(columnName) }
+      .map { case (key, value) => value }.head.toString.split(delimiter).toList)
   }
 }
 
