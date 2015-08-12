@@ -1,12 +1,12 @@
 package meta.piedmont
 
-import meta.ClientInputMeta
+import meta.{ActivityOutput, ClientInputMeta}
 
 /**
  * Piedmont Hospital
  */
 object Hospital extends ClientInputMeta with Piedmont {
-  override def mapping(): Seq[Product] = wrapRefArray(Array(
+  override def originalFields(): Seq[Product] = wrapRefArray(Array(
     ("sourceRecordId", "string"),
     ("sourcePersonId", "string"),
     ("facilityId", "string"),
@@ -45,4 +45,20 @@ object Hospital extends ClientInputMeta with Piedmont {
     ("primaryProcedureId", "string"),
     ("secondaryProcedures", "string"),
     ("finalDrgCd", "string")))
+
+  override def mapping(map: Map[String, Any]): ActivityOutput = {
+
+    ActivityOutput(
+      customerId = 1,
+      messageType = "utilization",
+      source = "epic",
+      sourceType = "hospital",
+      personType = "c",
+      sourcePersonId = getStringValue(map, "sourcePersonId"),
+      sourceRecordId = getStringValue(map, "sourceRecordId"),
+      trackingDate = getDateValue(map, "dischargeDate")
+    )
+
+
+  }
 }

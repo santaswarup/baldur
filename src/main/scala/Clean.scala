@@ -10,25 +10,25 @@ object Clean {
       try {
         Clean.string(fieldValue)
       } catch {
-        case err: Throwable => throw new Error(f"${fieldName} is not handled properly like a String: ${fieldValue}",err)
+        case err: Throwable => throw new Error(f"$fieldName is not handled properly like a String: $fieldValue",err)
       }
     case (fieldName, "int") =>
       try {
         Clean.int(fieldValue)
       } catch {
-        case err: Throwable => throw new Error(f"${fieldName} is not an integer: ${fieldValue}",err)
+        case err: Throwable => throw new Error(f"$fieldName is not an integer: $fieldValue",err)
       }
     case (fieldName, "date") =>
       try {
       Clean.date(fieldValue)
       } catch {
-        case err: Throwable => throw new Error(f"Could not parse date: ${fieldName}. Bad value: ${fieldValue}", err)
+        case err: Throwable => throw new Error(f"Could not parse date: $fieldName. Bad value: $fieldValue", err)
       }
     case (fieldName, "date", format: String) =>
       try {
         Clean.date(fieldValue, Some(format))
       } catch {
-        case err: Throwable => throw new Error(f"Could not parse date: ${fieldName}. Bad value: ${fieldValue} format ${format}",
+        case err: Throwable => throw new Error(f"Could not parse date: $fieldName. Bad value: $fieldValue format $format",
           err)
       }
     case (_, "float") =>

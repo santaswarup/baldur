@@ -1,12 +1,12 @@
 package meta.piedmont
 
-import meta.ClientInputMeta
+import meta.{ActivityOutput, ClientInputMeta}
 
 /**
  * Piedmont Physicians Office
  */
 object PhysicianOffice extends ClientInputMeta with Piedmont {
-  override def mapping(): Seq[Product] = wrapRefArray(Array(
+  override def originalFields(): Seq[Product] = wrapRefArray(Array(
     ("sourceRecordId", "string"),
     ("sourcePersonId", "string"),
     ("facilityId", "string"),
@@ -44,4 +44,17 @@ object PhysicianOffice extends ClientInputMeta with Piedmont {
     ("dxFourId", "string"),
     ("dxFiveId", "string"),
     ("dxSixId", "string")))
+
+  override def mapping(map: Map[String, Any]): ActivityOutput = {
+    ActivityOutput(
+      customerId = 1,
+      messageType = "utilization",
+      source = "epic",
+      sourceType = "physician office",
+      personType = "c",
+      sourcePersonId = getStringValue(map, "sourcePersonId"),
+      sourceRecordId = getStringValue(map, "sourceRecordId"),
+      trackingDate = getDateValue(map, "dischargeDate")
+    )
+  }
 }

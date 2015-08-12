@@ -2,6 +2,8 @@ import java.net.URI
 
 import meta.ClientInputMeta
 import org.apache.spark._
+import org.apache.spark.rdd.RDD
+import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming._
 
 object App {
@@ -23,13 +25,12 @@ object App {
 
     // Client document structure
     val clientInputMeta = getClientInputMeta(config.client, config.source, config.sourceType, config.delimiter)
-    val fieldsMapping = sc.broadcast(clientInputMeta.mapping)
-    val clientKey = sc.broadcast(clientInputMeta.ClientKey)
+    val fieldsMapping = sc.broadcast(clientInputMeta.originalFields())
+    val customerId = sc.broadcast(clientInputMeta.CustomerId)
     val delimiter = clientInputMeta.delimiter.replace("|", "\\|")
-    val customerId = 1 // TODO: Make this be based off of the client key
 
     // Begin streaming
-    val cleansedLines = sc
+    val cleansedLines: RDD[Array[Any]] = sc
       .textFile(config.in.getPath)
       .map(line => line.split(delimiter))
       .map(fields => {
@@ -40,14 +41,14 @@ object App {
           case err: Throwable =>
             val fieldsStr = fields.mkString(",")
             throw new Error(
-              f"Cleansing row failed:\n${fieldsStr}\n",
+              f"Cleansing row failed:\n$fieldsStr\n",
               err)
         }
       })
-      .cache()
+      .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     StatsReporter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig)
-    CleansedDataFormatter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig, customerId, outputTopic, config.source, config.sourceType, config.in.getPath)
+    CleansedDataFormatter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig, customerId.value, outputTopic, config.source, config.sourceType, config.in.getPath)
   }
 
   def getClientInputMeta(client: String, source: String, sourceType: String, overrideDelimiter: Option[String]): ClientInputMeta = {
@@ -57,7 +58,7 @@ object App {
       case ("piedmont", "epic", "physician office") =>
         meta.piedmont.PhysicianOffice
       case _ =>
-        throw new IllegalArgumentException(f"Metadata for parsing files of type ${source} for client ${client} not found")
+        throw new IllegalArgumentException(f"Metadata for parsing files of type $source for client $client not found")
     }
 
     if (overrideDelimiter.isDefined)

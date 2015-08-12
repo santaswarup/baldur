@@ -13,7 +13,7 @@ object CleansedDataFormatter {
       case (fieldName: String, fieldType, format) => fieldName
     }
 
-    val zippedKeyValuePairs = rdd
+    rdd
       .map(fieldNames.zip(_))
       .foreachPartition { partition =>
         partition.foreach { row =>
@@ -24,6 +24,8 @@ object CleansedDataFormatter {
             case (key, value: DateTime) => (key, JsString(ISODateTimeFormat.basicDate().print(value)))
             case (key, None) => (key, JsNull)
           }.toMap[String, JsValue] ++ Map("customerId" -> JsNumber(customerId), "source" -> JsString(source), "sourceType" -> JsString(sourceType), "sourceDescription" -> JsString(sourceDescription), "personType" -> JsString("c"))
+          //Map to standard input
+
 
           if (jsonRow("zip5").as[String].contains("-")) {
             val parts = jsonRow("zip5").as[String].split("-")

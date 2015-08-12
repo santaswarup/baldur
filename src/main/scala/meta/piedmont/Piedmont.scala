@@ -1,5 +1,5 @@
 package meta.piedmont
 
 trait Piedmont {
-  val ClientKey = "Piedmont"
+  val CustomerId = 1
 }
