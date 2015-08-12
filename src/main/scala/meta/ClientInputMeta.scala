@@ -162,6 +162,21 @@ trait ClientInputMeta extends ClientSpec {
       case None => None
     }}.head
   }
+
+  def getMedicalCodeString(map: Map[String, Any], columnName: String, codeType: String, delimiter: String = ","): Option[String] = {
+    map
+      .filter { case (key, value) => key.equals(columnName) }
+      .map{case x => mapMedicalCode(x, codeType, delimiter)}
+      .head
+  }
+
+  def mapMedicalCode(value: Any, codeType: String, delimiter: String): Option[String] = {
+    value match {
+      case None => None
+      case value: String => Some(value.replace(delimiter, ";" + getCodeType(codeType) + ",") + ";" + getCodeType(codeType))
+    }
+  }
+
 }
 
 abstract class ClientSpec {

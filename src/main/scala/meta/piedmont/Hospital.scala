@@ -67,6 +67,7 @@ object Hospital extends ClientInputMeta with Piedmont {
       source = "epic",
       sourceType = "hospital",
       personType = "c",
+      activityType = Some("encounter"),
       sourcePersonId = getStringValue(map, "sourcePersonId"),
       sourceRecordId = getStringValue(map, "sourceRecordId"),
       trackingDate = getDateValue(map, "dischargeDate"),
@@ -83,19 +84,15 @@ object Hospital extends ClientInputMeta with Piedmont {
       emails = getListOptValue(map, "patientEmail"),
       phoneNumbers = getListOptValue(map, "homePhone"),
 
-      locationId = getLocationId(map),
+      locationId = getLocationIdFromUtil(map),
       dischargedAt = getDateOptValue(map, "dischargeDate"),
       mxCodes = getMedicalCodes(map),
-      patientType = getPatientType(map)
+      patientType = getPatientType(map),
+      erPatient = getErFlag(map)
     )
   }
 
-  def containsHyphen(str: Option[String]): Boolean = {
-    str match {
-      case None => false
-      case Some(x) => Some(x).get.contains("-")
-    }
-  }
+
 
   def getMedicalCodes(map: Map[String, Any]): Option[List[String]] = {
     val primaryDxId: Option[String] = getMedicalCodeString(map, "primaryDxId", "icd9_diag", "|")
@@ -106,25 +103,6 @@ object Hospital extends ClientInputMeta with Piedmont {
 
     concatonateMedicalCodes(msDrg, primaryCpt, otherCpts, primaryDxId, otherDxIds)
 
-  }
-
-  def getLocationId(map: Map[String, Any]): Option[Int] = {
-    map
-      .filter { case (key, value) => key.equals("facilityId") }
-      .map { case (key, value) => value }
-      .map(mapLocationId)
-      .head
-  }
-
-  def mapLocationId(value: Any): Option[Int] = {
-    value match {
-      case 10500 => Some(600) // Atlanta
-      case 10501 => Some(601) // Fayette
-      case 10502 => Some(602) // Mountainside
-      case 10503 => Some(603) // Newnan
-      case 10504 => Some(604) // Henry
-      case _ => None
-    }
   }
 
   def concatonateMedicalCodes(msDrg: Option[String],
@@ -139,31 +117,28 @@ object Hospital extends ClientInputMeta with Piedmont {
       .toList)
   }
 
-  def getMedicalCodeString(map: Map[String, Any], columnName: String, codeType: String, delimiter: String = ","): Option[String] = {
-    map
-      .filter { case (key, value) => key.equals(columnName) }
-      .map{case x => mapMedicalCode(x, codeType, delimiter)}
-      .head
-  }
-
-  def mapMedicalCode(value: Any, codeType: String, delimiter: String): Option[String] = {
-    value match {
-      case None => None
-      case value: String => Some(value.replace(delimiter, ";" + getCodeType(codeType) + ",") + ";" + getCodeType(codeType))
-    }
-  }
-
   def getPatientType(map: Map[String, Any]): Option[String] ={
-    Some(map
+    map
       .filter { case (key, value) => key.equals("patientTypeShort") }
       .map { case (key, value) => value }
     .map { case value => value match{
         case None => None
-        case "IP" => "i"
-        case "OP" => "o"
+        case "IP" => Some("i")
+        case "ED" => Some("o")
       }}
       .head
-      .toString)
+  }
+
+  def getErFlag(map: Map[String, Any]): Option[Boolean] ={
+    map
+      .filter { case (key, value) => key.equals("patientTypeShort") }
+      .map { case (key, value) => value }
+      .map { case value => value match{
+      case None => None
+      case "IP" => Some(false)
+      case "ED" => Some(true)
+    }}
+      .head
   }
 
 }
