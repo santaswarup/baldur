@@ -79,7 +79,7 @@ case class ActivityOutput(//person-columns
                           servicedOn: Option[DateTime]=None,
                           locationId: Option[Int]=None,
                           activityType: Option[String]=None,
-                          mxCodes: Option[Set[String]]=None,
+                          mxCodes: Option[List[String]]=None,
                           mxGroups: Option[Set[Int]]=None,
                           providers: Option[Set[String]]=None,
                           erPatient: Option[Boolean]=None,

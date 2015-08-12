@@ -83,7 +83,10 @@ object Hospital extends ClientInputMeta with Piedmont {
       emails = getListOptValue(map, "patientEmail"),
       phoneNumbers = getListOptValue(map, "homePhone"),
 
-      dischargedAt = getDateOptValue(map, "dischargeDate")
+      locationId = getLocationId(map),
+      dischargedAt = getDateOptValue(map, "dischargeDate"),
+      mxCodes = getMedicalCodes(map),
+      patientType = getPatientType(map)
     )
   }
 
@@ -93,4 +96,74 @@ object Hospital extends ClientInputMeta with Piedmont {
       case Some(x) => Some(x).get.contains("-")
     }
   }
+
+  def getMedicalCodes(map: Map[String, Any]): Option[List[String]] = {
+    val primaryDxId: Option[String] = getMedicalCodeString(map, "primaryDxId", "icd9_diag", "|")
+    val otherDxIds: Option[String] = getMedicalCodeString(map, "secondaryDxIds", "icd9_diag", "|")
+    val primaryCpt: Option[String] = getMedicalCodeString(map, "primaryProcedureId", "cpt", "|")
+    val otherCpts: Option[String] = getMedicalCodeString(map, "primaryProcedureId", "cpt", "|")
+    val msDrg: Option[String] = getMedicalCodeString(map, "finalDrgCd", "ms_drg", "|")
+
+    concatonateMedicalCodes(msDrg, primaryCpt, otherCpts, primaryDxId, otherDxIds)
+
+  }
+
+  def getLocationId(map: Map[String, Any]): Option[Int] = {
+    map
+      .filter { case (key, value) => key.equals("facilityId") }
+      .map { case (key, value) => value }
+      .map(mapLocationId)
+      .head
+  }
+
+  def mapLocationId(value: Any): Option[Int] = {
+    value match {
+      case 10500 => Some(600) // Atlanta
+      case 10501 => Some(601) // Fayette
+      case 10502 => Some(602) // Mountainside
+      case 10503 => Some(603) // Newnan
+      case 10504 => Some(604) // Henry
+      case _ => None
+    }
+  }
+
+  def concatonateMedicalCodes(msDrg: Option[String],
+                              primaryCpt: Option[String],
+                              otherCpts: Option[String],
+                              primaryDxId: Option[String],
+                              otherDxIds: Option[String]): Option[List[String]] ={
+    Some(Seq(msDrg, primaryCpt, otherCpts, primaryDxId, otherDxIds)
+      .filter(_.nonEmpty)
+      .mkString(",")
+      .split(",")
+      .toList)
+  }
+
+  def getMedicalCodeString(map: Map[String, Any], columnName: String, codeType: String, delimiter: String = ","): Option[String] = {
+    map
+      .filter { case (key, value) => key.equals(columnName) }
+      .map{case x => mapMedicalCode(x, codeType, delimiter)}
+      .head
+  }
+
+  def mapMedicalCode(value: Any, codeType: String, delimiter: String): Option[String] = {
+    value match {
+      case None => None
+      case value: String => Some(value.replace(delimiter, ";" + getCodeType(codeType) + ",") + ";" + getCodeType(codeType))
+    }
+  }
+
+  def getPatientType(map: Map[String, Any]): Option[String] ={
+    Some(map
+      .filter { case (key, value) => key.equals("patientTypeShort") }
+      .map { case (key, value) => value }
+    .map { case value => value match{
+        case None => None
+        case "IP" => "i"
+        case "OP" => "o"
+      }}
+      .head
+      .toString)
+  }
+
 }
