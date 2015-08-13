@@ -5,7 +5,7 @@ import meta.{ActivityOutput, ClientInputMeta}
 /**
  * Piedmont Hospital
  */
-object Hospital extends ClientInputMeta with Piedmont {
+object Hospital extends ClientInputMeta with Piedmont with Serializable {
   override def originalFields(): Seq[Product] = wrapRefArray(Array(
     ("sourceRecordId", "string"),
     ("sourcePersonId", "string"),

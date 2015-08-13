@@ -28,7 +28,6 @@ object App {
     // Client document structure
     val clientInputMeta = getClientInputMeta(config.client, config.source, config.sourceType, config.delimiter)
     val fieldsMapping = sc.broadcast(clientInputMeta.originalFields())
-    val customerId = sc.broadcast(clientInputMeta.CustomerId)
     val delimiter = clientInputMeta.delimiter.replace("|", "\\|")
 
     val fieldNames = fieldsMapping.value.map {
