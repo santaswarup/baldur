@@ -132,6 +132,7 @@ object Hospital extends ClientInputMeta with Piedmont with Serializable {
   }
 
   def getPatientType(map: Map[String, Any]): Option[String] ={
+    val newMap =
     map
       .filter { case (key, value) => key.equals("patientTypeShort") }
       .map { case (key, value) => value }
@@ -140,10 +141,15 @@ object Hospital extends ClientInputMeta with Piedmont with Serializable {
         case "IP" => Some("i")
         case "ED" => Some("o")
       }}
-      .head
+
+    newMap.nonEmpty match {
+      case false => None
+      case true => newMap.head
+    }
   }
 
   def getErFlag(map: Map[String, Any]): Option[Boolean] ={
+    val newMap =
     map
       .filter { case (key, value) => key.equals("patientTypeShort") }
       .map { case (key, value) => value }
@@ -152,7 +158,11 @@ object Hospital extends ClientInputMeta with Piedmont with Serializable {
       case "IP" => Some(false)
       case "ED" => Some(true)
     }}
-      .head
+
+    newMap.nonEmpty match {
+      case false => None
+      case true => newMap.head
+    }
   }
 
 }

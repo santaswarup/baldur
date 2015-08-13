@@ -92,88 +92,141 @@ trait ClientInputMeta extends ClientSpec {
   }
 
   def getStringOptValue(map: Map[String, Any], columnName: String): Option[String] = {
-    map
+    val newMap =
+      map
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
-      case value: String => Some(value)
-      case None => None
-    }}.head
+        case None => None
+        case value: String => Some(value)
+    }}
+
+    newMap.nonEmpty match {
+      case false => None
+      case true => newMap.head
+    }
   }
 
   def getDateOptValue(map: Map[String, Any], columnName: String): Option[DateTime] = {
-    map
+    val newMap =
+      map
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
       case value: DateTime => Some(value)
       case None => None
-    }}.head
+    }}
+
+    newMap.nonEmpty match {
+      case false => None
+      case true => newMap.head
+    }
   }
 
   def getFloatOptValue(map: Map[String, Any], columnName: String): Option[Float] = {
+    val newMap =
     map
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
       case value: Float => Some(value)
       case None => None
-    }}.head
+    }}
+
+    newMap.nonEmpty match {
+      case false => None
+      case true => newMap.head
+    }
   }
 
   def getDoubleOptValue(map: Map[String, Any], columnName: String): Option[Double] = {
+    val newMap =
     map
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
       case value: Double => Some(value)
       case None => None
-    }}.head
+    }}
+
+    newMap.nonEmpty match {
+      case false => None
+      case true => newMap.head
+    }
   }
 
   def getLongOptValue(map: Map[String, Any], columnName: String): Option[Long] = {
+    val newMap =
     map
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
       case value: Long => Some(value)
       case None => None
-    }}.head
+    }}
+
+    newMap.nonEmpty match {
+      case false => None
+      case true => newMap.head
+    }
   }
 
   def getIntOptValue(map: Map[String, Any], columnName: String): Option[Int] = {
+    val newMap =
     map
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
       case value: Int => Some(value)
       case None => None
-    }}.head
+    }}
+
+    newMap.nonEmpty match {
+      case false => None
+      case true => newMap.head
+    }
   }
 
   def getSetOptValue(map: Map[String, Any], columnName: String, delimiter: String = ","): Option[Set[String]] = {
+    val newMap =
     map
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
         case value: String => Some(value.split(delimiter).toSet)
         case None => None
-    }}.head
+    }}
+
+    newMap.nonEmpty match {
+      case false => None
+      case true => newMap.head
+    }
   }
 
   def getListOptValue(map: Map[String, Any], columnName: String, delimiter: String = ","): Option[List[String]] = {
+    val newMap =
     map
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
       case value: String => Some(value.split(delimiter).toList)
       case None => None
-    }}.head
+    }}
+
+    newMap.nonEmpty match {
+      case false => None
+      case true => newMap.head
+    }
   }
 
   def getMedicalCodeString(map: Map[String, Any], columnName: String, codeType: String, delimiter: String = ","): Option[String] = {
+    val newMap =
     map
       .filter { case (key, value) => key.equals(columnName) }
       .map{case x => mapMedicalCode(x, codeType, delimiter)}
-      .head
+
+    newMap.nonEmpty match {
+      case false => None
+      case true => newMap.head
+    }
   }
 
   def mapMedicalCode(value: Any, codeType: String, delimiter: String): Option[String] = {
     value match {
       case None => None
-      case value: Any => Some(value.toString.replace(delimiter, ";" + getCodeType(codeType) + ",") + ";" + getCodeType(codeType))
+      case _ => Some(value.toString.replace(delimiter, ";" + getCodeType(codeType) + ",") + ";" + getCodeType(codeType))
     }
   }
 
