@@ -41,25 +41,21 @@ object Clean {
 
   def byType = byTypeFn.tupled
 
-  def string(x: String): Option[String] = {
-
+  def string(x: String): String = {
     val cleansed = x.replace("\uFFFD", " ").trim().replaceAll(" +", " ")
 
     if (cleansed.matches("(?i)null"))
-      return None
+      return ""
 
-    cleansed match{
-      case "" => None
-      case _ => Some(cleansed)
-    }
+    cleansed
   }
 
-  def float(x: String): Option[Float] = {
+  def float(x: String): Any = {
     val y = string(x)
 
     y match {
-       case None => None
-       case _ => Some(y.get.toFloat)
+       case "" => None
+       case _ => y.toFloat
      }
   }
 
@@ -67,35 +63,38 @@ object Clean {
     val y = string(x)
 
     y match {
-      case None => None
-      case _ => Some(y.get.toInt)
+      case "" => None
+      case _ => y.toInt
     }
   }
 
-  def date(x: String, format: Option[String]=None): Option[DateTime] = {
+  def date(x: String, format: Option[String]=None): Any = {
     val y = string(x)
 
     val formatter = format match {
-      case None => dateTimeFormatter
-      case _ => new DateTimeFormatterBuilder().append(null, Array(DateTimeFormat.forPattern(format.get).getParser, dateTimeFormatter.getParser)).toFormatter
+      case Some(format) =>
+        new DateTimeFormatterBuilder().append(null,
+          Array(DateTimeFormat.forPattern(format).getParser(), dateTimeFormatter.getParser())).toFormatter()
+      case None =>
+        dateTimeFormatter
     }
 
     y match {
-      case None => None
-      case _ => Some(DateTime.parse(y.get, formatter))
+      case "" => None
+      case _ => DateTime.parse(y, formatter)
     }
 
   }
 
-  val dateParsers = Array(DateTimeFormat.forPattern("yyyy/MM/dd").getParser,
-    DateTimeFormat.forPattern("yyyy-mm-dd").getParser,
-    DateTimeFormat.forPattern("MM/dd/yyyy").getParser,
-    DateTimeFormat.forPattern("MM-dd-yyyy").getParser,
-    DateTimeFormat.forPattern("yyyy-MM-dd H:mm:ss").getParser,
-    DateTimeFormat.forPattern("yyyy/MM/dd H:mm:ss").getParser,
-    ISODateTimeFormat.dateOptionalTimeParser().getParser,
-    ISODateTimeFormat.dateHour().getParser)
+  val dateParsers = Array(DateTimeFormat.forPattern("yyyy/MM/dd").getParser(),
+    DateTimeFormat.forPattern("yyyy-mm-dd").getParser(),
+    DateTimeFormat.forPattern("MM/dd/yyyy").getParser(),
+    DateTimeFormat.forPattern("MM-dd-yyyy").getParser(),
+    DateTimeFormat.forPattern("yyyy-MM-dd H:mm:ss").getParser(),
+    DateTimeFormat.forPattern("yyyy/MM/dd H:mm:ss").getParser(),
+    ISODateTimeFormat.dateOptionalTimeParser().getParser(),
+    ISODateTimeFormat.dateHour().getParser())
 
-  val dateTimeFormatter = new DateTimeFormatterBuilder().append(null, dateParsers).toFormatter
+  val dateTimeFormatter = new DateTimeFormatterBuilder().append(null, dateParsers).toFormatter()
 
 }
