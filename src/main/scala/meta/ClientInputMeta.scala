@@ -96,8 +96,8 @@ trait ClientInputMeta extends ClientSpec {
       map
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
-        case None => None
         case value: String => Some(value)
+        case _ => None
     }}
 
     newMap.nonEmpty match {
@@ -112,7 +112,7 @@ trait ClientInputMeta extends ClientSpec {
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
       case value: DateTime => Some(value)
-      case None => None
+      case _ => None
     }}
 
     newMap.nonEmpty match {
@@ -127,7 +127,7 @@ trait ClientInputMeta extends ClientSpec {
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
       case value: Float => Some(value)
-      case None => None
+      case _ => None
     }}
 
     newMap.nonEmpty match {
@@ -142,7 +142,7 @@ trait ClientInputMeta extends ClientSpec {
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
       case value: Double => Some(value)
-      case None => None
+      case _ => None
     }}
 
     newMap.nonEmpty match {
@@ -157,7 +157,7 @@ trait ClientInputMeta extends ClientSpec {
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
       case value: Long => Some(value)
-      case None => None
+      case _ => None
     }}
 
     newMap.nonEmpty match {
@@ -172,7 +172,7 @@ trait ClientInputMeta extends ClientSpec {
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
       case value: Int => Some(value)
-      case None => None
+      case _ => None
     }}
 
     newMap.nonEmpty match {
@@ -187,7 +187,7 @@ trait ClientInputMeta extends ClientSpec {
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
         case value: String => Some(value.split(delimiter).toSet)
-        case None => None
+        case _ => None
     }}
 
     newMap.nonEmpty match {
@@ -202,7 +202,7 @@ trait ClientInputMeta extends ClientSpec {
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
       case value: String => Some(value.split(delimiter).toList)
-      case None => None
+      case _ => None
     }}
 
     newMap.nonEmpty match {
