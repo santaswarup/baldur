@@ -1,10 +1,12 @@
 import java.net.URI
 
-import meta.ClientInputMeta
+import meta.{ActivityOutput, ClientInputMeta}
+import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.spark._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming._
+import play.api.libs.json._
 
 object App {
   val OutputTopicKey = "spark.app.topic.activity"
@@ -29,7 +31,12 @@ object App {
     val customerId = sc.broadcast(clientInputMeta.CustomerId)
     val delimiter = clientInputMeta.delimiter.replace("|", "\\|")
 
-    // Begin streaming
+    val fieldNames = fieldsMapping.value.map {
+      case (fieldName: String, fieldType) => fieldName
+      case (fieldName: String, fieldType, format) => fieldName
+    }
+
+    // First cleanse the original input values
     val cleansedLines: RDD[Array[Any]] = sc
       .textFile(config.in.getPath)
       .map(line => line.split(delimiter))
@@ -47,8 +54,28 @@ object App {
       })
       .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
+
+    // Next map them to the field names
+    cleansedLines
+      .map(fieldNames.zip(_))
+      // Now loop through the mapped lines, map to the ActivityOutput class, and send the messages
+      .foreachPartition { partition =>
+      partition.foreach { row =>
+        val mappedRow = row.map {
+          case (key, value: Any) => (key, value)
+        }.toMap[String, Any]
+
+        // Standard lines
+        val standardLines: ActivityOutput = clientInputMeta.mapping(mappedRow)
+
+        //Create Json for sending
+         val jsonRowString = Json.stringify(Json.toJson(ActivityOutput.mapJsonFields(standardLines)))
+         val producer = ProducerObject.get(kafkaProducerConfig)
+         producer.send(new ProducerRecord[String, String](outputTopic, jsonRowString))
+      }
+    }
+
     StatsReporter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig)
-    CleansedDataFormatter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig, customerId.value, outputTopic, config.source, config.sourceType, config.in.getPath)
   }
 
   def getClientInputMeta(client: String, source: String, sourceType: String, overrideDelimiter: Option[String]): ClientInputMeta = {

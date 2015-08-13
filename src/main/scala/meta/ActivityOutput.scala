@@ -1,7 +1,10 @@
 package meta
 
 import java.util.UUID
+
 import org.joda.time.DateTime
+import org.joda.time.format.ISODateTimeFormat
+import play.api.libs.json._
 
 /**
  * Defines the schema for the output message
@@ -149,6 +152,229 @@ case class ActivityOutput(//person-columns
                           reason: Option[String]=None
                            )
 
-object ActivityOutput{
+object ActivityOutput {
+  def mapJsonFields(activityOutput: ActivityOutput): Map[String, JsValue] = {
+    Map(
+      "personId" -> jsStringFromOptionOther(activityOutput.personId),
+      "customerId" -> JsNumber(activityOutput.customerId),
+      "addressId" -> jsStringFromOptionOther(activityOutput.addressId),
+      "householdId" -> jsStringFromOptionOther(activityOutput.householdId),
+      "messageType" -> JsString(activityOutput.messageType),
+      "source" -> JsString(activityOutput.source),
+      "sourceType" -> JsString(activityOutput.sourceType),
+      "personType" -> JsString(activityOutput.personType),
+      "sourcePersonId" -> JsString(activityOutput.sourcePersonId),
+      "sourceRecordId" -> JsString(activityOutput.sourceRecordId),
+      "trackingDate" -> jsDate(activityOutput.trackingDate),
+      "firstName" -> jsStringFromOptionString(activityOutput.firstName),
+      "middleName" -> jsStringFromOptionString(activityOutput.middleName),
+      "lastName" -> jsStringFromOptionString(activityOutput.lastName),
+      "prefix" -> jsStringFromOptionString(activityOutput.prefix),
+      "personalSuffix" -> jsStringFromOptionString(activityOutput.personalSuffix),
+      "dob" -> jsDateFromOption(activityOutput.dob),
+      "age" -> jsNumberFromOptionInt(activityOutput.age),
+      "sex" -> jsStringFromOptionString(activityOutput.sex),
+      "payerType" -> jsStringFromOptionString(activityOutput.payerType),
+      "maritalStatus" -> jsStringFromOptionString(activityOutput.maritalStatus),
+      "ethnicInsight" -> jsStringFromOptionString(activityOutput.ethnicInsight),
+      "race" -> jsStringFromOptionString(activityOutput.race),
+      "religion" -> jsStringFromOptionString(activityOutput.religion),
+      "language" -> jsStringFromOptionString(activityOutput.language),
+      "occupationGroup" -> jsStringFromOptionString(activityOutput.occupationGroup),
+      "occupation" -> jsStringFromOptionString(activityOutput.occupation),
+      "phoneNumbers" -> jsArrayFromOptionListString(activityOutput.phoneNumbers),
+      "emails" -> jsArrayFromOptionListString(activityOutput.emails),
+      "dwellType" -> jsStringFromOptionString(activityOutput.dwellType),
+      "combinedOwner" -> jsStringFromOptionString(activityOutput.combinedOwner),
+      "householdIncome" -> jsStringFromOptionString(activityOutput.householdIncome),
+      "recipientReliabilityCode" -> jsNumberFromOptionInt(activityOutput.recipientReliabilityCode),
+      "mailResponder" -> jsStringFromOptionString(activityOutput.mailResponder),
+      "lengthOfResidence" -> jsNumberFromOptionInt(activityOutput.lengthOfResidence),
+      "personsInLivingUnit" -> jsNumberFromOptionInt(activityOutput.personsInLivingUnit),
+      "adultsInLivingUnit" -> jsNumberFromOptionInt(activityOutput.adultsInLivingUnit),
+      "childrenInLivingUnit" -> jsNumberFromOptionInt(activityOutput.childrenInLivingUnit),
+      "homeYearBuilt" -> jsNumberFromOptionInt(activityOutput.homeYearBuilt),
+      "homeLandValue" -> jsNumberFromOptionFloat(activityOutput.homeLandValue),
+      "estimatedHomeValue" -> jsNumberFromOptionFloat(activityOutput.estimatedHomeValue),
+      "donatesToCharity" -> jsStringFromOptionString(activityOutput.donatesToCharity),
+      "mosaicZip4" -> jsStringFromOptionString(activityOutput.mosaicZip4),
+      "mosaicGlobalZip4" -> jsStringFromOptionString(activityOutput.mosaicGlobalZip4),
+      "hhComp" -> jsStringFromOptionString(activityOutput.hhComp),
+      "presenceOfChild" -> jsStringFromOptionString(activityOutput.presenceOfChild),
+      "childZeroToThreeBkt" -> jsStringFromOptionString(activityOutput.childZeroToThreeBkt),
+      "childFourToSixBkt" -> jsStringFromOptionString(activityOutput.childFourToSixBkt),
+      "childSevenToNineBkt" -> jsStringFromOptionString(activityOutput.childSevenToNineBkt),
+      "childTenToTwelveBkt" -> jsStringFromOptionString(activityOutput.childTenToTwelveBkt),
+      "childThirteenToFifteenBkt" -> jsStringFromOptionString(activityOutput.childThirteenToFifteenBkt),
+      "childSixteenToEighteenBkt" -> jsStringFromOptionString(activityOutput.childSixteenToEighteenBkt),
+      "wealthRating" -> jsNumberFromOptionInt(activityOutput.wealthRating),
+      "addressQualityIndicator" -> jsStringFromOptionString(activityOutput.addressQualityIndicator),
+      "addressType" -> jsStringFromOptionString(activityOutput.addressType),
+      "validAddressFlag" -> jsBoolFromOption(activityOutput.validAddressFlag),
+      "address1" -> jsStringFromOptionString(activityOutput.address1),
+      "address2" -> jsStringFromOptionString(activityOutput.address2),
+      "city" -> jsStringFromOptionString(activityOutput.city),
+      "state" -> jsStringFromOptionString(activityOutput.state),
+      "zip5" -> jsStringFromOptionString(activityOutput.zip5),
+      "zip4" -> jsStringFromOptionString(activityOutput.zip4),
+      "county" -> jsStringFromOptionString(activityOutput.county),
+      "carrierRoute" -> jsStringFromOptionString(activityOutput.carrierRoute),
+      "dpbc" -> jsStringFromOptionString(activityOutput.dpbc),
+      "lat" -> jsNumberFromOptionFloat(activityOutput.lat),
+      "lon" -> jsNumberFromOptionFloat(activityOutput.lon),
 
+      "servicedOn" -> jsDateFromOption(activityOutput.servicedOn),
+      "locationId" -> jsNumberFromOptionInt(activityOutput.locationId),
+      "activityType" -> jsStringFromOptionString(activityOutput.activityType),
+      "mxCodes" -> jsArrayFromOptionListString(activityOutput.mxCodes),
+      "mxGroups" -> jsArrayFromOptionSetNum(activityOutput.mxGroups),
+      "providers" -> jsArrayFromOptionSetString(activityOutput.providers),
+      "erPatient" -> jsBoolFromOption(activityOutput.erPatient),
+      "financialClassId" -> jsNumberFromOptionInt(activityOutput.financialClassId),
+      "financialClass" -> jsStringFromOptionString(activityOutput.financialClass),
+      "serviceLines" -> jsArrayFromOptionSetString(activityOutput.serviceLines),
+      "patientType" -> jsStringFromOptionString(activityOutput.patientType),
+      "dischargeStatus" -> jsNumberFromOptionInt(activityOutput.dischargeStatus),
+
+      "admittedAt" -> jsDateFromOption(activityOutput.admittedAt),
+      "dischargedAt" -> jsDateFromOption(activityOutput.dischargedAt),
+      "finalBillDate" -> jsDateFromOption(activityOutput.finalBillDate),
+      "transactionDate" -> jsDateFromOption(activityOutput.transactionDate),
+      "activityDate" -> jsDateFromOption(activityOutput.activityDate),
+
+      "hospitalId" -> jsStringFromOptionString(activityOutput.hospitalId),
+      "hospital" -> jsStringFromOptionString(activityOutput.hospital),
+      "businessUnitId" -> jsStringFromOptionString(activityOutput.businessUnitId),
+      "businessUnit" -> jsStringFromOptionString(activityOutput.businessUnit),
+      "siteId" -> jsStringFromOptionString(activityOutput.siteId),
+      "site" -> jsStringFromOptionString(activityOutput.site),
+      "clinicId" -> jsStringFromOptionString(activityOutput.clinicId),
+      "clinic" -> jsStringFromOptionString(activityOutput.clinic),
+      "practiceLocationId" -> jsStringFromOptionString(activityOutput.practiceLocationId),
+      "practiceLocation" -> jsStringFromOptionString(activityOutput.practiceLocation),
+      "facilityId" -> jsStringFromOptionString(activityOutput.facilityId),
+      "facility" -> jsStringFromOptionString(activityOutput.facility),
+
+      "insuranceId" -> jsStringFromOptionString(activityOutput.insuranceId),
+      "insurance" -> jsStringFromOptionString(activityOutput.insurance),
+      "charges" -> jsNumberFromOptionDouble(activityOutput.charges),
+      "cost" -> jsNumberFromOptionDouble(activityOutput.cost),
+      "revenue" -> jsNumberFromOptionDouble(activityOutput.revenue),
+      "contributionMargin" -> jsNumberFromOptionDouble(activityOutput.contributionMargin),
+      "profit" -> jsNumberFromOptionDouble(activityOutput.profit),
+
+      "systolic" -> jsNumberFromOptionDouble(activityOutput.systolic),
+      "diastolic" -> jsNumberFromOptionDouble(activityOutput.diastolic),
+      "height" -> jsNumberFromOptionDouble(activityOutput.height),
+      "weight" -> jsNumberFromOptionDouble(activityOutput.weight),
+      "bmi" -> jsNumberFromOptionDouble(activityOutput.bmi),
+
+      "guarantorFirstName" -> jsStringFromOptionString(activityOutput.guarantorFirstName),
+      "guarantorLastName" -> jsStringFromOptionString(activityOutput.guarantorLastName),
+      "guarantorMiddleName" -> jsStringFromOptionString(activityOutput.guarantorMiddleName),
+
+      "activityId" -> jsStringFromOptionString(activityOutput.activityId),
+      "activity" -> jsStringFromOptionString(activityOutput.activity),
+      "activityGroupId" -> jsStringFromOptionString(activityOutput.activityGroupId),
+      "activityGroup" -> jsStringFromOptionString(activityOutput.activityGroup),
+      "activityLocationId" -> jsStringFromOptionString(activityOutput.activityLocationId),
+      "activityLocation" -> jsStringFromOptionString(activityOutput.activityLocation),
+
+      "assessments" -> jsArrayFromOptionSetString(activityOutput.assessments),
+      "assessmentQuestions" -> jsArrayFromOptionSetString(activityOutput.assessmentQuestions),
+      "assessmentAnswers" -> jsArrayFromOptionSetString(activityOutput.assessmentAnswers),
+
+      "reasonId" -> jsStringFromOptionString(activityOutput.reasonId),
+      "reason" -> jsStringFromOptionString(activityOutput.reason)
+
+    )
+  }
+
+  def jsBoolFromOption(value: Option[Boolean]): JsValue = {
+    value match {
+      case None => JsNull
+      case _ => JsBoolean(value.get)
+    }
+  }
+
+  def jsDate(value: DateTime): JsValue = {
+    JsString(ISODateTimeFormat.basicDate().print(value))
+  }
+
+  def jsDateFromOption(value: Option[DateTime]): JsValue = {
+    value match {
+      case None => JsNull
+      case _ => JsString(ISODateTimeFormat.basicDate().print(value.get))
+    }
+  }
+
+  def jsStringFromOptionOther(value: Option[Any]): JsValue = {
+    value match {
+      case None => JsNull
+      case _ => JsString(value.get.toString)
+    }
+  }
+
+  def jsStringFromOptionString(value: Option[String]): JsValue = {
+    value match {
+      case None => JsNull
+      case _ => JsString(value.get)
+    }
+  }
+
+  def jsNumberFromOptionFloat(value: Option[Float]): JsValue = {
+    value match {
+      case None => JsNull
+      case _ => JsNumber(BigDecimal.valueOf(value.get.toDouble))
+    }
+  }
+
+  def jsNumberFromOptionInt(value: Option[Int]): JsValue = {
+    value match {
+      case None => JsNull
+      case _ => JsNumber(value.get)
+    }
+  }
+
+  def jsNumberFromOptionDouble(value: Option[Double]): JsValue = {
+    value match {
+      case None => JsNull
+      case _ => JsNumber(value.get)
+    }
+  }
+
+  def jsNumberFromOptionLong(value: Option[Long]): JsValue = {
+    value match {
+      case None => JsNull
+      case _ => JsNumber(value.get)
+    }
+  }
+
+  def jsArrayFromOptionListString(value: Option[List[String]]): JsValue = {
+    value match {
+      case None => JsNull
+      case _ => JsArray(value.get.map { case x => JsString(x) }.toSeq)
+    }
+  }
+
+  def jsArrayFromOptionSetString(value: Option[Set[String]]): JsValue = {
+    value match {
+      case None => JsNull
+      case _ => JsArray(value.get.map { case x => JsString(x) }.toSeq)
+    }
+  }
+
+  def jsArrayFromOptionListNum(value: Option[List[Int]]): JsValue = {
+    value match {
+      case None => JsNull
+      case _ => JsArray(value.get.map { case x => JsNumber(x) }.toSeq)
+    }
+  }
+
+  def jsArrayFromOptionSetNum(value: Option[Set[Int]]): JsValue = {
+    value match {
+      case None => JsNull
+      case _ => JsArray(value.get.map { case x => JsNumber(x) }.toSeq)
+    }
+  }
 }
