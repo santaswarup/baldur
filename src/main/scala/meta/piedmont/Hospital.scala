@@ -60,6 +60,8 @@ object Hospital extends ClientInputMeta with Piedmont {
       case false => zipInput
     }
 
+    val financialClass: (Option[Int], Option[String]) = getFinancialClasses(map)
+
     ActivityOutput(
       //Person
       customerId = 1,
@@ -86,9 +88,21 @@ object Hospital extends ClientInputMeta with Piedmont {
 
       locationId = getLocationIdFromUtil(map),
       dischargedAt = getDateOptValue(map, "dischargeDate"),
+      servicedOn = getDateOptValue(map, "dischargeDate"),
       mxCodes = getMedicalCodes(map),
       patientType = getPatientType(map),
-      erPatient = getErFlag(map)
+      erPatient = getErFlag(map),
+      financialClassId = financialClass._1,
+      financialClass = financialClass._2,
+
+      insuranceId = getStringOptValue(map, "payorId"),
+      insurance = getStringOptValue(map, "payorName"),
+
+      facilityId = getStringOptValue(map, "facilityId"),
+      facility = getStringOptValue(map, "facility"),
+      siteId = getStringOptValue(map, "departmentId"),
+      site = getStringOptValue(map, "departmentName")
+
     )
   }
 
