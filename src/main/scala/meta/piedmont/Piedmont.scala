@@ -338,5 +338,23 @@ trait Piedmont {
     }
   }
 
+  def getPhoneNumbers(map: Map[String, Any], delimiter: String = ","): Option[List[String]] = {
+    map
+      .filter { case (key, value) => key.equals("homePhone") }
+      .map { case (key, value) => value match{
+      case value: String => Some(value.replace(delimiter, ";home" + delimiter).split(delimiter).toList)
+      case None => None
+    }}.head
+  }
+
+  def getEmails(map: Map[String, Any], delimiter: String = ","): Option[List[String]] = {
+    map
+      .filter { case (key, value) => key.equals("patientEmail") }
+      .map { case (key, value) => value match{
+      case value: String => Some(value.replace(delimiter, ";home" + delimiter).split(delimiter).toList)
+      case None => None
+    }}.head
+  }
+
 
 }

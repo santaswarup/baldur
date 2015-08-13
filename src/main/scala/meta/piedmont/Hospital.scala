@@ -83,8 +83,8 @@ object Hospital extends ClientInputMeta with Piedmont {
       sex = getStringOptValue(map, "sex"),
       age = getIntOptValue(map, "age"),
       dob = getDateOptValue(map, "dob"),
-      emails = getListOptValue(map, "patientEmail"),
-      phoneNumbers = getListOptValue(map, "homePhone"),
+      emails = getEmails(map),
+      phoneNumbers = getPhoneNumbers(map),
 
       locationId = getLocationIdFromUtil(map),
       dischargedAt = getDateOptValue(map, "dischargeDate"),
@@ -100,8 +100,8 @@ object Hospital extends ClientInputMeta with Piedmont {
 
       facilityId = getStringOptValue(map, "facilityId"),
       facility = getStringOptValue(map, "facility"),
-      siteId = getStringOptValue(map, "departmentId"),
-      site = getStringOptValue(map, "departmentName")
+      businessUnitId = getStringOptValue(map, "departmentId"),
+      businessUnit = getStringOptValue(map, "departmentName")
 
     )
   }
