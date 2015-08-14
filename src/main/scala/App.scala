@@ -77,13 +77,11 @@ object App {
       .foreachPartition { partition =>
 
       val mappedLines: String = partition
-      .map(_.toMap[String, Any])
-      .map(clientInputMeta.mapping)
-      .map(_.productIterator)
-      .map(ActivityOutput.toStringFromActivity)
-      .map(_.mkString("|"))
-      .mkString("\n")
-      
+      .map{case line =>
+        ActivityOutput.toStringFromActivity(clientInputMeta.mapping(line.toMap[String, Any]).productIterator)
+        .mkString("|")
+      }.mkString("\n")
+
       val outputFile = new FileOutputStream(outputPath, true)
       val writer = new PrintWriter(outputFile)
 
@@ -91,9 +89,7 @@ object App {
       writer.append(mappedLines)
       writer.close()
       outputFile.close()
-
     }
-
 
     StatsReporter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig)
 
