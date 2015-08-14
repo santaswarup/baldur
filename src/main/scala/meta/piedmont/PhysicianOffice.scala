@@ -126,6 +126,7 @@ object PhysicianOffice extends ClientInputMeta with Piedmont with Serializable {
                               dx6: Option[String]): Option[List[String]] ={
     Some(Seq(primaryDxId, dx2, dx3, dx4, dx5, dx6)
       .filter(_.nonEmpty)
+      .map(_.get)
       .mkString(",")
       .split(",")
       .toList)
