@@ -215,7 +215,7 @@ trait ClientInputMeta extends ClientSpec {
     val newMap =
     map
       .filter { case (key, value) => key.equals(columnName) }
-      .map{case x => mapMedicalCode(x, codeType, delimiter)}
+      .map{case (key, value) => mapMedicalCode(value, codeType, delimiter)}
 
     newMap.nonEmpty match {
       case false => None
