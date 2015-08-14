@@ -226,6 +226,7 @@ trait ClientInputMeta extends ClientSpec {
   def mapMedicalCode(value: Any, codeType: String, delimiter: String): Option[String] = {
     value match {
       case None => None
+      case "" => None
       case _ => Some(value.toString.replace(delimiter, ";" + getCodeType(codeType) + ",") + ";" + getCodeType(codeType))
     }
   }
