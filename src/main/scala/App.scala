@@ -1,4 +1,4 @@
-import java.io.{ObjectOutputStream, FileOutputStream}
+import java.io.{PrintWriter, File, ObjectOutputStream, FileOutputStream}
 import java.net.URI
 
 import meta.{ActivityOutput, ClientInputMeta}
@@ -57,15 +57,18 @@ object App {
       .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     val today: String = ISODateTimeFormat.basicDateTime().print(DateTime.now())
-
+    val outputPath = config.out.getPath.last match {
+      case '/' => config.out.getPath + "baldur_output_" + today + ".txt"
+      case _ => config.out.getPath + "/baldur_output_" + today + ".txt"
+    }
 
     val header = fieldNames.mkString("|")
+    val outputFile = new File(outputPath)
+    val writer = new PrintWriter(outputFile)
 
-    val fileOutputStream = new FileOutputStream(config.out.getPath + "/baldur_output_" + today.toString + ".txt", true)
-    val outputStream = new ObjectOutputStream(fileOutputStream)
-    outputStream.writeObject(header)
-    outputStream.close
-    fileOutputStream.close
+    writer.append(header + "\n")
+    writer.close()
+
     // Next map them to the field names
     cleansedLines
       .map(fieldNames.zip(_))
@@ -76,19 +79,15 @@ object App {
           case (key, value: Any) => (key, value)
         }.toMap[String, Any]
 
+        val writer = new PrintWriter(outputFile)
+
         // Standard lines
         val standardLines: ActivityOutput = clientInputMeta.mapping(mappedRow)
 
-
         // Create file for anchor
-
-        val fileOutputStream = new FileOutputStream(config.out.getPath + "/baldur_output_" + today.toString + ".txt", true)
-        val outputStream = new ObjectOutputStream(fileOutputStream)
-        outputStream.writeObject(standardLines.productIterator.mkString("|"))
-        outputStream.close
-        fileOutputStream.close
-
-
+        writer.append(standardLines.productIterator.mkString("|") + "\n")
+        writer.close()
+        
         /*
         // Create Json for sending
          val jsonRowString = Json.stringify(Json.toJson(ActivityOutput.mapJsonFields(standardLines)))
