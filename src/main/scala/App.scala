@@ -63,11 +63,12 @@ object App {
     }
 
     val header = fieldNames.mkString("|")
-    val outputFile = new File(outputPath)
+    val outputFile = new FileOutputStream(outputPath, true)
     val writer = new PrintWriter(outputFile)
 
     writer.append(header + "\n")
     writer.close()
+    outputFile.close()
 
     // Next map them to the field names
     cleansedLines
@@ -79,6 +80,7 @@ object App {
           case (key, value: Any) => (key, value)
         }.toMap[String, Any]
 
+        val outputFile = new FileOutputStream(outputPath, true)
         val writer = new PrintWriter(outputFile)
 
         // Standard lines
@@ -87,7 +89,7 @@ object App {
         // Create file for anchor
         writer.append(standardLines.productIterator.mkString("|") + "\n")
         writer.close()
-        
+        outputFile.close()
         /*
         // Create Json for sending
          val jsonRowString = Json.stringify(Json.toJson(ActivityOutput.mapJsonFields(standardLines)))
