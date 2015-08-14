@@ -9,7 +9,7 @@ object PhysicianOffice extends ClientInputMeta with Piedmont with Serializable {
   override def originalFields(): Seq[Product] = wrapRefArray(Array(
     ("sourceRecordId", "string"),
     ("sourcePersonId", "string"),
-    ("facilityId", "string"),
+    ("facilityId", "int"),
     ("facilityName", "string"),
     ("facilityAddress", "string"),
     ("facilityCity", "string"),
@@ -30,7 +30,7 @@ object PhysicianOffice extends ClientInputMeta with Piedmont with Serializable {
     ("birthDay", "int"),
     ("birthMonth", "string"),
     ("dischargeDate", "date", "MM/dd/yyyy"),
-    ("payorId", "string"),
+    ("payorId", "int"),
     ("payorName", "string"),
     ("patientType", "string"),
     ("patientTypeDesc", "string"),
@@ -97,7 +97,7 @@ object PhysicianOffice extends ClientInputMeta with Piedmont with Serializable {
       insurance = getStringOptValue(map, "payorName"),
 
       facilityId = getStringOptValue(map, "facilityId"),
-      facility = getStringOptValue(map, "facility"),
+      facility = getStringOptValue(map, "facilityName"),
       businessUnitId = getStringOptValue(map, "departmentId"),
       businessUnit = getStringOptValue(map, "departmentName")
 
