@@ -61,9 +61,9 @@ object App {
 
     val header = fieldNames.mkString("|")
 
-    val fileOutputStream = new FileOutputStream(config.out.getPath + "baldur_output_" + today.toString + ".txt", true)
+    val fileOutputStream = new FileOutputStream(config.out.getPath + "/baldur_output_" + today.toString + ".txt", true)
     val outputStream = new ObjectOutputStream(fileOutputStream)
-    outputStream.writeChars(header)
+    outputStream.writeObject(header)
     outputStream.close
     fileOutputStream.close
     // Next map them to the field names
@@ -82,9 +82,9 @@ object App {
 
         // Create file for anchor
 
-        val fileOutputStream = new FileOutputStream(config.out.getPath + "baldur_output_" + today.toString + ".txt", true)
+        val fileOutputStream = new FileOutputStream(config.out.getPath + "/baldur_output_" + today.toString + ".txt", true)
         val outputStream = new ObjectOutputStream(fileOutputStream)
-        outputStream.writeChars(standardLines.productIterator.mkString("|"))
+        outputStream.writeObject(standardLines.productIterator.mkString("|"))
         outputStream.close
         fileOutputStream.close
 
