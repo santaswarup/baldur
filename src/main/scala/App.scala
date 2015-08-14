@@ -75,32 +75,23 @@ object App {
       .map(fieldNames.zip(_))
       // Now loop through the mapped lines, map to the ActivityOutput class, and send the messages
       .foreachPartition { partition =>
-      partition.foreach { row =>
-        val mappedRow = row.map {
-          case (key, value: Any) => (key, value)
-        }.toMap[String, Any]
 
-        val outputFile = new FileOutputStream(outputPath, true)
-        val writer = new PrintWriter(outputFile)
+      val mappedLines: String = partition
+      .map(_.toMap[String, Any])
+      .map(clientInputMeta.mapping)
+      .map(_.productIterator)
+      .map(ActivityOutput.toStringFromActivity)
+      .map(_.mkString("|"))
+      .mkString("\n")
+      
+      val outputFile = new FileOutputStream(outputPath, true)
+      val writer = new PrintWriter(outputFile)
 
-        // Standard lines
-        val standardLines: ActivityOutput = clientInputMeta.mapping(mappedRow)
+      // Create file for anchor
+      writer.append(mappedLines)
+      writer.close()
+      outputFile.close()
 
-        // Create file for anchor
-        writer.append(
-          standardLines
-          .productIterator
-          .map(ActivityOutput.toStringFromActivity)
-          .mkString("|") + "\n")
-        writer.close()
-        outputFile.close()
-        /*
-        // Create Json for sending
-         val jsonRowString = Json.stringify(Json.toJson(ActivityOutput.mapJsonFields(standardLines)))
-         val producer = ProducerObject.get(kafkaProducerConfig)
-         producer.send(new ProducerRecord[String, String](outputTopic, jsonRowString))
-         */
-      }
     }
 
 
