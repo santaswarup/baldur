@@ -90,8 +90,9 @@ object App {
       }
     }
 
-    StatsReporter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig)
     outputStream.close
+    StatsReporter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig)
+
   }
 
   def getClientInputMeta(client: String, source: String, sourceType: String, overrideDelimiter: Option[String]): ClientInputMeta = {

@@ -22,7 +22,7 @@ object StatsReporter {
         case _ => y.toInt
       }
     }).filter(x => x >= 0)
-      .fold(0)((a, b) => a + b)
+      .mean()
 
     val producer = ProducerObject.get(producerConfig)
 
