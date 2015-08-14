@@ -90,10 +90,7 @@ object App {
         writer.append(
           standardLines
           .productIterator
-          .map{case value => value match{
-            case value: Option[_] => ActivityOutput.toStringFromOption(value)
-            case _ => value.toString
-          }}
+          .map(ActivityOutput.toStringFromActivity)
           .mkString("|") + "\n")
         writer.close()
         outputFile.close()

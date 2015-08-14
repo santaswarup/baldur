@@ -290,11 +290,18 @@ object ActivityOutput {
     )
   }
 
-  def toStringFromOption(value: Option[_]): String = {
-    value match {
-      case None => ""
-      case _ => value.get.toString
-    }
+  def toStringFromActivity(headValue: Any): String = {
+      headValue match{
+        case headValue: Option[_] => headValue.isDefined match {
+          case true => headValue.get match{
+            case value: List[_] => value.mkString(",")
+            case value: Set[_] => value.mkString(",")
+            case _ => headValue.get.toString
+          }
+          case false => ""
+        }
+        case _ => headValue.toString
+      }
   }
 
   def jsBoolFromOption(value: Option[Boolean]): JsValue = {
