@@ -58,14 +58,14 @@ object App {
 
     val today: String = ISODateTimeFormat.basicDateTime().print(DateTime.now())
 
-    val fileOutputStream = new FileOutputStream(config.out.getPath + "baldur_output_" + today.toString, true)
 
     val header = fieldNames.mkString("|")
 
+    val fileOutputStream = new FileOutputStream(config.out.getPath + "baldur_output_" + today.toString, true)
     val outputStream = new ObjectOutputStream(fileOutputStream)
-
     outputStream.writeChars(header)
-
+    outputStream.close
+    fileOutputStream.close
     // Next map them to the field names
     cleansedLines
       .map(fieldNames.zip(_))
@@ -79,8 +79,16 @@ object App {
         // Standard lines
         val standardLines: ActivityOutput = clientInputMeta.mapping(mappedRow)
 
+
         // Create file for anchor
+
+        val fileOutputStream = new FileOutputStream(config.out.getPath + "baldur_output_" + today.toString, true)
+        val outputStream = new ObjectOutputStream(fileOutputStream)
         outputStream.writeChars(standardLines.productIterator.mkString("|"))
+        outputStream.close
+        fileOutputStream.close
+
+
         /*
         // Create Json for sending
          val jsonRowString = Json.stringify(Json.toJson(ActivityOutput.mapJsonFields(standardLines)))
@@ -90,7 +98,7 @@ object App {
       }
     }
 
-    outputStream.close
+
     StatsReporter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig)
 
   }
