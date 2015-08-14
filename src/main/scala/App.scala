@@ -1,3 +1,4 @@
+import java.io.{ObjectOutputStream, FileOutputStream}
 import java.net.URI
 
 import meta.{ActivityOutput, ClientInputMeta}
@@ -6,6 +7,8 @@ import org.apache.spark._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming._
+import org.joda.time.DateTime
+import org.joda.time.format.ISODateTimeFormat
 import play.api.libs.json._
 
 object App {
@@ -30,7 +33,7 @@ object App {
     val fieldsMapping = sc.broadcast(clientInputMeta.originalFields())
     val delimiter = clientInputMeta.delimiter.replace("|", "\\|")
 
-    val fieldNames = fieldsMapping.value.map {
+    val fieldNames: Seq[String] = fieldsMapping.value.map {
       case (fieldName: String, fieldType) => fieldName
       case (fieldName: String, fieldType, format) => fieldName
     }
@@ -53,6 +56,15 @@ object App {
       })
       .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
+    val today: String = ISODateTimeFormat.basicDateTime().print(DateTime.now())
+
+    val fileOutputStream = new FileOutputStream(config.out.getPath + "baldur_output_" + today.toString, true)
+
+    val header = fieldNames.mkString("|")
+
+    val outputStream = new ObjectOutputStream(fileOutputStream)
+
+    outputStream.writeChars(header)
 
     // Next map them to the field names
     cleansedLines
@@ -67,14 +79,19 @@ object App {
         // Standard lines
         val standardLines: ActivityOutput = clientInputMeta.mapping(mappedRow)
 
-        //Create Json for sending
+        // Create file for anchor
+        outputStream.writeChars(standardLines.productIterator.mkString("|"))
+        /*
+        // Create Json for sending
          val jsonRowString = Json.stringify(Json.toJson(ActivityOutput.mapJsonFields(standardLines)))
          val producer = ProducerObject.get(kafkaProducerConfig)
          producer.send(new ProducerRecord[String, String](outputTopic, jsonRowString))
+         */
       }
     }
 
     StatsReporter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig)
+    outputStream.close
   }
 
   def getClientInputMeta(client: String, source: String, sourceType: String, overrideDelimiter: Option[String]): ClientInputMeta = {
