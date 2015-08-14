@@ -78,7 +78,7 @@ object App {
 
       val mappedLines: String = partition
       .map{case line =>
-        ActivityOutput.toStringFromActivity(clientInputMeta.mapping(line.toMap[String, Any]).productIterator)
+       clientInputMeta.mapping(line.toMap[String, Any]).productIterator.map(ActivityOutput.toStringFromActivity)
         .mkString("|")
       }.mkString("\n")
 
