@@ -126,6 +126,7 @@ object Hospital extends ClientInputMeta with Piedmont with Serializable {
                               otherDxIds: Option[String]): Option[List[String]] ={
     Some(Seq(msDrg, primaryCpt, otherCpts, primaryDxId, otherDxIds)
       .filter(_.nonEmpty)
+      .map(_.get)
       .mkString(",")
       .split(",")
       .toList)

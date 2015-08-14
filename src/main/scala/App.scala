@@ -62,7 +62,7 @@ object App {
       case _ => config.out.getPath + "/baldur_output_" + today + ".txt"
     }
 
-    val header = fieldNames.mkString("|")
+    val header = extractFieldNames[ActivityOutput].mkString("|")
     val outputFile = new FileOutputStream(outputPath, true)
     val writer = new PrintWriter(outputFile)
 
@@ -131,4 +131,9 @@ object App {
   def createInputStreamingContext(sparkConf: SparkConf, uri: URI, duration: Duration): StreamingContext = {
     new StreamingContext(sparkConf, duration)
   }
+
+  def extractFieldNames[T<:Product:Manifest] = {
+    implicitly[Manifest[T]].runtimeClass.getDeclaredFields.map(_.getName)
+  }
+
 }
