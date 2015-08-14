@@ -290,6 +290,13 @@ object ActivityOutput {
     )
   }
 
+  def toStringFromOption(value: Option[_]): String = {
+    value match {
+      case None => ""
+      case _ => value.get.toString
+    }
+  }
+
   def jsBoolFromOption(value: Option[Boolean]): JsValue = {
     value match {
       case None => JsNull

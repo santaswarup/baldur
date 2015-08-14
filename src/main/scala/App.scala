@@ -52,7 +52,7 @@ object App {
             throw new Error(
               f"Cleansing row failed:\n$fieldsStr\n",
               err)
-        }
+    }
       })
       .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
@@ -87,7 +87,14 @@ object App {
         val standardLines: ActivityOutput = clientInputMeta.mapping(mappedRow)
 
         // Create file for anchor
-        writer.append(standardLines.productIterator.mkString("|") + "\n")
+        writer.append(
+          standardLines
+          .productIterator
+          .map{case value => value match{
+            case value: Option[_] => ActivityOutput.toStringFromOption(value)
+            case _ => value.toString
+          }}
+          .mkString("|") + "\n")
         writer.close()
         outputFile.close()
         /*
