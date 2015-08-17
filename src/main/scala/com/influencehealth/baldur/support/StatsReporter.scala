@@ -1,3 +1,5 @@
+package com.influencehealth.baldur.support
+
 import org.apache.kafka.clients.producer._
 import org.apache.spark.rdd.RDD
 

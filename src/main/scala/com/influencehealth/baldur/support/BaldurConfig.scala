@@ -1,3 +1,5 @@
+package com.influencehealth.baldur.support
+
 import scopt.OptionParser
 
 

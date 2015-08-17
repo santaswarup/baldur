@@ -1,15 +1,16 @@
-import java.io.{PrintWriter, File, ObjectOutputStream, FileOutputStream}
+package com.influencehealth.baldur
+
+import java.io.{FileOutputStream, PrintWriter}
 import java.net.URI
 
-import meta.{ActivityOutput, ClientInputMeta}
-import org.apache.kafka.clients.producer.ProducerRecord
+import com.influencehealth.baldur.meta.{ActivityOutput, ClientInputMeta}
+import com.influencehealth.baldur.support._
 import org.apache.spark._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming._
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
-import play.api.libs.json._
 
 object App {
   val OutputTopicKey = "spark.app.topic.activity"
@@ -19,8 +20,6 @@ object App {
     val config = BaldurConfig.getConfig(args)
     val sparkConf = createSparkConf()
     val sc = new SparkContext(sparkConf)
-
-    val outputTopic = sparkConf.get(OutputTopicKey, "unidentified_encounters")
 
     // Set up Kafka producer
     val kafkaProducerConfig = Map("client.id" -> "Baldur",

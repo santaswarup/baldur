@@ -1,6 +1,6 @@
-package meta.piedmont
+package com.influencehealth.baldur.meta.piedmont
 
-import meta.{ActivityOutput, ClientInputMeta}
+import com.influencehealth.baldur.meta._
 
 /**
  * Piedmont Hospital
@@ -64,7 +64,7 @@ object Hospital extends ClientInputMeta with Piedmont with Serializable {
 
     ActivityOutput(
       //Person
-      customerId = 1,
+      customerId = CustomerId,
       messageType = "utilization",
       source = "epic",
       sourceType = "hospital",

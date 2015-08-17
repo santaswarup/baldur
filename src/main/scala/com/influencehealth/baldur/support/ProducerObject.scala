@@ -1,6 +1,8 @@
-import scala.collection.JavaConversions._
+package com.influencehealth.baldur.support
+
 import org.apache.kafka.clients.producer._
-import org.apache.spark.broadcast.Broadcast
+
+import scala.collection.JavaConversions._
 
 object ProducerObject {
   private var producer: Option[KafkaProducer[String, String]] = None

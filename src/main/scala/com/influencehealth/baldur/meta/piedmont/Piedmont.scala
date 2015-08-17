@@ -1,4 +1,4 @@
-package meta.piedmont
+package com.influencehealth.baldur.meta
 
 trait Piedmont {
   val CustomerId = 1

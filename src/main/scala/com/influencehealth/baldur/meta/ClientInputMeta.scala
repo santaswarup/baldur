@@ -1,4 +1,4 @@
-package meta
+package com.influencehealth.baldur.meta
 
 import org.joda.time.DateTime
 

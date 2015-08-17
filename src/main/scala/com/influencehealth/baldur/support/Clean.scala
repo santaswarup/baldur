@@ -1,3 +1,5 @@
+package com.influencehealth.baldur.support
+
 import org.joda.time.DateTime
 import org.joda.time.format._
 
