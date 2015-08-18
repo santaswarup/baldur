@@ -62,14 +62,6 @@ object IntakeApp {
       case _ => config.out.getPath + "/baldur_output_" + today + ".txt"
     }
 
-    val header = extractFieldNames[ActivityOutput].mkString("|")
-    val outputFile = new FileOutputStream(outputPath, true)
-    val writer = new PrintWriter(outputFile)
-
-    writer.append(header + "\n")
-    writer.close()
-    outputFile.close()
-
     // Next map them to the field names
     cleansedLines
       .map(fieldNames.zip(_))
