@@ -5,6 +5,7 @@ import java.net.URI
 
 import com.influencehealth.baldur.intake.meta._
 import com.influencehealth.baldur.support._
+import com.influencehealth.baldur.intake.config._
 import org.apache.spark._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.storage.StorageLevel
@@ -17,7 +18,7 @@ object IntakeApp {
   val StringSerializer = "org.apache.kafka.common.serialization.StringSerializer"
 
   def main (args: Array[String]): Unit = {
-    val config = BaldurConfig.getConfig(args)
+    val config = IntakeConfig.getConfig(args)
     val sparkConf = createSparkConf()
     val sc = new SparkContext(sparkConf)
 

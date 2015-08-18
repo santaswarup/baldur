@@ -1,9 +1,9 @@
-package com.influencehealth.baldur.support
+package com.influencehealth.baldur.intake.config
 
 import scopt.OptionParser
 
 
-object BaldurConfig {
+object IntakeConfig {
 
   case class Config(in: java.net.URI=new java.net.URI("in"),
     out: java.net.URI=new java.net.URI("out"),
@@ -55,7 +55,7 @@ object BaldurConfig {
     }
 
     optionParser.parse(args, Config()) match {
-      case Some(config) => return config
+      case Some(config) => config
       case None => sys.exit(1)
     }
 
