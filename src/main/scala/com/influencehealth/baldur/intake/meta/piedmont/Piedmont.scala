@@ -1,4 +1,4 @@
-package com.influencehealth.baldur.meta
+package com.influencehealth.baldur.intake.meta.piedmont
 
 trait Piedmont {
   val CustomerId = 1
@@ -308,12 +308,7 @@ trait Piedmont {
     70010 -> (Some(9300),Some("Other"))
   )
   
-  def containsHyphen(str: Option[String]): Boolean = {
-    str match {
-      case None => false
-      case Some(x) => Some(x).get.contains("-")
-    }
-  }
+
 
   def getLocationIdFromUtil(map: Map[String, Any]): Option[Int] = {
     map

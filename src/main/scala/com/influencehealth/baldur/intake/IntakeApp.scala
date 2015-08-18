@@ -1,9 +1,9 @@
-package com.influencehealth.baldur
+package com.influencehealth.baldur.intake
 
 import java.io.{FileOutputStream, PrintWriter}
 import java.net.URI
 
-import com.influencehealth.baldur.meta.{ActivityOutput, ClientInputMeta}
+import com.influencehealth.baldur.intake.meta._
 import com.influencehealth.baldur.support._
 import org.apache.spark._
 import org.apache.spark.rdd.RDD
@@ -12,7 +12,7 @@ import org.apache.spark.streaming._
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 
-object App {
+object IntakeApp {
   val OutputTopicKey = "spark.app.topic.activity"
   val StringSerializer = "org.apache.kafka.common.serialization.StringSerializer"
 

@@ -1,6 +1,7 @@
-package com.influencehealth.baldur.meta.piedmont
+package com.influencehealth.baldur.intake.meta.piedmont
 
-import com.influencehealth.baldur.meta._
+import com.influencehealth.baldur.intake.meta._
+import com.influencehealth.baldur.support._
 
 /**
  * Piedmont Hospital
@@ -48,14 +49,14 @@ object Hospital extends ClientInputMeta with Piedmont with Serializable {
 
   override def mapping(map: Map[String, Any]): ActivityOutput = {
 
-    val zipInput = getStringOptValue(map, "zip5")
+    val zipInput = FileInputSupport.getStringOptValue(map, "zip5")
 
-    val zip5: Option[String] = containsHyphen(zipInput) match {
+    val zip5: Option[String] = FileInputSupport.containsHyphen(zipInput) match {
       case true => Some(zipInput.get.split("-")(0))
       case false => zipInput
     }
 
-    val zip4: Option[String] = containsHyphen(zipInput) match {
+    val zip4: Option[String] = FileInputSupport.containsHyphen(zipInput) match {
       case true => Some(zipInput.get.split("-")(1))
       case false => zipInput
     }
@@ -70,38 +71,38 @@ object Hospital extends ClientInputMeta with Piedmont with Serializable {
       sourceType = "hospital",
       personType = "c",
       activityType = Some("encounter"),
-      sourcePersonId = getStringValue(map, "sourcePersonId"),
-      sourceRecordId = getStringValue(map, "sourceRecordId"),
-      trackingDate = getDateValue(map, "dischargeDate"),
-      firstName = getStringOptValue(map, "firstName"),
-      lastName = getStringOptValue(map, "lastName"),
-      address1 = getStringOptValue(map, "address1"),
-      city = getStringOptValue(map, "city"),
-      state = getStringOptValue(map, "state"),
+      sourcePersonId = FileInputSupport.getStringValue(map, "sourcePersonId"),
+      sourceRecordId = FileInputSupport.getStringValue(map, "sourceRecordId"),
+      trackingDate = FileInputSupport.getDateValue(map, "dischargeDate"),
+      firstName = FileInputSupport.getStringOptValue(map, "firstName"),
+      lastName = FileInputSupport.getStringOptValue(map, "lastName"),
+      address1 = FileInputSupport.getStringOptValue(map, "address1"),
+      city = FileInputSupport.getStringOptValue(map, "city"),
+      state = FileInputSupport.getStringOptValue(map, "state"),
       zip5 = zip5,
       zip4 = zip4,
-      sex = getStringOptValue(map, "sex"),
-      age = getIntOptValue(map, "age"),
-      dob = getDateOptValue(map, "dob"),
+      sex = FileInputSupport.getStringOptValue(map, "sex"),
+      age = FileInputSupport.getIntOptValue(map, "age"),
+      dob = FileInputSupport.getDateOptValue(map, "dob"),
       emails = getEmails(map),
       phoneNumbers = getPhoneNumbers(map),
 
       locationId = getLocationIdFromUtil(map),
-      dischargedAt = getDateOptValue(map, "dischargeDate"),
-      servicedOn = getDateOptValue(map, "dischargeDate"),
+      dischargedAt = FileInputSupport.getDateOptValue(map, "dischargeDate"),
+      servicedOn = FileInputSupport.getDateOptValue(map, "dischargeDate"),
       mxCodes = getMedicalCodes(map),
       patientType = getPatientType(map),
       erPatient = getErFlag(map),
       financialClassId = financialClass._1,
       financialClass = financialClass._2,
 
-      insuranceId = getStringOptValue(map, "payorId"),
-      insurance = getStringOptValue(map, "payorName"),
+      insuranceId = FileInputSupport.getStringOptValue(map, "payorId"),
+      insurance = FileInputSupport.getStringOptValue(map, "payorName"),
 
-      facilityId = getStringOptValue(map, "facilityId"),
-      facility = getStringOptValue(map, "facilityName"),
-      businessUnitId = getStringOptValue(map, "departmentId"),
-      businessUnit = getStringOptValue(map, "departmentName")
+      facilityId = FileInputSupport.getStringOptValue(map, "facilityId"),
+      facility = FileInputSupport.getStringOptValue(map, "facilityName"),
+      businessUnitId = FileInputSupport.getStringOptValue(map, "departmentId"),
+      businessUnit = FileInputSupport.getStringOptValue(map, "departmentName")
 
     )
   }
@@ -109,11 +110,11 @@ object Hospital extends ClientInputMeta with Piedmont with Serializable {
 
 
   def getMedicalCodes(map: Map[String, Any]): Option[List[String]] = {
-    val primaryDxId: Option[String] = getMedicalCodeString(map, "primaryDxId", "icd9_diag", "|")
-    val otherDxIds: Option[String] = getMedicalCodeString(map, "secondaryDxIds", "icd9_diag", "|")
-    val primaryCpt: Option[String] = getMedicalCodeString(map, "primaryProcedureId", "cpt", "|")
-    val otherCpts: Option[String] = getMedicalCodeString(map, "primaryProcedureId", "cpt", "|")
-    val msDrg: Option[String] = getMedicalCodeString(map, "finalDrgCd", "ms_drg", "|")
+    val primaryDxId: Option[String] = FileInputSupport.getMedicalCodeString(map, "primaryDxId", "icd9_diag", "|")
+    val otherDxIds: Option[String] = FileInputSupport.getMedicalCodeString(map, "secondaryDxIds", "icd9_diag", "|")
+    val primaryCpt: Option[String] = FileInputSupport.getMedicalCodeString(map, "primaryProcedureId", "cpt", "|")
+    val otherCpts: Option[String] = FileInputSupport.getMedicalCodeString(map, "primaryProcedureId", "cpt", "|")
+    val msDrg: Option[String] = FileInputSupport.getMedicalCodeString(map, "finalDrgCd", "ms_drg", "|")
 
     concatonateMedicalCodes(msDrg, primaryCpt, otherCpts, primaryDxId, otherDxIds)
 
