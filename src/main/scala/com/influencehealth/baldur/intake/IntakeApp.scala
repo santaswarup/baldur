@@ -72,7 +72,7 @@ object IntakeApp {
       .map{case line =>
        clientInputMeta.mapping(line.toMap[String, Any]).productIterator.map(ActivityOutput.toStringFromActivity)
         .mkString("|")
-      }.mkString("\n")
+      }.mkString("\r\n")
 
       val outputFile = new FileOutputStream(outputPath, true)
       val writer = new PrintWriter(outputFile)
