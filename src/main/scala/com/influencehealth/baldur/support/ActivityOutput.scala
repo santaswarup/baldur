@@ -296,6 +296,7 @@ object ActivityOutput {
           case true => headValue.get match{
             case value: List[_] => value.mkString(",")
             case value: Set[_] => value.mkString(",")
+            case value: DateTime => ISODateTimeFormat.basicDate().print(value)
             case _ => headValue.get.toString
           }
           case false => ""

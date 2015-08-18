@@ -89,7 +89,8 @@ object Clean {
   }
 
   val dateParsers = Array(DateTimeFormat.forPattern("yyyy/MM/dd").getParser(),
-    DateTimeFormat.forPattern("yyyy-mm-dd").getParser(),
+    DateTimeFormat.forPattern("yyyyMMdd").getParser(),
+    DateTimeFormat.forPattern("yyyy-MM-dd").getParser(),
     DateTimeFormat.forPattern("MM/dd/yyyy").getParser(),
     DateTimeFormat.forPattern("MM-dd-yyyy").getParser(),
     DateTimeFormat.forPattern("yyyy-MM-dd H:mm:ss").getParser(),
