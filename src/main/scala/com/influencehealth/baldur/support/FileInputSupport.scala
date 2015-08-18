@@ -9,6 +9,26 @@ import org.joda.time.DateTime
  */
 object FileInputSupport {
 
+  def getAddressStringValue(map: Map[String, Any], columnName: String, validAddressFlag: Option[Boolean]): Option[String] = {
+    validAddressFlag.isDefined match{
+      case false => None
+      case true => validAddressFlag.get match{
+        case true => getStringOptValue(map, columnName)
+        case _ => None
+      }
+    }
+  }
+
+  def getAddressFloatValue(map: Map[String, Any], columnName: String, validAddressFlag: Option[Boolean]): Option[Float] = {
+    validAddressFlag.isDefined match{
+      case false => None
+      case true => validAddressFlag.get match{
+        case true => getFloatOptValue(map, columnName)
+        case _ => None
+      }
+    }
+  }
+
   def getValidAddressFlag(ncoaActionCode: Option[String]): Option[Boolean] = {
     ncoaActionCode.isDefined match{
       case true => ncoaActionCode.get match{
