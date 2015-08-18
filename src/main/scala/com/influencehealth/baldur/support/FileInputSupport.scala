@@ -33,7 +33,7 @@ object FileInputSupport {
     ncoaActionCode.isDefined match{
       case true => ncoaActionCode.get match{
         case "B" => Some(false)
-        case "C" => Some(false)
+        case "C" => Some(true)
         case "P" => Some(false)
         case "Y" => Some(false)
         case "F" => Some(false)
