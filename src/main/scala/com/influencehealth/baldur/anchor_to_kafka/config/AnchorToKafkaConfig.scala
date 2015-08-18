@@ -28,7 +28,7 @@ object AnchorToKafkaConfig {
         c.copy(inputSource = x)
       }
 
-      opt[String]("outputTopic") required() valueName "<outputTopic>" action { (x, c) =>
+      opt[String]("outputTopic") valueName "<outputTopic>" action { (x, c) =>
         c.copy(outputTopic = x)
       }
 
