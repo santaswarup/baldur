@@ -143,8 +143,8 @@ object ExperianSchema extends FileInputMeta with Serializable {
     ("streetSuffix", "string"),
     ("streetSecondNumber", "string"),
     ("streetSecondUnit", "string"),
-    ("lat", "float"),
-    ("lon", "float"),
+    ("lat", "string"),
+    ("lon", "string"),
     ("msa", "string"),
     ("pmsa", "string"),
     ("dpv", "string"),
@@ -169,6 +169,8 @@ object ExperianSchema extends FileInputMeta with Serializable {
   override def mapping(input: Map[String, Any]): ActivityOutput = {
 
     val validAddressFlag = FileInputSupport.getValidAddressFlag(FileInputSupport.getStringOptValue(input, "ncoaActionCode"))
+    val lat = getAnchorLatLon(FileInputSupport.getAddressStringValue(input, "lat", validAddressFlag))
+    val lon = getAnchorLatLon(FileInputSupport.getAddressStringValue(input, "lon", validAddressFlag))
 
     ActivityOutput(
       personId = FileInputSupport.getUUIDOptValue(input, "personId"),
@@ -236,8 +238,8 @@ object ExperianSchema extends FileInputMeta with Serializable {
       county = FileInputSupport.getAddressStringValue(input, "county", validAddressFlag),
       carrierRoute = FileInputSupport.getAddressStringValue(input, "carrierRoute", validAddressFlag),
       dpbc = FileInputSupport.getAddressStringValue(input, "dpbc", validAddressFlag),
-      lat = FileInputSupport.getAddressFloatValue(input, "lat", validAddressFlag),
-      lon = FileInputSupport.getAddressFloatValue(input, "lon", validAddressFlag),
+      lat = lat,
+      lon = lon,
       streetPreDir = FileInputSupport.getAddressStringValue(input, "streetPreDir", validAddressFlag),
       streetName = FileInputSupport.getAddressStringValue(input, "streetName", validAddressFlag),
       streetPostDir = FileInputSupport.getAddressStringValue(input, "streetPostDir", validAddressFlag),
