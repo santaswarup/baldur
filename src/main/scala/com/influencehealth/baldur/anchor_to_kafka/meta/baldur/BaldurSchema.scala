@@ -130,8 +130,6 @@ object BaldurSchema extends FileInputMeta with Serializable {
     ("assessmentAnswers", "string"),
     ("reasonId", "string"),
     ("reason", "string"),
-    ("filler1", "string"),
-    ("filler2", "string"),
     ("address1", "string"),
     ("address2", "string"),
     ("city", "string"),
