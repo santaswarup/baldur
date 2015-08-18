@@ -9,6 +9,25 @@ import org.joda.time.DateTime
  */
 object FileInputSupport {
 
+  def getValidAddressFlag(ncoaActionCode: Option[String]): Option[Boolean] = {
+    ncoaActionCode.isDefined match{
+      case true => ncoaActionCode.get match{
+        case "B" => Some(false)
+        case "C" => Some(false)
+        case "P" => Some(false)
+        case "Y" => Some(false)
+        case "F" => Some(false)
+        case "Z" => Some(false)
+        case "G" => Some(false)
+        case "I" => Some(true)
+        case "M" => Some(true)
+        case "O" => Some(true)
+        case _ => Some(false)
+      }
+      case false => None
+    }
+  }
+
   def containsHyphen(str: Option[String]): Boolean = {
     str match {
       case None => false

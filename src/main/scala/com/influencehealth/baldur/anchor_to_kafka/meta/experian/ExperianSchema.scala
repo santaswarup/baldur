@@ -223,7 +223,7 @@ object ExperianSchema extends FileInputMeta with Serializable {
       wealthRating = FileInputSupport.getIntOptValue(input, "wealthRating"),
       addressQualityIndicator = FileInputSupport.getStringOptValue(input, "addressQualityIndicator"),
       addressType = FileInputSupport.getStringOptValue(input, "addressType"),
-      validAddressFlag = FileInputSupport.getBoolOptValue(input, "validAddressFlag"),
+      validAddressFlag = FileInputSupport.getValidAddressFlag(FileInputSupport.getStringOptValue(input, "ncoaActionCode")),
       address1 = FileInputSupport.getStringOptValue(input, "address1"),
       address2 = FileInputSupport.getStringOptValue(input, "address2"),
       city = FileInputSupport.getStringOptValue(input, "city"),
