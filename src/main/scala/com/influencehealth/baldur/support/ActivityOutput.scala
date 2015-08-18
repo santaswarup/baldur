@@ -301,7 +301,12 @@ object ActivityOutput {
           }
           case false => ""
         }
-        case _ => headValue.toString
+        case _ => headValue match {
+          case value: List[_] => value.mkString(",")
+          case value: Set[_] => value.mkString(",")
+          case value: DateTime => ISODateTimeFormat.basicDate().print(value)
+          case _ => headValue.toString
+        }
       }
   }
 
