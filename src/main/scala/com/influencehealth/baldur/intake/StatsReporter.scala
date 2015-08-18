@@ -1,5 +1,6 @@
-package com.influencehealth.baldur.support
+package com.influencehealth.baldur.intake
 
+import com.influencehealth.baldur.support._
 import org.apache.kafka.clients.producer._
 import org.apache.spark.rdd.RDD
 
