@@ -175,6 +175,7 @@ object FileInputSupport {
       map
         .filter { case (key, value) => key.equals(columnName) }
         .map { case (key, value) => value match{
+        case "" => None
         case value: String => Some(value)
         case _ => None
       }}
@@ -190,6 +191,7 @@ object FileInputSupport {
       map
         .filter { case (key, value) => key.equals(columnName) }
         .map { case (key, value) => value match{
+        case "" => None
         case value: String => Some(UUID.fromString(value))
         case _ => None
       }}
@@ -295,6 +297,7 @@ object FileInputSupport {
       map
         .filter { case (key, value) => key.equals(columnName) }
         .map { case (key, value) => value match{
+        case "" => None
         case value: String => Some(value.split(delimiter).toSet)
         case _ => None
       }}
@@ -310,6 +313,7 @@ object FileInputSupport {
       map
         .filter { case (key, value) => key.equals(columnName) }
         .map { case (key, value) => value match{
+        case "" => None
         case value: String => Some(value.split(delimiter).map(value => value.toInt).toSet)
         case _ => None
       }}
@@ -325,6 +329,7 @@ object FileInputSupport {
       map
         .filter { case (key, value) => key.equals(columnName) }
         .map { case (key, value) => value match{
+        case "" => None
         case value: String => Some(value.split(delimiter).toList)
         case _ => None
       }}
