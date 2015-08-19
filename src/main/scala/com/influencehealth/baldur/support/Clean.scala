@@ -20,6 +20,12 @@ object Clean {
       } catch {
         case err: Throwable => throw new Error(f"$fieldName is not an integer: $fieldValue",err)
       }
+    case (fieldName, "boolean") =>
+      try {
+        Clean.bool(fieldValue)
+      } catch {
+        case err: Throwable => throw new Error(f"$fieldName is not an boolean: $fieldValue",err)
+      }
     case (fieldName, "date") =>
       try {
       Clean.date(fieldValue)
@@ -70,15 +76,24 @@ object Clean {
     }
   }
 
+  def bool(x: String): Any = {
+    val y = string(x)
+
+    y match {
+      case "" => None
+      case _ => y.toBoolean
+    }
+  }
+
   def date(x: String, format: Option[String]=None): Any = {
     val y = string(x)
 
     val formatter = format match {
-      case Some(format) =>
-        new DateTimeFormatterBuilder().append(null,
-          Array(DateTimeFormat.forPattern(format).getParser(), dateTimeFormatter.getParser())).toFormatter()
       case None =>
         dateTimeFormatter
+      case _ =>
+        new DateTimeFormatterBuilder().append(null,
+          Array(DateTimeFormat.forPattern(format.get).getParser, dateTimeFormatter.getParser)).toFormatter
     }
 
     y match {
@@ -88,16 +103,16 @@ object Clean {
 
   }
 
-  val dateParsers = Array(DateTimeFormat.forPattern("yyyy/MM/dd").getParser(),
-    DateTimeFormat.forPattern("yyyyMMdd").getParser(),
-    DateTimeFormat.forPattern("yyyy-MM-dd").getParser(),
-    DateTimeFormat.forPattern("MM/dd/yyyy").getParser(),
-    DateTimeFormat.forPattern("MM-dd-yyyy").getParser(),
-    DateTimeFormat.forPattern("yyyy-MM-dd H:mm:ss").getParser(),
-    DateTimeFormat.forPattern("yyyy/MM/dd H:mm:ss").getParser(),
-    ISODateTimeFormat.dateOptionalTimeParser().getParser(),
-    ISODateTimeFormat.dateHour().getParser())
+  val dateParsers = Array(DateTimeFormat.forPattern("yyyy/MM/dd").getParser,
+    DateTimeFormat.forPattern("yyyyMMdd").getParser,
+    DateTimeFormat.forPattern("yyyy-MM-dd").getParser,
+    DateTimeFormat.forPattern("MM/dd/yyyy").getParser,
+    DateTimeFormat.forPattern("MM-dd-yyyy").getParser,
+    DateTimeFormat.forPattern("yyyy-MM-dd H:mm:ss").getParser,
+    DateTimeFormat.forPattern("yyyy/MM/dd H:mm:ss").getParser,
+    ISODateTimeFormat.dateOptionalTimeParser().getParser,
+    ISODateTimeFormat.dateHour().getParser)
 
-  val dateTimeFormatter = new DateTimeFormatterBuilder().append(null, dateParsers).toFormatter()
+  val dateTimeFormatter = new DateTimeFormatterBuilder().append(null, dateParsers).toFormatter
 
 }
