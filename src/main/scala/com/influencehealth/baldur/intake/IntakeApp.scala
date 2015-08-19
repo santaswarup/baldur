@@ -65,7 +65,7 @@ object IntakeApp {
               f"Cleansing row failed:\n$fieldsStr\n",
               err)
     }
-      }).persist(StorageLevel.MEMORY_AND_DISK_SER_2)
+      }).persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     // Next map them to the field names
     cleansedLines
