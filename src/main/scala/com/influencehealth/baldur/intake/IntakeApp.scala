@@ -13,6 +13,10 @@ import org.apache.spark.streaming._
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.fs._
+
+
 object IntakeApp {
   val OutputTopicKey = "spark.app.topic.activity"
   val StringSerializer = "org.apache.kafka.common.serialization.StringSerializer"
@@ -38,6 +42,14 @@ object IntakeApp {
       case (fieldName: String, fieldType, format) => fieldName
     }
 
+    val today: String = ISODateTimeFormat.basicDateTime().print(DateTime.now())
+    val outputPath = config.out.getPath.last match {
+      case '/' => config.out.getPath + "baldur_output_" + today + ".txt"
+      case _ => config.out.getPath + "/baldur_output_" + today + ".txt"
+    }
+
+    val tempPath = "/tmp/baldur_output_" + today + ".txt"
+
     // First cleanse the original input values
     val cleansedLines: RDD[Array[Any]] = sc
       .textFile(config.in.getPath)
@@ -53,37 +65,32 @@ object IntakeApp {
               f"Cleansing row failed:\n$fieldsStr\n",
               err)
     }
-      })
-      .persist(StorageLevel.MEMORY_AND_DISK_SER)
-
-    val today: String = ISODateTimeFormat.basicDateTime().print(DateTime.now())
-    val outputPath = config.out.getPath.last match {
-      case '/' => config.out.getPath + "baldur_output_" + today + ".txt"
-      case _ => config.out.getPath + "/baldur_output_" + today + ".txt"
-    }
+      }).persist(StorageLevel.MEMORY_AND_DISK_SER_2)
 
     // Next map them to the field names
     cleansedLines
-      .map(fieldNames.zip(_))
-      // Now loop through the mapped lines, map to the ActivityOutput class, and send the messages
-      .foreachPartition { partition =>
+      .map(fieldNames.zip(_)) // Now loop through the mapped lines, map to the ActivityOutput class, make an RDD of strings
+      .map {case line =>
+              val mappedLine =
+                line
+                .map(x => (x._1, x._2))
+                .toMap[String, Any]
 
-      val mappedLines: String = partition
-      .map{case line =>
-       clientInputMeta.mapping(line.toMap[String, Any]).productIterator.map(ActivityOutput.toStringFromActivity)
-        .mkString("|")
-      }.mkString("\r\n")
+                clientInputMeta.mapping(mappedLine)
+                .productIterator
+                .map(ActivityOutput.toStringFromActivity)
+                .mkString("|")
+      }
+    // Saves to multiple files in a directory. We use the tempPath as a storage area for this
+    .saveAsTextFile(tempPath)
 
-      val outputFile = new FileOutputStream(outputPath, true)
-      val writer = new PrintWriter(outputFile)
+    // Merge the results into the desired output path
+    merge(tempPath, outputPath)
 
-      // Create file for anchor
-      writer.append(mappedLines)
-      writer.close()
-      outputFile.close()
-    }
-
+    // Process the statistics of the RDD
     StatsReporter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig)
+    
+    cleansedLines.unpersist()
 
   }
 
@@ -114,5 +121,13 @@ object IntakeApp {
   def extractFieldNames[T<:Product:Manifest] = {
     implicitly[Manifest[T]].runtimeClass.getDeclaredFields.map(_.getName)
   }
+
+  def merge(srcPath: String, dstPath: String): Unit =  {
+    val hadoopConfig = new Configuration()
+    val hdfs = FileSystem.get(hadoopConfig)
+    FileUtil.copyMerge(hdfs, new Path(srcPath), hdfs, new Path(dstPath), false, hadoopConfig, null)
+
+  }
+
 
 }

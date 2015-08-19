@@ -56,7 +56,7 @@ object PhysicianOffice extends ClientInputMeta with Piedmont with Serializable {
 
     val zip4: Option[String] = FileInputSupport.containsHyphen(zipInput) match {
       case true => Some(zipInput.get.split("-")(1))
-      case false => zipInput
+      case false => None
     }
 
     val financialClass: (Option[Int], Option[String]) = getFinancialClasses(map)

@@ -16,7 +16,8 @@ libraryDependencies ++= Seq("com.github.scopt" %% "scopt" % "3.3.0",
     exclude("jline", "jline"),
   "org.apache.spark" %% "spark-core" % "1.4.0",
   "org.apache.spark" %% "spark-streaming" % "1.4.0",
-  "com.typesafe.play" %% "play-json" % "2.3.4"
+  "com.typesafe.play" %% "play-json" % "2.3.4",
+  "org.apache.hadoop" % "hadoop-hdfs" % "2.7.1"
    )
 
 resolvers ++= Seq(Resolver.sonatypeRepo("public"),
