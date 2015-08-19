@@ -79,7 +79,7 @@ object IntakeApp {
                 clientInputMeta.mapping(mappedLine)
                 .productIterator
                 .map(ActivityOutput.toStringFromActivity)
-                .mkString("|")
+                .mkString("|") + "\r"
       }
     // Saves to multiple files in a directory. We use the tempPath as a storage area for this
     .saveAsTextFile(tempPath)
