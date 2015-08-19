@@ -42,8 +42,6 @@ object IntakeApp {
       case (fieldName: String, fieldType, format) => fieldName
     }
 
-    val standardFieldNames: Seq[String] = extractFieldNames[ActivityOutput]
-
     val today: String = ISODateTimeFormat.basicDateTime().print(DateTime.now())
     val outputPath = config.out.getPath.last match {
       case '/' => config.out.getPath + "baldurToAnchor_" + today + ".txt"
@@ -71,7 +69,7 @@ object IntakeApp {
 
     // Next map them to the field names
     cleansedLines
-      .map(standardFieldNames.zip(_)) // Now loop through the mapped lines, map to the ActivityOutput class, make an RDD of strings
+      .map(fieldNames.zip(_)) // Now loop through the mapped lines, map to the ActivityOutput class, make an RDD of strings
       .map {case line =>
               val mappedLine =
                 line
