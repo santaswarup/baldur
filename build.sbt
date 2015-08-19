@@ -17,11 +17,13 @@ libraryDependencies ++= Seq("com.github.scopt" %% "scopt" % "3.3.0",
   "org.apache.spark" %% "spark-core" % "1.4.0",
   "org.apache.spark" %% "spark-streaming" % "1.4.0",
   "com.typesafe.play" %% "play-json" % "2.3.4",
-  "org.apache.hadoop" % "hadoop-hdfs" % "2.7.1"
+  "org.apache.hadoop" % "hadoop-hdfs" % "2.7.1",
+  "uk.gov.hmrc" % "emailaddress_2.11" % "0.2.0"
    )
 
 resolvers ++= Seq(Resolver.sonatypeRepo("public"),
-  "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/")
+  "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
+  Resolver.bintrayRepo("hmrc", "releases"))
 
 assemblyMergeStrategy in assembly := {
   case PathList("org", "apache", "kafka", xs @ _) => MergeStrategy.first

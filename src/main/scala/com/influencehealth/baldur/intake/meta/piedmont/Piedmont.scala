@@ -1,5 +1,7 @@
 package com.influencehealth.baldur.intake.meta.piedmont
 
+import uk.gov.hmrc.emailaddress._
+
 trait Piedmont {
   val CustomerId = 1
 
@@ -367,7 +369,14 @@ trait Piedmont {
     map
       .filter { case (key, value) => key.equals("homePhone") }
       .map { case (key, value) => value match{
-      case value: String => Some(value.replace(delimiter, ";home" + delimiter).split(delimiter).toList)
+      case value: String => {
+        Some(value
+          .split(delimiter)
+          .map(_.replace("-",""))
+          .filter(x => x.length == 10)
+          .map(_ + ";home")
+          .toList)
+      }
       case None => None
     }}
 
@@ -382,7 +391,13 @@ trait Piedmont {
     map
       .filter { case (key, value) => key.equals("patientEmail") }
       .map { case (key, value) => value match{
-      case value: String => Some(value.replace(delimiter, ";home" + delimiter).split(delimiter).toList)
+      case value: String => {
+        Some(value
+          .split(delimiter)
+          .filter(x => EmailAddress.isValid(x))
+          .map(_ + ";home")
+          .toList)
+      }
       case None => None
     }}
 

@@ -1,7 +1,6 @@
 package com.influencehealth.baldur.support
 
 import java.util.UUID
-
 import org.joda.time.DateTime
 
 /**
