@@ -61,7 +61,7 @@ object Hospital extends ClientInputMeta with Piedmont with Serializable {
       case false => None
     }
 
-    val financialClass: (Option[Int], Option[String]) = getFinancialClasses(map)
+    val financialClass: (Option[Int], Option[String], Option[String]) = getFinancialClasses(map)
 
     ActivityOutput(
       //Person
@@ -97,6 +97,7 @@ object Hospital extends ClientInputMeta with Piedmont with Serializable {
       erPatient = getErFlag(map),
       financialClassId = financialClass._1,
       financialClass = financialClass._2,
+      payerType = financialClass._3,
 
       insuranceId = FileInputSupport.getStringOptValue(map, "payorId"),
       insurance = FileInputSupport.getStringOptValue(map, "payorName"),
@@ -104,7 +105,9 @@ object Hospital extends ClientInputMeta with Piedmont with Serializable {
       facilityId = FileInputSupport.getStringOptValue(map, "facilityId"),
       facility = FileInputSupport.getStringOptValue(map, "facilityName"),
       businessUnitId = FileInputSupport.getStringOptValue(map, "departmentId"),
-      businessUnit = FileInputSupport.getStringOptValue(map, "departmentName")
+      businessUnit = FileInputSupport.getStringOptValue(map, "departmentName"),
+      activityLocationId = FileInputSupport.getStringOptValue(map, "facilityId"),
+      activityLocation = FileInputSupport.getStringOptValue(map, "facilityName")
 
     )
   }
