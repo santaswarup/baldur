@@ -1,6 +1,6 @@
 package com.influencehealth.baldur.intake
 
-import java.io.{FileOutputStream, PrintWriter}
+import java.io.File
 import java.net.URI
 
 import com.influencehealth.baldur.intake.meta._
@@ -87,9 +87,12 @@ object IntakeApp {
     // Merge the results into the desired output path
     merge(tempPath, outputPath)
 
+    // Delete the temp results
+    FileUtil.fullyDelete(new File(tempPath))
+
     // Process the statistics of the RDD
     StatsReporter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig)
-    
+
     cleansedLines.unpersist()
 
   }
