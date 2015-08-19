@@ -95,6 +95,7 @@ object FileInputSupport {
       .filter { case (key, value) => key.equals(columnName) }
       .map { case (key, value) => value match{
       case value: String => value
+      case _ => value.toString
     }}.head
   }
 
@@ -176,8 +177,9 @@ object FileInputSupport {
         .filter { case (key, value) => key.equals(columnName) }
         .map { case (key, value) => value match{
         case "" => None
+        case None => None
         case value: String => Some(value)
-        case _ => None
+        case _ => Some(value.toString)
       }}
 
     newMap.nonEmpty match {
