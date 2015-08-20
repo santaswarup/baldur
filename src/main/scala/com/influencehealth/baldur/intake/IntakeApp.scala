@@ -43,12 +43,16 @@ object IntakeApp {
     }
 
     val today: String = ISODateTimeFormat.basicDateTime().print(DateTime.now())
+
     val outputPath = config.out.getPath.last match {
-      case '/' => config.out.getPath + "baldurToAnchor_" + today + ".txt"
-      case _ => config.out.getPath + "/baldurToAnchor_" + today + ".txt"
+      case '/' => config.out.getPath + "input/baldurToAnchor_" + today + ".txt"
+      case _ => config.out.getPath + "/input/baldurToAnchor_" + today + ".txt"
     }
 
-    val tempPath = "/tmp/baldurToAnchor_" + today + ".txt"
+    val tempPath = config.out.getPath.last match {
+      case '/' => config.out.getPath + "temp/baldurToAnchor_" + today + ".txt"
+      case _ => config.out.getPath + "/temp/baldurToAnchor_" + today + ".txt"
+    }
 
     // First cleanse the original input values
     val cleansedLines: RDD[Array[Any]] = sc
