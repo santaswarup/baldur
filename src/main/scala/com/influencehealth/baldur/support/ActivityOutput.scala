@@ -9,7 +9,8 @@ import play.api.libs.json._
 /**
  * Defines the schema for the output message
  */
-case class ActivityOutput(//person-columns
+case class ActivityOutput(
+   //person-columns
     personId: Option[UUID]=None,
     customerId: Int,
     addressId: Option[UUID]=None,
@@ -80,21 +81,21 @@ case class ActivityOutput(//person-columns
     dpbc: Option[String]=None,
     lat: Option[Float]=None,
     lon: Option[Float]=None,
-    streetPreDir: Option[String] = None,
-    streetName: Option[String] = None,
-    streetPostDir: Option[String] = None,
-    streetSuffix: Option[String] = None,
-    streetSecondNumber: Option[String] = None,
-    streetSecondUnit: Option[String] = None,
-    streetHouseNum: Option[String] = None,
-    msa: Option[String] = None,
-    pmsa: Option[String] = None,
-    dpv: Option[String] = None,
-    countyCode: Option[String] = None,
-    censusBlock: Option[String] = None,
-    censusTract: Option[String] = None,
-    beehiveCluster: Option[Int] = None,
-    primaryCarePhysician: Option[Long] = None,
+    streetPreDir: Option[String]=None,
+    streetName: Option[String]=None,
+    streetPostDir: Option[String]=None,
+    streetSuffix: Option[String]=None,
+    streetSecondNumber: Option[String]=None,
+    streetSecondUnit: Option[String]=None,
+    streetHouseNum: Option[String]=None,
+    msa: Option[String]=None,
+    pmsa: Option[String]=None,
+    dpv: Option[String]=None,
+    countyCode: Option[String]=None,
+    censusBlock: Option[String]=None,
+    censusTract: Option[String]=None,
+    beehiveCluster: Option[Int]=None,
+    primaryCarePhysician: Option[Long]=None,
 
     //activity columns
     servicedOn: Option[DateTime]=None,
