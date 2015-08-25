@@ -49,6 +49,11 @@ object IntakeApp {
       case _ => config.out.getPath + "/input/baldurToAnchor_" + today + ".txt"
     }
 
+    val outputCRCPath = config.out.getPath.last match {
+      case '/' => config.out.getPath + "input/.baldurToAnchor_" + today + ".txt.crc"
+      case _ => config.out.getPath + "/input/.baldurToAnchor_" + today + ".txt.crc"
+    }
+
     val tempPath = config.out.getPath.last match {
       case '/' => config.out.getPath + "temp/baldurToAnchor_" + today + ".txt"
       case _ => config.out.getPath + "/temp/baldurToAnchor_" + today + ".txt"
@@ -93,6 +98,9 @@ object IntakeApp {
 
     // Delete the temp results
     FileUtil.fullyDelete(new File(tempPath))
+
+    // Clean up CRC file
+    new File(outputCRCPath).delete()
 
     // Process the statistics of the RDD
     StatsReporter.processRDD(cleansedLines, fieldsMapping.value, kafkaProducerConfig)
