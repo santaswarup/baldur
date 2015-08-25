@@ -2,6 +2,7 @@ package com.influencehealth.baldur.intake.meta.piedmont
 
 import com.influencehealth.baldur.intake.meta._
 import com.influencehealth.baldur.support._
+import org.joda.time.DateTime
 
 /**
  * Piedmont Physicians Office
@@ -60,6 +61,7 @@ object PhysicianOffice extends ClientInputMeta with Piedmont with Serializable {
     }
 
     val financialClass: (Option[Int], Option[String], Option[String]) = getFinancialClasses(map)
+    val ageDob: (Option[DateTime], Option[Int], Option[String]) = FileInputSupport.getAgeDob(map, "age", "dob")
 
     ActivityOutput(
       //Person
@@ -81,8 +83,9 @@ object PhysicianOffice extends ClientInputMeta with Piedmont with Serializable {
       zip5 = zip5,
       zip4 = zip4,
       sex = FileInputSupport.getStringOptValue(map, "sex"),
-      age = FileInputSupport.getIntOptValue(map, "age"),
-      dob = FileInputSupport.getDateOptValue(map, "dob"),
+      age = ageDob._2,
+      ageGroup = ageDob._3,
+      dob = ageDob._1,
       emails = getEmails(map),
       phoneNumbers = getPhoneNumbers(map),
 

@@ -1,12 +1,76 @@
 package com.influencehealth.baldur.support
 
 import java.util.UUID
-import org.joda.time.DateTime
+import org.joda.time.{PeriodType, Period, DateTime}
 
 /**
  * Defines the contract for input metadata defining implementors.
  */
 object FileInputSupport {
+
+  def getAgeDob(map: Map[String, Any], ageColumn: String, dobColumn: String): (Option[DateTime], Option[Int], Option[String]) = {
+    val dobMap =
+      map
+        .filter { case (key, value) => key.equals(dobColumn) }
+        .map { case (key, value) => value match{
+        case value: DateTime => Some(value)
+        case _ => None
+      }}
+
+    val ageMap =
+      map
+        .filter { case (key, value) => key.equals(ageColumn) }
+        .map { case (key, value) => value match{
+        case value: Int => Some(value)
+        case _ => None
+      }}
+
+    val ageRaw: Option[Int] = ageMap.nonEmpty match {
+      case false => None
+      case true => ageMap.head
+    }
+
+    val dob: Option[DateTime] = dobMap.nonEmpty match {
+      case false => None
+      case true => dobMap.head
+    }
+
+    val ageCalculated: Option[Int] = dob.nonEmpty match {
+      case false => ageRaw
+      case true => Some(new Period((dob, DateTime.now(), PeriodType.yearMonthDay())).getYears())
+    }
+
+    val ageGroup = ageCalculated.nonEmpty match {
+      case false => None
+      case true => ageCalculated.get match{
+        case x if x <= 4 => Some("A")
+        case x if x <= 10 => Some("B")
+        case x if x <= 14 => Some("C")
+        case x if x <= 17 => Some("D")
+        case x if x <= 20 => Some("E")
+        case x if x <= 24 => Some("F")
+        case x if x <= 29 => Some("G")
+        case x if x <= 34 => Some("H")
+        case x if x <= 39 => Some("I")
+        case x if x <= 44 => Some("J")
+        case x if x <= 49 => Some("K")
+        case x if x <= 54 => Some("L")
+        case x if x <= 59 => Some("M")
+        case x if x <= 61 => Some("N")
+        case x if x <= 64 => Some("O")
+        case x if x <= 66 => Some("P")
+        case x if x <= 69 => Some("Q")
+        case x if x <= 74 => Some("R")
+        case x if x <= 79 => Some("S")
+        case x if x <= 84 => Some("T")
+        case x if x <= 99 => Some("U")
+        case x if x >= 100 => Some("V")
+        case _ => Some("U")
+      }
+    }
+
+    (dob, ageCalculated, ageGroup)
+  }
 
   def getAddressStringValue(map: Map[String, Any], columnName: String, validAddressFlag: Option[Boolean]): Option[String] = {
     validAddressFlag.isDefined match{
