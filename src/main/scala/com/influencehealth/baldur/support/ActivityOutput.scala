@@ -94,6 +94,8 @@ case class ActivityOutput(//person-columns
     censusBlock: Option[String] = None,
     censusTract: Option[String] = None,
     beehiveCluster: Option[Int] = None,
+    primaryCarePhysician: Option[Long] = None,
+
     //activity columns
     servicedOn: Option[DateTime]=None,
     locationId: Option[Int]=None,
@@ -242,6 +244,7 @@ object ActivityOutput {
       "lat" -> jsNumberFromOptionFloat(activityOutput.lat),
       "lon" -> jsNumberFromOptionFloat(activityOutput.lon),
       "beehiveCluster" -> jsNumberFromOptionInt(activityOutput.beehiveCluster),
+      "primaryCarePhysician" -> jsNumberFromOptionLong(activityOutput.primaryCarePhysician),
 
       "servicedOn" -> jsDateFromOption(activityOutput.servicedOn),
       "locationId" -> jsNumberFromOptionInt(activityOutput.locationId),

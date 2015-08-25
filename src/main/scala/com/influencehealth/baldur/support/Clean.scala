@@ -41,6 +41,8 @@ object Clean {
       }
     case (_, "float") =>
       Clean.float(fieldValue)
+    case (_, "long") =>
+      Clean.long(fieldValue)
     case (_, "skip") =>
       fieldValue
     case _ =>
@@ -65,6 +67,15 @@ object Clean {
        case "" => None
        case _ => y.toFloat
      }
+  }
+
+  def long(x: String): Any = {
+    val y = string(x)
+
+    y match {
+      case "" => None
+      case _ => y.toLong
+    }
   }
 
   def int(x: String): Any = {
