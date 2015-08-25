@@ -1,7 +1,7 @@
 package com.influencehealth.baldur.support
 
 import java.util.UUID
-import org.joda.time.{PeriodType, Period, DateTime}
+import org.joda.time.{Period, DateTime}
 
 /**
  * Defines the contract for input metadata defining implementors.
@@ -37,7 +37,7 @@ object FileInputSupport {
 
     val ageCalculated: Option[Int] = dob.nonEmpty match {
       case false => ageRaw
-      case true => Some(new Period((dob, DateTime.now())).getYears())
+      case true => Some(new Period((dob.get, DateTime.now())).getYears)
     }
 
     val ageGroup = ageCalculated.nonEmpty match {
