@@ -1,5 +1,7 @@
 package com.influencehealth.baldur.support
 
+import java.util.regex.Pattern
+
 import org.joda.time.DateTime
 import org.joda.time.format._
 
@@ -8,6 +10,12 @@ import org.joda.time.format._
  */
 object Clean {
   private val byTypeFn = (fieldValue: String, fieldMeta: Product) => fieldMeta match {
+    case (fieldName, "title") =>
+      try {
+        Clean.titleCase(fieldValue)
+      } catch {
+        case err: Throwable => throw new Error(f"$fieldName is not handled properly when converting to tile case: $fieldValue",err)
+      }
     case (fieldName, "string") =>
       try {
         Clean.string(fieldValue)
@@ -58,6 +66,23 @@ object Clean {
       return ""
 
     cleansed
+  }
+
+  def titleCase(x: String): String = {
+    val y = string(x)
+
+    val words = y.split(" ")
+
+    val regexPattern = Pattern.compile("[A-Z]{2,}")
+
+
+    words.map{
+      case word =>
+        regexPattern.matcher(word).matches match{
+          case true => word.toLowerCase.capitalize
+          case false => word.capitalize
+        }
+    }.mkString(" ")
   }
 
   def float(x: String): Any = {
