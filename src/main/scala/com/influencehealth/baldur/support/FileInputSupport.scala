@@ -37,7 +37,7 @@ object FileInputSupport {
 
     val ageCalculated: Option[Int] = dob.nonEmpty match {
       case false => ageRaw
-      case true => Some(new Period((dob, DateTime.now(), PeriodType.yearMonthDay())).getYears())
+      case true => Some(new Period((dob, DateTime.now())).getYears())
     }
 
     val ageGroup = ageCalculated.nonEmpty match {
