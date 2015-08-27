@@ -1,12 +1,12 @@
-package com.influencehealth.baldur.anchor_to_kafka.meta.baldur
+package com.influencehealth.baldur.identity_load.meta.experian
 
-import com.influencehealth.baldur.anchor_to_kafka.meta._
+import com.influencehealth.baldur.identity_load.meta._
 import com.influencehealth.baldur.support._
 
 /**
- * Baldur schema
+ * Experian schema
  */
-object BaldurSchema extends FileInputMeta with Serializable {
+object ExperianSchema extends FileInputMeta with Serializable {
   override def originalFields(): Seq[Product] = wrapRefArray(Array(
     ("personId", "string"),
     ("customerId", "int"),

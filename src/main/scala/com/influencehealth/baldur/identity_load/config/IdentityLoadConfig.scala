@@ -1,10 +1,10 @@
-package com.influencehealth.baldur.anchor_to_kafka.config
+package com.influencehealth.baldur.identity_load.config
 
 import java.net.URI
 
 import scopt.OptionParser
 
-object AnchorToKafkaConfig {
+object IdentityLoadConfig {
 
   case class Config(
     in: URI=new URI("in"),

@@ -16,9 +16,14 @@ libraryDependencies ++= Seq("com.github.scopt" %% "scopt" % "3.3.0",
     exclude("jline", "jline"),
   "org.apache.spark" %% "spark-core" % "1.4.0",
   "org.apache.spark" %% "spark-streaming" % "1.4.0",
+  "org.apache.spark" %% "spark-streaming-kafka" % "1.4.0",
   "com.typesafe.play" %% "play-json" % "2.3.4",
   "org.apache.hadoop" % "hadoop-hdfs" % "2.7.1",
-  "uk.gov.hmrc" % "emailaddress_2.11" % "0.2.0"
+  "com.datastax.spark" %% "spark-cassandra-connector" % "1.3.0-M2",
+  "uk.gov.hmrc" % "emailaddress_2.11" % "0.2.0",
+  "org.scalatest" %% "scalatest" % "2.2.4" % "test",
+  "org.scalamock" %% "scalamock-scalatest-support" % "3.2.2" % "test",
+  "com.rockymadden.stringmetric" %% "stringmetric-core" % "0.27.4"
    )
 
 resolvers ++= Seq(Resolver.sonatypeRepo("public"),
