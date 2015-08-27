@@ -25,6 +25,7 @@ object ChangeCaptureStream {
     // Doing so prevents shuffles in the spanByKey function
     val personChangesJoined: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
       changeCaptureStream
+        .distinct()
         .leftOuterJoinWithCassandraTable[ColumnChange](changeCaptureConfig.keyspace, changeCaptureConfig.personChangeCaptureTable)
         .persist(StorageLevel.MEMORY_AND_DISK)
 
@@ -36,6 +37,7 @@ object ChangeCaptureStream {
 
     val personMridsChanges: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
       changeCaptureStream
+        .distinct()
         .map(ChangeCaptureSupport.getMridsColumnChange)
 
     val newPersonsDetermined: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
@@ -44,18 +46,18 @@ object ChangeCaptureStream {
         .map(_._1)
         .flatMap(ChangeCaptureSupport.determineNewChanges(_, "person_master"))
 
-    val personMasterChanges: RDD[(ChangeCaptureMessage, Set[ColumnChange])] =
+    val personMasterChanges: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       existingPersonsDetermined
       .union(newPersonsDetermined)
       .union(personMridsChanges)
       .filter{case (personChange, columnChange) => columnChange.isDefined}
       .map{case (personChange, columnChange) => (personChange, columnChange.get)}
       .spanByKey
-      .map{case (personChange, columnChangeSeq) => (personChange, columnChangeSeq.toSet)}
       .persist(StorageLevel.MEMORY_AND_DISK)
 
     val activityChangesJoined: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
       changeCaptureStream
+        .distinct()
         .filter{case x => x.messageType.equals("utilization")}
         .leftOuterJoinWithCassandraTable[ColumnChange](changeCaptureConfig.keyspace, changeCaptureConfig.personChangeCaptureTable)
         .persist(StorageLevel.MEMORY_AND_DISK)
@@ -71,13 +73,12 @@ object ChangeCaptureStream {
         .map(_._1)
         .flatMap(ChangeCaptureSupport.determineNewChanges(_, "person_activity"))
 
-    val personActivityChanges: RDD[(ChangeCaptureMessage, Set[ColumnChange])] =
+    val personActivityChanges: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       existingActivitiesDetermined
         .union(newActivitiesDetermined)
         .filter{case (activityChange, columnChange) => columnChange.isDefined}
         .map{case (activityChange, columnChange) => (activityChange, columnChange.get)}
         .spanByKey
-        .map{case (personChange, columnChangeSeq) => (personChange, columnChangeSeq.toSet)}
         .persist(StorageLevel.MEMORY_AND_DISK)
 
     val personMasterChangesFlattened: RDD[ColumnChange] =
