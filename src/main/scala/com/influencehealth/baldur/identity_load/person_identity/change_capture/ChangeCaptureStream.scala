@@ -34,33 +34,17 @@ object ChangeCaptureStream {
       .filter{case (changeCapture, columnChange) => columnChange.isDefined}
       .map(ChangeCaptureSupport.determineExistingChanges(_,"person_master"))
 
-    val existingPersonsDeterminedPartitions = existingPersonsDetermined.isEmpty() match{
-      case true => 0
-      case false => existingPersonsDetermined.partitions.length
-    }
 
     val personMridsChanges: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
       changeCaptureStream
         .distinct()
         .map(ChangeCaptureSupport.getMridsColumnChange)
 
-    val personMridsChangesPartitions = personMridsChanges.isEmpty() match{
-      case true => 0
-      case false => personMridsChanges.partitions.length
-    }
-
     val newPersonsDetermined: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
       personChangesJoined
         .filter{case (changeCapture, columnChange) => columnChange.isEmpty}
         .map(_._1)
         .flatMap(ChangeCaptureSupport.determineNewChanges(_, "person_master"))
-
-    val newPersonsDeterminedPartitions = newPersonsDetermined.isEmpty() match{
-      case true => 0
-      case false => newPersonsDetermined.partitions.length
-    }
-
-    val personMasterChangesPartitions = existingPersonsDeterminedPartitions + personMridsChangesPartitions + newPersonsDeterminedPartitions
 
     val personMasterChanges: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       existingPersonsDetermined
@@ -69,7 +53,6 @@ object ChangeCaptureStream {
       .filter{case (personChange, columnChange) => columnChange.isDefined}
       .map{case (personChange, columnChange) => (personChange, columnChange.get)}
       .spanByKey
-      .repartition(personMasterChangesPartitions)
       .persist(StorageLevel.MEMORY_AND_DISK)
 
     val activityChangesJoined: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
@@ -84,23 +67,11 @@ object ChangeCaptureStream {
       .filter{case (changeCapture, columnChange) => columnChange.isDefined}
       .map(ChangeCaptureSupport.determineExistingChanges(_, "person_activity"))
 
-    val existingActivitiesDeterminedPartitions = existingActivitiesDetermined.isEmpty() match{
-      case true => 0
-      case false => existingActivitiesDetermined.partitions.length
-    }
-
     val newActivitiesDetermined: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
       activityChangesJoined
         .filter{case (changeCapture, columnChange) => columnChange.isEmpty}
         .map(_._1)
         .flatMap(ChangeCaptureSupport.determineNewChanges(_, "person_activity"))
-
-    val newActivitiesDeterminedPartitions = newActivitiesDetermined.isEmpty() match{
-      case true => 0
-      case false => newActivitiesDetermined.partitions.length
-    }
-
-    val personActivityPartitions = existingActivitiesDeterminedPartitions + newActivitiesDeterminedPartitions
 
     val personActivityChanges: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       existingActivitiesDetermined
@@ -108,7 +79,6 @@ object ChangeCaptureStream {
         .filter{case (activityChange, columnChange) => columnChange.isDefined}
         .map{case (activityChange, columnChange) => (activityChange, columnChange.get)}
         .spanByKey
-        .repartition(personActivityPartitions)
         .persist(StorageLevel.MEMORY_AND_DISK)
 
     val personMasterChangesFlattened: RDD[ColumnChange] =

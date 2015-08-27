@@ -23,8 +23,6 @@ object HouseholdStream {
   def processHouseholds(householdConfig: HouseholdConfig, identifiedRdd: RDD[JsObject],
                         kafkaProducerConfig: Map[String, Object]): RDD[JsObject] = {
 
-    val inputPartitions: Int = identifiedRdd.partitions.size
-
     val personIdToRecord: RDD[(UUID, JsObject)] = identifiedRdd
       .map { record => ((record \ "personId").as[UUID], record) }
 
@@ -126,8 +124,7 @@ object HouseholdStream {
           record +
             ("addressId", addressId) +
             ("householdId", householdId)
-      }.repartition(inputPartitions)
-      .persist(StorageLevel.MEMORY_AND_DISK)
+      }.persist(StorageLevel.MEMORY_AND_DISK)
 
     result
   }

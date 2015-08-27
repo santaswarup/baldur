@@ -23,7 +23,6 @@ object IdentityStream {
   var support: Support = SupportImpl
 
   def processIdentity(rdd: RDD[JsObject], personIdentityConfig: PersonIdentityConfig, kafkaParams: Map[String, String], kafkaProducerConfig: Map[String, Object]): RDD[JsObject] = {
-    val inputPartitions: Int = rdd.partitions.size
 
     val sourceIdentityToRecord: RDD[(SourceIdentity, PersonIdentityColumns)] =
       rdd
@@ -136,7 +135,7 @@ object IdentityStream {
       .join(existingPersonsByExternalPersonId)
       .map(addPersonId)
 
-    val results = newPersons.union(existingPersons).repartition(inputPartitions).persist(StorageLevel.MEMORY_AND_DISK_SER)
+    val results = newPersons.union(existingPersons).persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     val allCount = rdd.count()
     val alreadyIdentifiedCount = alreadyIdentified.count()
