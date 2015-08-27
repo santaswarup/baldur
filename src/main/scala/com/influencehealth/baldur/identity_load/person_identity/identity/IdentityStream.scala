@@ -5,6 +5,7 @@ import java.util.UUID
 import com.influencehealth.baldur.identity_load.person_identity.change_capture.support._
 import com.datastax.spark.connector._
 import com.datastax.spark.connector.cql.CassandraConnector
+import com.datastax.spark.connector.extensions._
 import com.influencehealth.baldur.identity_load.person_identity.householding.support._
 import com.influencehealth.baldur.identity_load.person_identity.identity.support.PersonMatchKey._
 import com.influencehealth.baldur.identity_load.person_identity.identity.support._
@@ -24,44 +25,48 @@ object IdentityStream {
   def processIdentity(rdd: RDD[JsObject], personIdentityConfig: PersonIdentityConfig, kafkaParams: Map[String, String], kafkaProducerConfig: Map[String, Object]): RDD[JsObject] = {
     val inputPartitions: Int = rdd.partitions.size
 
-    val recordIdToRaw: RDD[(String, JsObject)] = rdd.map { jsObj =>
-      ((jsObj \ support.ExternalRecordIdField).as[String], jsObj)
-    }.persist(StorageLevel.MEMORY_AND_DISK_SER)
+    val sourceIdentityToRecord: RDD[(SourceIdentity, PersonIdentityColumns)] =
+      rdd
+      .map{case record =>  (SourceIdentity.fromJson(record), record.as[PersonIdentityColumns])}
+      .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     // Pair RDD keyed by the person id from the input source with value of the raw JSON received
-    val externalPersonIdToRaw: RDD[(String, JsObject)] = recordIdToRaw.map {
-      case (_, jsObj) => ((jsObj \ support.ExternalPersonIdField).as[String], jsObj)
-    }.persist(StorageLevel.MEMORY_AND_DISK_SER)
+    val externalPersonIdToRaw: RDD[(String, JsObject)] =
+      rdd
+      .map { case jsObj =>
+        val uniqueID: String = support.getUniquePersonIdFromJson(jsObj)
+        (uniqueID, jsObj) }
+      .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
-    // Pair RDD keyed by the record id from the input source with value of parsed record
-    val recordIdToPersonIdentityColumns: RDD[(String, PersonIdentityColumns)] = recordIdToRaw.map {
-      case (recordId, jsObj) => (recordId, jsObj.as[PersonIdentityColumns])
-    }
+    val joined: RDD[(SourceIdentity, Option[UUID])] =
+      sourceIdentityToRecord
+      .map { case (sourceIdentity, _) => sourceIdentity }
+      .distinct()
+      .leftOuterJoinWithCassandraTable[UUID](personIdentityConfig.keyspace, personIdentityConfig.sourceIdentityTable)
+      .select("person_id")
+      .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
-    val sourceIdentityToRecord: RDD[(SourceIdentity, PersonIdentityColumns)] = recordIdToPersonIdentityColumns.map {
-      case (_, record) =>
-        (SourceIdentity(record.customerId, record.externalPersonId, record.source, record.sourceType), record)
-    }.persist(StorageLevel.MEMORY_AND_DISK_SER)
-
-    val alreadyIdentified: RDD[(SourceIdentity, UUID)] = sourceIdentityToRecord.map {
-      case (sourceIdentity, _) => sourceIdentity
-    }.distinct().joinWithCassandraTable(personIdentityConfig.keyspace, personIdentityConfig.sourceIdentityTable).map {
-      case (sourceIdentity, cassandraRow) => (sourceIdentity, cassandraRow.getUUID("person_id"))
-    }.persist(StorageLevel.MEMORY_AND_DISK_SER)
+    val alreadyIdentified =
+      joined
+      .filter{case (sourceIdentity, uuid) => uuid.isDefined}
+      .map{case (sourceIdentity, uuid) => (sourceIdentity, uuid.get)}
+      .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     var sourceIdentityToPersonId: RDD[(SourceIdentity, (Option[UUID], PersonIdentityColumns))] =
-      sourceIdentityToRecord.reduceByKey((a, b) => a).leftOuterJoin(alreadyIdentified).map {
-        case (sourceIdentity, (personIdentityColumns, personId)) => (sourceIdentity, (personId, personIdentityColumns))
-      }
+      sourceIdentityToRecord
+      .join(joined)
+      .map{ case (sourceIdentity, (personIdentityColumns, personId)) => (sourceIdentity, (personId, personIdentityColumns)) }
 
-    val unidentifiedKey1Candidates: RDD[PersonIdentityColumns] = sourceIdentityToPersonId.filter {
+    val unidentifiedKey1Candidates: RDD[PersonIdentityColumns] =
+    sourceIdentityToPersonId
+    .filter {
       case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns.toPersonMatchKey1.isDefined
       case _ => false
-    }.map {
-      case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns
     }
+    .map { case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns  }
 
-    val identifiedByKey1: RDD[(SourceIdentity, UUID)] = support.identifyByKey(unidentifiedKey1Candidates, (personIdentityConfig.keyspace, personIdentityConfig.identity1Table))
+    val identifiedByKey1: RDD[(SourceIdentity, UUID)] = support.identifyByKey(unidentifiedKey1Candidates,
+      (personIdentityConfig.keyspace, personIdentityConfig.identity1Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     sourceIdentityToPersonId = support.updateIdentifiedPersons(sourceIdentityToPersonId, identifiedByKey1)
 
@@ -72,7 +77,8 @@ object IdentityStream {
       case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns
     }
 
-    val identifiedByKey2: RDD[(SourceIdentity, UUID)] = support.identifyByKey(unidentifiedKey2Candidates, (personIdentityConfig.keyspace, personIdentityConfig.identity2Table))
+    val identifiedByKey2: RDD[(SourceIdentity, UUID)] = support.identifyByKey(unidentifiedKey2Candidates,
+      (personIdentityConfig.keyspace, personIdentityConfig.identity2Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     sourceIdentityToPersonId = support.updateIdentifiedPersons(sourceIdentityToPersonId, identifiedByKey2)
 
@@ -84,7 +90,7 @@ object IdentityStream {
     }
 
     val identifiedByKey3: RDD[(SourceIdentity, UUID)] = support.identifyByKey(unidentifiedKey3Candidates,
-      (personIdentityConfig.keyspace, personIdentityConfig.identity3Table))
+      (personIdentityConfig.keyspace, personIdentityConfig.identity3Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     sourceIdentityToPersonId = support.updateIdentifiedPersons(sourceIdentityToPersonId, identifiedByKey3)
 
@@ -93,12 +99,12 @@ object IdentityStream {
     val newPersonsSourceIdentity = sourceIdentityToPersonId.filter {
       case (_, (None, _)) => true
       case _ => false
-    }.map((_, UUID.randomUUID())).persist(StorageLevel.MEMORY_AND_DISK)
+    }.map((_, UUID.randomUUID()))
 
     // Save source identity to person id mapping for new person ids.
     val newPersonsSourceIdentityToPersonId = newPersonsSourceIdentity.map {
       case ((sourceIdentity, (None, _)), personId) => (sourceIdentity, personId)
-    }
+    }.persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     newPersonsSourceIdentityToPersonId.map {
       case (sourceIdentity, personId) => (sourceIdentity.customerId, sourceIdentity.sourcePersonId, sourceIdentity.source, sourceIdentity.sourceType, personId)
@@ -116,19 +122,28 @@ object IdentityStream {
     val newPersons: RDD[JsObject] = externalPersonIdToRaw.join(newPersonsByExternalPersonId).map(addPersonId)
 
     // Get the persons by external person id to join to the externalPersonIdToRaw rdd.
-    val existingPersonsByExternalPersonId: RDD[(String, UUID)] = alreadyIdentified.union(identifiedByKey1).union(identifiedByKey2).map {
-      case (sourceIdentity, personId) => (sourceIdentity.sourcePersonId, personId)
-    }
+    val existingPersonsByExternalPersonId: RDD[(String, UUID)] =
+      alreadyIdentified
+      .union(identifiedByKey1)
+      .union(identifiedByKey2)
+      .union(identifiedByKey3)
+      .map { case (sourceIdentity, personId) =>
+        val uniqueId: String = support.getUniquePersonIdFromSourceIdentity(sourceIdentity)
+          (uniqueId, personId) }
 
-    val existingPersons = externalPersonIdToRaw.join(existingPersonsByExternalPersonId).map(addPersonId)
+    val existingPersons =
+      externalPersonIdToRaw
+      .join(existingPersonsByExternalPersonId)
+      .map(addPersonId)
 
     val results = newPersons.union(existingPersons).repartition(inputPartitions).persist(StorageLevel.MEMORY_AND_DISK_SER)
 
-    val allCount = recordIdToRaw.count()
+    val allCount = rdd.count()
     val alreadyIdentifiedCount = alreadyIdentified.count()
     val identityKey1Matches = identifiedByKey1.count()
     val identityKey2Matches = identifiedByKey2.count()
-    val matchesCount = identityKey1Matches + identityKey2Matches
+    val identityKey3Matches = identifiedByKey3.count()
+    val matchesCount = identityKey1Matches + identityKey2Matches + identityKey3Matches
     val newPersonsCount = newPersons.count()
 
     support.sendToTopic(ProducerObject.get(kafkaProducerConfig), new ProducerRecord[String, String](personIdentityConfig.identityStatsTopic,
@@ -138,12 +153,17 @@ object IdentityStream {
         "identifiedCount" -> JsNumber(matchesCount),
         "identifiedByKey1Count" -> JsNumber(identityKey1Matches),
         "identifiedByKey2Count" -> JsNumber(identityKey2Matches),
+        "identifiedByKey3Count" -> JsNumber(identityKey3Matches),
         "totalCount" -> JsNumber(allCount))))))
 
-    recordIdToRaw.unpersist(false)
-    externalPersonIdToRaw.unpersist(false)
-    sourceIdentityToRecord.unpersist(false)
-    newPersonsSourceIdentityToPersonId.unpersist(false)
+    joined.unpersist()
+    identifiedByKey1.unpersist()
+    identifiedByKey2.unpersist()
+    identifiedByKey3.unpersist()
+    alreadyIdentified.unpersist()
+    externalPersonIdToRaw.unpersist()
+    sourceIdentityToRecord.unpersist()
+    newPersonsSourceIdentityToPersonId.unpersist()
 
     results
   }

@@ -14,6 +14,7 @@ import org.apache.spark.streaming.dstream.InputDStream
 import org.apache.spark.streaming.kafka._
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
+import play.api.libs.json.JsObject
 
 trait Support {
   val ExternalPersonIdField = "sourcePersonId"
@@ -88,6 +89,14 @@ trait Support {
 
   def toDateTime(value: String): DateTime = {
     DateTime.parse(value, ISODateTimeFormat.basicDate())
+  }
+
+  def getUniquePersonIdFromJson(jsObj: JsObject): String = {
+    (jsObj \ support.ExternalPersonIdField).as[String] + "." + (jsObj \ "source").as[String] + "." + (jsObj \ "sourceType").as[String] + "." + (jsObj \ "customerId").as[String]
+  }
+
+  def getUniquePersonIdFromSourceIdentity(sourceIdentity: SourceIdentity): String = {
+    sourceIdentity.sourcePersonId + "." + sourceIdentity.source + "." + sourceIdentity.sourceType + "." + sourceIdentity.customerId
   }
 
   def toDateTimeOpt(value: Option[String]): Option[DateTime]= {
