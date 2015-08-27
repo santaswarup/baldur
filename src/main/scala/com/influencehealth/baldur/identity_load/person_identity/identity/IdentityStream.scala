@@ -135,7 +135,7 @@ object IdentityStream {
       .join(existingPersonsByExternalPersonId)
       .map(addPersonId)
 
-    val results = newPersons.union(existingPersons).persist(StorageLevel.MEMORY_AND_DISK_SER)
+    val results = newPersons.union(existingPersons)
 
     val allCount = rdd.count()
     val alreadyIdentifiedCount = alreadyIdentified.count()

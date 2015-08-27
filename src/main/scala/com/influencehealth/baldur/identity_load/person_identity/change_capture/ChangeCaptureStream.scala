@@ -84,7 +84,6 @@ object ChangeCaptureStream {
       personMasterChanges
       .map{case (personChange, columnChange) => columnChange}
       .flatMap(x => x)
-      .persist(StorageLevel.MEMORY_AND_DISK)
 
     // Save person master changes to Cassandra
     personMasterChangesFlattened

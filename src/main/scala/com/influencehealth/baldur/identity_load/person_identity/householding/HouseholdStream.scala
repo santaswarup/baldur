@@ -127,7 +127,7 @@ object HouseholdStream {
           record +
             ("addressId", addressId) +
             ("householdId", householdId)
-      }.persist(StorageLevel.MEMORY_AND_DISK)
+      }
 
     result
   }
