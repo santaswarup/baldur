@@ -92,7 +92,11 @@ trait Support {
   }
 
   def getUniquePersonIdFromJson(jsObj: JsObject): String = {
-    (jsObj \ support.ExternalPersonIdField).as[String] + "." + (jsObj \ "source").as[String] + "." + (jsObj \ "sourceType").as[String] + "." + (jsObj \ "customerId").as[String]
+    try {
+      (jsObj \ support.ExternalPersonIdField).as[String] + "." + (jsObj \ "source").as[String] + "." + (jsObj \ "sourceType").as[String] + "." + (jsObj \ "customerId").as[Int]
+    } catch {
+      case e: Exception => throw new Exception(f"geUniquePersonIdFromJson: ${jsObj.toString()}", e)
+    }
   }
 
   def getUniquePersonIdFromSourceIdentity(sourceIdentity: SourceIdentity): String = {
