@@ -57,11 +57,14 @@ object HouseholdStream {
     newAddresses.map(_.toAddress).saveToCassandra(householdConfig.keyspace, householdConfig.addressTable)
 
     // Generate new household ids for the new addresses
-    val newHouseholds = newAddresses.groupBy(x => x.addressId.toString + x.lastName).flatMap {
-      case (_, householdAddresses) =>
-        val householdId = UUID.randomUUID()
-        householdAddresses.map(_.copy(householdId = Some(householdId)))
-    }.persist(StorageLevel.MEMORY_AND_DISK)
+    val newHouseholds =
+      newAddresses
+      .groupBy(x => x.addressId.toString + x.lastName)
+      .flatMap {
+        case (_, householdAddresses) =>
+          val householdId = UUID.randomUUID()
+          householdAddresses.map(_.copy(householdId = Some(householdId)))
+    }.filter(_.hasHouseholdColumns).persist(StorageLevel.MEMORY_AND_DISK)
 
     newHouseholds.map(_.toHousehold).saveToCassandra(householdConfig.keyspace, householdConfig.householdTable)
 
@@ -77,7 +80,7 @@ object HouseholdStream {
     val existingHouseholds = existingAddresses.filter(_.householdId.isDefined)
 
     val existingAddressesWithNewHouseholdIds = existingAddresses
-      .filter(_.householdId.isEmpty)
+      .filter{x => x.householdId.isEmpty && x.hasHouseholdColumns}
       .groupBy(x => (x.addressId.get, x.lastName.get))
       .flatMap {
       case (_, records) =>
