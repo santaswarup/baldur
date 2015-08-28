@@ -155,7 +155,8 @@ object ChangeCaptureSupport {
     "assessmentQuestions",
     "assessmentAnswers",
     "reasonId",
-    "reason"
+    "reason",
+    "zip5"
   )
 
   val columnTypes = Seq(
