@@ -57,11 +57,13 @@ object ChangeCaptureStream {
       .spanByKey
       .persist(StorageLevel.MEMORY_AND_DISK)
 
+    val activityJoinColumns: SomeColumns = SomeColumns.seqToSomeColumns(Seq("customer_id", "person_id", "source_record_id", "source", "source_type"))
+
     val activityChangesJoined: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
       changeCaptureStream
         .distinct()
         .filter{case x => x.messageType.equals("utilization")}
-        .leftOuterJoinWithCassandraTable[ColumnChange](changeCaptureConfig.keyspace, changeCaptureConfig.activityChangeCaptureTable)
+        .leftOuterJoinWithCassandraTable[ColumnChange](changeCaptureConfig.keyspace, changeCaptureConfig.activityChangeCaptureTable, joinColumns = activityJoinColumns)
         .persist(StorageLevel.MEMORY_AND_DISK)
 
     val existingActivitiesDetermined: RDD[(ChangeCaptureMessage, ColumnChange)] =
@@ -77,10 +79,10 @@ object ChangeCaptureStream {
         .map(_._1)
         .flatMap(ChangeCaptureSupport.determineNewChanges(_, "person_activity"))
 
-    val personActivityChanges: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
+    val personActivityChanges: RDD[(ChangeCaptureMessage, Iterable[ColumnChange])] =
       existingActivitiesDetermined
         .union(newActivitiesDetermined)
-        .spanByKey
+        .groupByKey()
         .persist(StorageLevel.MEMORY_AND_DISK)
 
     val personMasterChangesFlattened: RDD[ColumnChange] =
@@ -126,7 +128,7 @@ object ChangeCaptureStream {
 
 
     personActivityChanges
-      .map{case (personChange, columnChange) => columnChange}
+      .map{case (activityChange, columnChange) => columnChange}
       .flatMap(x => x)
       .saveToCassandra(changeCaptureConfig.keyspace,changeCaptureConfig.activityChangeCaptureTable)
 
