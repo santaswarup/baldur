@@ -59,7 +59,7 @@ object ChangeCaptureStream {
       changeCaptureStream
         .distinct()
         .filter{case x => x.messageType.equals("utilization")}
-        .leftOuterJoinWithCassandraTable[ColumnChange](changeCaptureConfig.keyspace, changeCaptureConfig.personChangeCaptureTable)
+        .leftOuterJoinWithCassandraTable[ColumnChange](changeCaptureConfig.keyspace, changeCaptureConfig.activityChangeCaptureTable)
         .persist(StorageLevel.MEMORY_AND_DISK)
 
     val existingActivitiesDetermined: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
