@@ -6,6 +6,7 @@ import com.datastax.driver.core.{BoundStatement, Session}
 import com.influencehealth.baldur.identity_load.person_identity.support.{SupportImpl, Support}
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
+import scala.reflect.runtime.universe._
 
 
 object ChangeCaptureSupport {
@@ -301,43 +302,51 @@ object ChangeCaptureSupport {
     ("reason", "string"),
     ("updatedAt", "datetime"))
 
-  def determineNewChanges(changeCaptureMessage: ChangeCaptureMessage, trackedTable: String): Seq[(ChangeCaptureMessage, Option[ColumnChange])] = {
+  private val m = runtimeMirror(getClass.getClassLoader)
+
+  val methods = typeOf[ChangeCaptureMessage].members.sorted.collect {
+    case m: MethodSymbol if m.isCaseAccessor => m
+  }
+
+  def determineNewChanges(changeCaptureMessage: ChangeCaptureMessage, trackedTable: String): Seq[(ChangeCaptureMessage, ColumnChange)] = {
     val columns: Seq[String] = trackedTable match {
       case "person_master" => personMasterColumns
       case "person_activity" => personActivityColumns
     }
 
-    val changeCaptureValues: Array[Any] = changeCaptureMessage.productIterator.toArray
+    val filteredMethods = methods.filter{ methodSymbol => columns.contains(methodSymbol.name.toString)}
+    val im = m.reflect(changeCaptureMessage)
+    val columnToValue = filteredMethods.map(methodSymbol => {
+      (methodSymbol.name.toString, methodSymbol.returnType.typeArgs, im.reflectField(methodSymbol).get)
+    })
 
-    val newColumnChanges: Seq[(String, Any)] = changeCaptureFields
-      .zip(changeCaptureValues)
-      .filter{case (field, newValue) => newValue match {
-        case newValue: Option[_] if newValue.isEmpty => false
-                case newValue: Option[_] => columns.contains(field)
-                case _ => columns.contains(field)
-        }
-      }
-      .map{case (field, newValue) => newValue match {
-                case newValue: Option[_] => (field, newValue.get)
-                case _ => (field, newValue)
-       }
-      }
+    val newColumnChanges = columnToValue.map {
+      case (field, typeArgs, value: Option[_]) if value.isEmpty => None
+      case (field, typeArgs, value: Option[_]) => Some(field, value.get)
+      case (field, typeArgs, value) => Some(field, value)
+    }
 
     newColumnChanges
-      .map{ case (columnName, value) =>
-      (changeCaptureMessage, getChange(
-        value,
-        columnName,
-        changeCaptureMessage.customerId,
-        changeCaptureMessage.personId,
-        changeCaptureMessage.source,
-        changeCaptureMessage.sourceType,
-        changeCaptureMessage.sourceRecordId,
-        changeCaptureMessage.messageType,
-        trackedTable,
-        changeCaptureMessage.trackingDate,
-        None
-      ))}
+      .map{
+        case Some((columnName, value)) =>
+          Some((changeCaptureMessage, getChange(
+            value,
+            columnName,
+            changeCaptureMessage.customerId,
+            changeCaptureMessage.personId,
+            changeCaptureMessage.source,
+            changeCaptureMessage.sourceType,
+            changeCaptureMessage.sourceRecordId,
+            changeCaptureMessage.messageType,
+            trackedTable,
+            changeCaptureMessage.trackingDate,
+            None
+          )))
+      case None => None}
+      .filter(_.isDefined)
+      .map(_.get)
+      .filter{case (changeCapture, columnChange) => columnChange.isDefined}
+      .map{case (changeCapture, columnChange) => (changeCapture, columnChange.get)}
   }
 
   def getMridsColumnChange(changeCaptureMessage: ChangeCaptureMessage): (ChangeCaptureMessage, Option[ColumnChange]) = {
@@ -358,36 +367,43 @@ object ChangeCaptureSupport {
     ))
   }
 
+  def castOption[T: scala.reflect.ClassTag](a: Any) = {
+    val ct = implicitly[scala.reflect.ClassTag[T]]
+    a match {
+      case ct(x) => Some(x)
+      case _ => None
+    }
+  }
+
   def determineExistingChanges(changeCaptureTuple: (ChangeCaptureMessage, Option[ColumnChange]), trackedTable: String): (ChangeCaptureMessage, Option[ColumnChange]) = {
 
     val changeCapture: ChangeCaptureMessage = changeCaptureTuple._1
+    val lastChange: Option[ColumnChange] = changeCaptureTuple._2
 
     val columns: Seq[String] = trackedTable match {
       case "person_master" => personMasterColumns
       case "person_activity" => personActivityColumns
     }
-    val changeCaptureValues: Array[Any] = changeCapture.productIterator.toArray
 
-    val newColumnChanges: Map[String, Any] =
-      changeCaptureFields
-      .zip(changeCaptureValues)
-      .filter{case (field, newValue) => newValue match {
-                case newValue: Option[_] if newValue.isEmpty => false
-                case newValue: Option[_] => columns.contains(field)
-                case _ => columns.contains(field)
-        }
-      }
-      .map{case (field, newValue) => newValue match {
-              case newValue: Option[_] => (field, newValue.get)
-              case _ => (field, newValue)
-        }
-      }
-      .toMap
+    val filteredMethods = methods.filter{ methodSymbol => columns.contains(methodSymbol.name.toString)}
+    val im = m.reflect(changeCapture)
+    val columnToValue = filteredMethods
+      .map(methodSymbol => {
+        (methodSymbol.name.toString, methodSymbol.returnType.typeArgs, im.reflectField(methodSymbol).get)
+      })
 
-    val fieldName = changeCaptureTuple._2.get.columnName
+    val newColumnChanges: Map[String, Any] = columnToValue.map {
+      case (field, typeArgs, value: Option[_]) if value.isEmpty => None
+      case (field, typeArgs, value: Option[_]) => Some(field, value.get)
+      case (field, typeArgs, value) => Some(field, value)
+    }.filter(_.isDefined)
+    .map(_.get)
+    .toMap
+
+    val fieldName = lastChange.get.columnName
 
     val determinedChange = getChange(
-      newColumnChanges getOrElse(fieldName, None),
+      newColumnChanges.getOrElse(fieldName,None),
       fieldName,
       changeCapture.customerId,
       changeCapture.personId,
@@ -440,36 +456,36 @@ object ChangeCaptureSupport {
         valueWithLastChange.mkString("|")
 
       // Handling Sets
-    case value: Set[_] =>
+      case value: Set[_] =>
 
-      // Previous values stored like: 'value1','value2'...
-      // This prepends new values to existing sets
-      val valueWithLastChange: Set[String] = lastChange match{
-        case None => value.map(_.toString)
-        case _ => value.map(_.toString) ++ lastChange.get.newValue.split("\\|").filterNot(value.toSet)
-      }
+        // Previous values stored like: 'value1','value2'...
+        // This prepends new values to existing sets
+        val valueWithLastChange: Set[String] = lastChange match{
+          case None => value.map(_.toString)
+          case _ => value.map(_.toString) ++ lastChange.get.newValue.split("\\|").filterNot(value.toSet)
+        }
 
-      // logic is inserted to determine if a change really needs to be made between two of the same set
-      // String comparison won't work properly as the sets could be in diff orders. E.g.
-      // Set("Pig","Rhino","Elephant") vs. Set("Rhino","Pig","Elephant")
-      // Automatically assumes that there is a change if the previous is null
-      val difference: Int = lastChange match{
-        case None => 1
-        case _ => lastChange.get.newValue.split("\\|").toSet.diff(valueWithLastChange).size
-      }
+        // logic is inserted to determine if a change really needs to be made between two of the same set
+        // String comparison won't work properly as the sets could be in diff orders. E.g.
+        // Set("Pig","Rhino","Elephant") vs. Set("Rhino","Pig","Elephant")
+        // Automatically assumes that there is a change if the previous is null
+        val difference: Int = lastChange match{
+          case None => 1
+          case _ => lastChange.get.newValue.split("\\|").toSet.diff(valueWithLastChange).size
+        }
 
-      // if there is no difference, then use the previous value. Otherwise use the newest value
-      val finalValue: Set[_] = difference match{
-        case 0 => lastChange.get.newValue.split("\\|").toSet
-        case _ => valueWithLastChange
+        // if there is no difference, then use the previous value. Otherwise use the newest value
+        val finalValue: Set[_] = difference match{
+          case 0 => lastChange.get.newValue.split("\\|").toSet
+          case _ => valueWithLastChange
 
-      }
+        }
 
-      // Final value as a string, separated by pipes as commas are too common and can cause further issues
-      finalValue.mkString("|")
+        // Final value as a string, separated by pipes as commas are too common and can cause further issues
+        finalValue.mkString("|")
 
-    case value =>
-      value.toString
+      case value =>
+        value.toString
 
   }
 

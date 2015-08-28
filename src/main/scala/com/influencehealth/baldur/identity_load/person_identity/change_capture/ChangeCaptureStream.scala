@@ -29,18 +29,22 @@ object ChangeCaptureStream {
         .leftOuterJoinWithCassandraTable[ColumnChange](changeCaptureConfig.keyspace, changeCaptureConfig.personChangeCaptureTable)
         .persist(StorageLevel.MEMORY_AND_DISK)
 
-    val existingPersonsDetermined: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
+    val existingPersonsDetermined: RDD[(ChangeCaptureMessage, ColumnChange)] =
       personChangesJoined
       .filter{case (changeCapture, columnChange) => columnChange.isDefined}
       .map(ChangeCaptureSupport.determineExistingChanges(_,"person_master"))
+      .filter{case (personChange, columnChange) => columnChange.isDefined}
+      .map{case (personChange, columnChange) => (personChange, columnChange.get)}
 
 
-    val personMridsChanges: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
+    val personMridsChanges: RDD[(ChangeCaptureMessage, ColumnChange)] =
       changeCaptureStream
         .distinct()
         .map(ChangeCaptureSupport.getMridsColumnChange)
+        .filter{case (personChange, columnChange) => columnChange.isDefined}
+        .map{case (personChange, columnChange) => (personChange, columnChange.get)}
 
-    val newPersonsDetermined: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
+    val newPersonsDetermined: RDD[(ChangeCaptureMessage, ColumnChange)] =
       personChangesJoined
         .filter{case (changeCapture, columnChange) => columnChange.isEmpty}
         .map(_._1)
@@ -50,8 +54,6 @@ object ChangeCaptureStream {
       existingPersonsDetermined
       .union(newPersonsDetermined)
       .union(personMridsChanges)
-      .filter{case (personChange, columnChange) => columnChange.isDefined}
-      .map{case (personChange, columnChange) => (personChange, columnChange.get)}
       .spanByKey
       .persist(StorageLevel.MEMORY_AND_DISK)
 
@@ -62,12 +64,14 @@ object ChangeCaptureStream {
         .leftOuterJoinWithCassandraTable[ColumnChange](changeCaptureConfig.keyspace, changeCaptureConfig.activityChangeCaptureTable)
         .persist(StorageLevel.MEMORY_AND_DISK)
 
-    val existingActivitiesDetermined: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
+    val existingActivitiesDetermined: RDD[(ChangeCaptureMessage, ColumnChange)] =
       activityChangesJoined
       .filter{case (changeCapture, columnChange) => columnChange.isDefined}
       .map(ChangeCaptureSupport.determineExistingChanges(_, "person_activity"))
+      .filter{case (activityChange, columnChange) => columnChange.isDefined}
+      .map{case (activityChange, columnChange) => (activityChange, columnChange.get)}
 
-    val newActivitiesDetermined: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
+    val newActivitiesDetermined: RDD[(ChangeCaptureMessage, ColumnChange)] =
       activityChangesJoined
         .filter{case (changeCapture, columnChange) => columnChange.isEmpty}
         .map(_._1)
@@ -76,8 +80,6 @@ object ChangeCaptureStream {
     val personActivityChanges: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       existingActivitiesDetermined
         .union(newActivitiesDetermined)
-        .filter{case (activityChange, columnChange) => columnChange.isDefined}
-        .map{case (activityChange, columnChange) => (activityChange, columnChange.get)}
         .spanByKey
         .persist(StorageLevel.MEMORY_AND_DISK)
 
