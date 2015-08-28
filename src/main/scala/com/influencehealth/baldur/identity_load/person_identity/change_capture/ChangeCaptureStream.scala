@@ -79,10 +79,10 @@ object ChangeCaptureStream {
         .map(_._1)
         .flatMap(ChangeCaptureSupport.determineNewChanges(_, "person_activity"))
 
-    val personActivityChanges: RDD[(ChangeCaptureMessage, Iterable[ColumnChange])] =
+    val personActivityChanges: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       existingActivitiesDetermined
         .union(newActivitiesDetermined)
-        .groupByKey()
+        .spanByKey
         .persist(StorageLevel.MEMORY_AND_DISK)
 
     val personMasterChangesFlattened: RDD[ColumnChange] =
