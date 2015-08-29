@@ -16,6 +16,7 @@ import com.influencehealth.baldur.identity_load.person_identity.identity_table.I
 import com.influencehealth.baldur.identity_load.person_identity.identity_table.support.IdentityTableCreatorConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.spark._
+import org.apache.spark.serializer._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.storage.StorageLevel
 import play.api.libs.json._
@@ -149,7 +150,9 @@ object IdentityLoadApp {
   }
 
   def createSparkConf(): SparkConf = {
-    new SparkConf().setAppName("Anchor to Kafka")
+    new SparkConf()
+      .setAppName("Identity Load")
+      .set("spark.serializer", "org.apache.spark.serializer.KyroSerializer")
   }
 
 }
