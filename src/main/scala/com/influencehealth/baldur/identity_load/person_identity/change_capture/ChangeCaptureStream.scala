@@ -27,7 +27,7 @@ object ChangeCaptureStream {
       changeCaptureStream
         .distinct()
         .leftOuterJoinWithCassandraTable[ColumnChange](changeCaptureConfig.keyspace, changeCaptureConfig.personChangeCaptureTable)
-        .persist(StorageLevel.MEMORY_AND_DISK)
+        .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     val existingPersonsDetermined: RDD[(ChangeCaptureMessage, ColumnChange)] =
       personChangesJoined
@@ -55,7 +55,7 @@ object ChangeCaptureStream {
       .union(newPersonsDetermined)
       .union(personMridsChanges)
       .spanByKey
-      .persist(StorageLevel.MEMORY_AND_DISK)
+      .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     val activityJoinColumns: SomeColumns = SomeColumns.seqToSomeColumns(Seq("customer_id", "person_id", "source_record_id", "source", "source_type"))
 
@@ -64,7 +64,7 @@ object ChangeCaptureStream {
         .distinct()
         .filter{case x => x.messageType.equals("utilization")}
         .leftOuterJoinWithCassandraTable[ColumnChange](changeCaptureConfig.keyspace, changeCaptureConfig.activityChangeCaptureTable, joinColumns = activityJoinColumns)
-        .persist(StorageLevel.MEMORY_AND_DISK)
+        .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     val existingActivitiesDetermined: RDD[(ChangeCaptureMessage, ColumnChange)] =
       activityChangesJoined
@@ -83,7 +83,7 @@ object ChangeCaptureStream {
       existingActivitiesDetermined
         .union(newActivitiesDetermined)
         .spanByKey
-        .persist(StorageLevel.MEMORY_AND_DISK)
+        .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     val personMasterChangesFlattened: RDD[ColumnChange] =
       personMasterChanges
