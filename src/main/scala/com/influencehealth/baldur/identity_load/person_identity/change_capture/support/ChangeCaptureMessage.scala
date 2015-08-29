@@ -10,8 +10,8 @@ case class ChangeCaptureMessage(
     //person-columns
     personId: UUID,
     customerId: Int,
-    addressId: UUID,
-    householdId: UUID,
+    addressId: Option[UUID],
+    householdId: Option[UUID],
     messageType: String,
     source: String,
     sourceType: String,
@@ -179,8 +179,8 @@ object ChangeCaptureMessage {
     ChangeCaptureMessage(
       personId = (json \ "personId").as[UUID],
       customerId = (json \ "customerId").as[Int],
-      addressId = (json \ "addressId").as[UUID],
-      householdId = (json \ "householdId").as[UUID],
+      addressId = (json \ "addressId").asOpt[UUID],
+      householdId = (json \ "householdId").asOpt[UUID],
       messageType = (json \ "messageType").as[String],
       source = (json \ "source").as[String],
       sourceType = (json \ "sourceType").as[String],

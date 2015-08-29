@@ -42,14 +42,15 @@ object HouseholdStream {
     }.persist(StorageLevel.MEMORY_AND_DISK)
 
     // Get the records that we can not assign an address id to because we do not have enough information
-    val unaddressable = records.filter(x => x.addressId.isEmpty && !x.hasAddressColumns)
+    val unaddressable: RDD[HouseholdAddress] = records.filter(x => x.addressId.isEmpty && !x.hasAddressColumns)
 
-    val unhouseholdable =
+    // Get the records that we can not assign a household id to because we do not have enough information
+    val unhouseholdable: RDD[HouseholdAddress] =
       records
-      .filter(x => x.householdId.isEmpty && !x.hasHouseholdColumns && ((x.addressId.isEmpty && x.hasAddressColumns) || x.addressId.nonEmpty))
+      .filter(x => x.householdId.isEmpty && x.hasAddressColumns && !x.hasHouseholdColumns)
 
     // Generate new address ids for those records that do not have an address id
-    val newAddresses = records
+    val newAddresses: RDD[HouseholdAddress] = records
       .filter(x => x.addressId.isEmpty && x.hasAddressColumns)
       .groupBy(x => (x.address1, x.address2, x.city, x.state, x.zip5, x.zip4))
       .flatMap {
@@ -61,7 +62,7 @@ object HouseholdStream {
     newAddresses.map(_.toAddress).saveToCassandra(householdConfig.keyspace, householdConfig.addressTable)
 
     // Generate new household ids for the new addresses
-    val newHouseholds =
+    val newHouseholds: RDD[HouseholdAddress] =
       newAddresses
       .groupBy(x => x.addressId.toString + x.lastName)
       .flatMap {
@@ -73,7 +74,7 @@ object HouseholdStream {
     newHouseholds.map(_.toHousehold).saveToCassandra(householdConfig.keyspace, householdConfig.householdTable)
 
     // Get existing household ids
-    val existingAddresses = records.filter(_.hasHouseholdColumns)
+    val existingAddresses: RDD[HouseholdAddress] = records.filter(_.hasHouseholdColumns)
       .leftOuterJoinWithCassandraTable[UUID](householdConfig.keyspace, householdConfig.householdTable)
       .select("household_id")
       .map {
@@ -81,9 +82,10 @@ object HouseholdStream {
       case (address, None) => address
     }.persist(StorageLevel.MEMORY_AND_DISK)
 
-    val existingHouseholds = existingAddresses.filter(_.householdId.isDefined)
+    val existingHouseholds: RDD[HouseholdAddress] = existingAddresses.filter(_.householdId.isDefined)
 
-    val existingAddressesWithNewHouseholdIds = existingAddresses
+    val existingAddressesWithNewHouseholdIds: RDD[HouseholdAddress] =
+      existingAddresses
       .filter{x => x.householdId.isEmpty}
       .groupBy(x => (x.addressId.get, x.lastName.get))
       .flatMap {
@@ -110,7 +112,7 @@ object HouseholdStream {
       new ProducerRecord[String, String](householdConfig.householdStatsTopic,
       Json.stringify(JsObject(stats))))
 
-    val result = personIdToRecord
+    val result: RDD[JsObject] = personIdToRecord
       .join(
         existingAddressesWithNewHouseholdIds
           .union(existingHouseholds)
