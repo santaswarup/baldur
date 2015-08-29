@@ -43,7 +43,7 @@ object HouseholdStream {
 
     // Get the records that we can not assign an address id to because we do not have enough information
     val unaddressable = records.filter(x => x.addressId.isEmpty && !x.hasAddressColumns)
-
+    val unhouseholdable = records.filter(x => x.addressId.nonEmpty && x.householdId.isEmpty && !x.hasHouseholdColumns)
     // Generate new address ids for those records that do not have an address id
     val newAddresses = records
       .filter(x => x.addressId.isEmpty && x.hasAddressColumns)
@@ -96,7 +96,8 @@ object HouseholdStream {
       "existing addresses with new households" -> existingAddressesWithNewHouseholdIds.count(),
       "existing addresses with existing households" -> existingHouseholds.count(),
       "new addresses new households" -> newHouseholds.count(),
-      "unaddressable" -> unaddressable.count())
+      "unaddressable" -> unaddressable.count(),
+      "unhouseholdable" -> unhouseholdable.count())
       .map {
         case (key, value) => (key, JsNumber(value))
       }
@@ -111,6 +112,7 @@ object HouseholdStream {
           .union(existingHouseholds)
           .union(newHouseholds)
           .union(unaddressable)
+          .union(unhouseholdable)
           .keyBy(_.personId))
       .map {
         case (_, (record, householdAddress)) =>
