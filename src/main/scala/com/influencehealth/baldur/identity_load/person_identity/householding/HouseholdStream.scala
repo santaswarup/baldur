@@ -69,7 +69,7 @@ object HouseholdStream {
     newHouseholds.map(_.toHousehold).saveToCassandra(householdConfig.keyspace, householdConfig.householdTable)
 
     // Get existing household ids
-    val existingAddresses = records.filter(_.addressId.isDefined)
+    val existingAddresses = records.filter(_.hasHouseholdColumns)
       .leftOuterJoinWithCassandraTable[UUID](householdConfig.keyspace, householdConfig.householdTable)
       .select("household_id")
       .map {
@@ -80,7 +80,7 @@ object HouseholdStream {
     val existingHouseholds = existingAddresses.filter(_.householdId.isDefined)
 
     val existingAddressesWithNewHouseholdIds = existingAddresses
-      .filter{x => x.householdId.isEmpty && x.hasHouseholdColumns}
+      .filter{x => x.householdId.isEmpty}
       .groupBy(x => (x.addressId.get, x.lastName.get))
       .flatMap {
       case (_, records) =>
