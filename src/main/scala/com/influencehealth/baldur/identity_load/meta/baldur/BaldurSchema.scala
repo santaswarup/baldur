@@ -1,5 +1,7 @@
 package com.influencehealth.baldur.identity_load.meta.baldur
 
+import java.util.UUID
+
 import com.influencehealth.baldur.identity_load.meta._
 import com.influencehealth.baldur.support._
 
@@ -191,17 +193,29 @@ object BaldurSchema extends FileInputMeta with Serializable {
     val lat = getAnchorLatLon(FileInputSupport.getAddressStringValue(input, "lat", validAddressFlag))
     val lon = getAnchorLatLon(FileInputSupport.getAddressStringValue(input, "lon", validAddressFlag))
 
+    // Logic below temporarily added to handle Piedmont's duplicate issue in the physician office data set
+    val customerId = FileInputSupport.getIntValue(input, "customerId")
+    val sourceType = FileInputSupport.getStringValue(input, "sourceType")
+
+    val sourceRecordId = customerId match{
+      case 1 => sourceType match {
+        case "hospital" => FileInputSupport.getStringValue(input, "sourceRecordId")
+        case "physician office" => UUID.randomUUID().toString
+      }
+      case _ => FileInputSupport.getStringValue(input, "sourceRecordId")
+    }
+
     ActivityOutput(
       personId = FileInputSupport.getUUIDOptValue(input, "personId"),
-      customerId = FileInputSupport.getIntValue(input, "customerId"),
+      customerId = customerId,
       addressId = FileInputSupport.getUUIDOptValue(input, "addressId"),
       householdId = FileInputSupport.getUUIDOptValue(input, "householdId"),
       messageType = FileInputSupport.getStringValue(input, "messageType"),
       source = FileInputSupport.getStringValue(input, "source"),
-      sourceType = FileInputSupport.getStringValue(input, "sourceType"),
+      sourceType = sourceType,
       personType = FileInputSupport.getStringValue(input, "personType"),
       sourcePersonId = FileInputSupport.getStringValue(input, "sourcePersonId"),
-      sourceRecordId = FileInputSupport.getStringValue(input, "sourceRecordId"),
+      sourceRecordId = sourceRecordId,
       trackingDate = FileInputSupport.getDateValue(input, "trackingDate"),
       firstName = FileInputSupport.getStringOptValue(input, "firstName"),
       middleName = FileInputSupport.getStringOptValue(input, "middleName"),

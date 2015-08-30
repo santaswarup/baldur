@@ -71,6 +71,7 @@ object IdentityLoadApp {
         }
       })
       .map(fieldNames.zip(_))
+      .distinct()
       .map{ line => Json.toJson(ActivityOutput.mapJsonFields(fileInputMeta.mapping(line.toMap[String, Any]))).as[JsObject]}
       .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
