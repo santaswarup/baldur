@@ -85,10 +85,10 @@ object IntakeApp {
                 .map(x => (x._1, x._2))
                 .toMap[String, Any]
 
-                clientInputMeta.mapping(mappedLine)
-                .productIterator
-                .map(ActivityOutput.toStringFromActivity)
-                .mkString("|") + "\r"
+                clientInputMeta.mapping(mappedLine) // creates an ActivityOutput object
+                .productIterator // maps all values from the ActivityOutput object to an iterator ordered by the class's definition
+                .map(ActivityOutput.toStringFromActivity) // takes all values, makes them a string
+                .mkString("|") + "\r" // coalesce all values in iterator, separated by pipes. added return carriage for Anchr
       }
     // Saves to multiple files in a directory. We use the tempPath as a storage area for this
     .saveAsTextFile(tempPath)
