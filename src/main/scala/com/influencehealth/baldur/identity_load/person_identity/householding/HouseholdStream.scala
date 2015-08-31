@@ -23,11 +23,27 @@ object HouseholdStream {
   def processHouseholds(householdConfig: HouseholdConfig, identifiedRdd: RDD[JsObject],
                         kafkaProducerConfig: Map[String, Object]): RDD[JsObject] = {
 
+    // Person ID to input record
     val personIdToRecord: RDD[(UUID, JsObject)] = identifiedRdd
       .map { record => ((record \ "personId").as[UUID], record) }
 
-    // Get the address id for addresses that already have one.
-    val records: RDD[HouseholdAddress] = identifiedRdd.map(HouseholdAddress.create)
+    // Creating an RDD of HouseholdAddress with input json
+    val records: RDD[HouseholdAddress] = identifiedRdd
+      .map(HouseholdAddress.create)
+
+    // Get the records that we can not assign an address id to because we do not have enough information
+    val unaddressable: RDD[HouseholdAddress] =
+      records
+        .filter(x => x.addressId.isEmpty && !x.hasAddressColumns)
+        .persist(StorageLevel.MEMORY_AND_DISK_SER)
+
+    // Get the records that we can not assign a household id to because we do not have enough information
+    val unhouseholdable: RDD[HouseholdAddress] =
+      records
+        .filter(x => x.householdId.isEmpty && x.hasAddressColumns && !x.hasHouseholdColumns)
+
+    // Defining records for addressing
+    val addressRecords = records
       .filter(_.hasAddressColumns)
       .map { householdAddress =>
       if (householdAddress.address2.isEmpty)
@@ -41,17 +57,10 @@ object HouseholdStream {
       case (address, None) => address
     }.persist(StorageLevel.MEMORY_AND_DISK)
 
-    // Get the records that we can not assign an address id to because we do not have enough information
-    val unaddressable: RDD[HouseholdAddress] = records.filter(x => x.addressId.isEmpty && !x.hasAddressColumns)
-
-    // Get the records that we can not assign a household id to because we do not have enough information
-    val unhouseholdable: RDD[HouseholdAddress] =
-      records
-      .filter(x => x.householdId.isEmpty && x.hasAddressColumns && !x.hasHouseholdColumns)
-
     // Generate new address ids for those records that do not have an address id
-    val newAddresses: RDD[HouseholdAddress] = records
-      .filter(x => x.addressId.isEmpty && x.hasAddressColumns)
+    val newAddresses: RDD[HouseholdAddress] =
+      addressRecords
+      .filter(x => x.addressId.isEmpty)
       .groupBy(x => (x.address1, x.address2, x.city, x.state, x.zip5, x.zip4))
       .flatMap {
       case (_, householdAddresses) =>
@@ -62,19 +71,28 @@ object HouseholdStream {
     newAddresses.map(_.toAddress).saveToCassandra(householdConfig.keyspace, householdConfig.addressTable)
 
     // Generate new household ids for the new addresses
-    val newHouseholds: RDD[HouseholdAddress] =
+    val newAddressNewHouseholds: RDD[HouseholdAddress] =
       newAddresses
       .groupBy(x => x.addressId.toString + x.lastName)
       .flatMap {
         case (_, householdAddresses) =>
           val householdId = UUID.randomUUID()
           householdAddresses.map(_.copy(householdId = Some(householdId)))
-    }.filter(_.hasHouseholdColumns).persist(StorageLevel.MEMORY_AND_DISK)
+      }
+      .filter(_.hasHouseholdColumns)
+      .persist(StorageLevel.MEMORY_AND_DISK)
 
-    newHouseholds.map(_.toHousehold).saveToCassandra(householdConfig.keyspace, householdConfig.householdTable)
+    newAddressNewHouseholds.map(_.toHousehold).saveToCassandra(householdConfig.keyspace, householdConfig.householdTable)
 
-    // Get existing household ids
-    val existingAddresses: RDD[HouseholdAddress] = records.filter(_.hasHouseholdColumns)
+    val existingAddresses: RDD[HouseholdAddress] =
+      addressRecords
+      .filter(_.addressId.isDefined)
+      .persist(StorageLevel.MEMORY_AND_DISK)
+
+    // Get household ids for existing addresses
+    val householdRecords: RDD[HouseholdAddress] =
+      existingAddresses
+      .filter(_.hasHouseholdColumns)
       .leftOuterJoinWithCassandraTable[UUID](householdConfig.keyspace, householdConfig.householdTable)
       .select("household_id")
       .map {
@@ -82,16 +100,16 @@ object HouseholdStream {
       case (address, None) => address
     }.persist(StorageLevel.MEMORY_AND_DISK)
 
-    val existingHouseholds: RDD[HouseholdAddress] = existingAddresses.filter(_.householdId.isDefined)
+    val existingHouseholds: RDD[HouseholdAddress] = householdRecords.filter(_.householdId.isDefined)
 
     val existingAddressesWithNewHouseholdIds: RDD[HouseholdAddress] =
-      existingAddresses
+      householdRecords
       .filter{x => x.householdId.isEmpty}
       .groupBy(x => (x.addressId.get, x.lastName.get))
       .flatMap {
-      case (_, records) =>
+      case (_, householdAddress) =>
         val householdId = UUID.randomUUID()
-        records.map(_.copy(householdId = Some(householdId)))
+        householdAddress.map(_.copy(householdId = Some(householdId)))
     }.persist(StorageLevel.MEMORY_AND_DISK)
 
     existingAddressesWithNewHouseholdIds.map(_.toHousehold)
@@ -101,7 +119,7 @@ object HouseholdStream {
       "existing addresses" -> existingAddresses.count(),
       "existing addresses with new households" -> existingAddressesWithNewHouseholdIds.count(),
       "existing addresses with existing households" -> existingHouseholds.count(),
-      "new addresses new households" -> newHouseholds.count(),
+      "new addresses new households" -> newAddressNewHouseholds.count(),
       "unaddressable" -> unaddressable.count(),
       "unhouseholdable" -> unhouseholdable.count())
       .map {
@@ -118,7 +136,7 @@ object HouseholdStream {
       .join(
         existingAddressesWithNewHouseholdIds
           .union(existingHouseholds)
-          .union(newHouseholds)
+          .union(newAddressNewHouseholds)
           .union(unaddressable)
           .union(unhouseholdable)
           .keyBy(_.personId))
@@ -138,6 +156,13 @@ object HouseholdStream {
             ("addressId", addressId) +
             ("householdId", householdId)
       }
+
+    records.unpersist()
+    addressRecords.unpersist()
+    newAddresses.unpersist()
+    existingAddresses.unpersist()
+    householdRecords.unpersist()
+    existingAddressesWithNewHouseholdIds.unpersist()
 
     result
   }
