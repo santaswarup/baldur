@@ -108,6 +108,8 @@ object HouseholdStream {
         case (key, value) => (key, JsNumber(value))
       }
 
+    stats.foreach(println)
+
     support.sendToTopic(ProducerObject.get(kafkaProducerConfig),
       new ProducerRecord[String, String](householdConfig.householdStatsTopic,
       Json.stringify(JsObject(stats))))
