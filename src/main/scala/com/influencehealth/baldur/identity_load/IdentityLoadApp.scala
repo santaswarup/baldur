@@ -56,7 +56,7 @@ object IdentityLoadApp {
 
     // Leveraging the baldur "Clean" class to parse the file into standard data types
     // TODO - put the Clean class in its own repo, import it to whatever projects need it
-    val input: RDD[JsObject] = sc.textFile(config.in.getPath)
+    val input: RDD[JsObject] = sc.textFile(config.in.getPath,8)
       .map(line => line.split(delimiter))
       .map(fields => {
         try {
