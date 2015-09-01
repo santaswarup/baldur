@@ -16,7 +16,6 @@ object JsonSupport {
 
   implicit val personIdentityColumnsReads: Reads[PersonIdentityColumns] = (
     (JsPath \ "customerId").read[Int] and
-    (JsPath \ "sourceRecordId").read[String] and
     (JsPath \ "sourcePersonId").read[String] and
     (JsPath \ "source").read[String] and
     (JsPath \ "sourceType").read[String] and
@@ -28,10 +27,8 @@ object JsonSupport {
     (JsPath \ "middleName").readNullable[String] and
     (JsPath \ "lastName").readNullable[String] and
     (JsPath \ "suffix").readNullable[String] and
-    (JsPath \ "mrn").readNullable[String] and
     (JsPath \ "dob").readNullable[String].map[Option[DateTime]](support.toDateTimeOpt) and
     (JsPath \ "sex").readNullable[String] and
-    (JsPath \ "email").readNullable[String] and
     (JsPath \ "personId").readNullable[UUID] 
   )(PersonIdentityColumns.apply _)
 

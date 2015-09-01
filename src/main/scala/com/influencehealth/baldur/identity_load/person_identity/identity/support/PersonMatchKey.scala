@@ -64,14 +64,14 @@ object PersonMatchKey {
     }
 
     def toPersonMatchKey4 = {
-      (personIdentityColumns.rootFirstName, personIdentityColumns.soundexLastName, personIdentityColumns.zip5, personIdentityColumns.mrn) match {
+      (personIdentityColumns.rootFirstName, personIdentityColumns.soundexLastName, personIdentityColumns.zip5, Some(f"${personIdentityColumns.source}.${personIdentityColumns.sourceType}.${personIdentityColumns.sourcePersonId}")) match {
         case (Some(rootFirstName), Some(soundexLastName), Some(zip5), Some(mrn)) => Some(PersonMatchKey4(personIdentityColumns.sourceIdentity, personIdentityColumns, rootFirstName, soundexLastName, zip5, mrn))
         case _ => None
       }
     }
 
     def sourceIdentity = {
-      SourceIdentity(personIdentityColumns.customerId, personIdentityColumns.externalPersonId, personIdentityColumns.source, personIdentityColumns.sourceType)
+      SourceIdentity(personIdentityColumns.customerId, personIdentityColumns.sourcePersonId, personIdentityColumns.source, personIdentityColumns.sourceType)
     }
   }
 }

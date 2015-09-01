@@ -389,7 +389,7 @@ object ChangeCaptureSupport {
 
     (changeCaptureMessage
       , getChange(
-      f"${changeCaptureMessage.source}.${changeCaptureMessage.sourceType}.${changeCaptureMessage.sourcePersonId}",
+      Set(f"${changeCaptureMessage.source}.${changeCaptureMessage.sourceType}.${changeCaptureMessage.sourcePersonId}"),
       "mrids",
       changeCaptureMessage.customerId,
       changeCaptureMessage.personId,

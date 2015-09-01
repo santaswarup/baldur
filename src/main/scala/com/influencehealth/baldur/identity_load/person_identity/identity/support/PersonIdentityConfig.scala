@@ -15,6 +15,7 @@ case class PersonIdentityConfig(identityInputTopics: String,
                                 identity2Table: String,
                                 identity3Table: String,
                                 identity4Table: String,
+                                trustSourceId: Boolean,
                                 kafkaReset: String) {
 
   def kafkaParams: Map[String, String] = Map("metadata.broker.list" -> brokerList,
@@ -28,6 +29,8 @@ object PersonIdentityConfig {
     //Specific to PersonIdentity
     val identityInputTopics = sc.get("spark.app.topic.identity", "identity_input")
     val identityStatsTopic = sc.get("spark.app.topic.identity_stats", "identity_stats")
+
+    val trustSourceId = sc.get("spark.app.identity.trust_source_id", "true").toBoolean
 
     //Broker list exists in Common Config as we only have 1 Kafka cluster
     val brokerList = CommonConfig.kafkaBrokerList(sc)
@@ -55,6 +58,7 @@ object PersonIdentityConfig {
       identity2Table,
       identity3Table,
       identity4Table,
+      trustSourceId,
       kafkaReset)
   }
 }

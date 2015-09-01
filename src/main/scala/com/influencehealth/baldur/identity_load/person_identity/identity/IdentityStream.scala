@@ -24,163 +24,235 @@ object IdentityStream {
 
   def processIdentity(rdd: RDD[JsObject], personIdentityConfig: PersonIdentityConfig, kafkaParams: Map[String, String], kafkaProducerConfig: Map[String, Object]): RDD[JsObject] = {
 
-    val sourceIdentityToRecord: RDD[(SourceIdentity, PersonIdentityColumns)] =
-      rdd
-      .map{case record =>  (SourceIdentity.fromJson(record), record.as[PersonIdentityColumns])}
-      .persist(StorageLevel.MEMORY_AND_DISK_SER)
+    val trustSourceId = personIdentityConfig.trustSourceId
 
-    // Pair RDD keyed by the person id from the input source with value of the raw JSON received
-    val externalPersonIdToRaw: RDD[(SourceIdentity, JsObject)] =
-      rdd
-      .map { case jsObj =>
-        val sourceIdentity: SourceIdentity = SourceIdentity.fromJson(jsObj)
-        (sourceIdentity, jsObj) }
-      .persist(StorageLevel.MEMORY_AND_DISK_SER)
+    val results: RDD[JsObject] = trustSourceId match{
 
-    val joined: RDD[(SourceIdentity, Option[UUID])] =
-      sourceIdentityToRecord
-      .map { case (sourceIdentity, _) => sourceIdentity }
-      .distinct()
-      .leftOuterJoinWithCassandraTable[UUID](personIdentityConfig.keyspace, personIdentityConfig.sourceIdentityTable)
-      .select("person_id")
-      .persist(StorageLevel.MEMORY_AND_DISK_SER)
+      // if we trust the source ID, we can use it by itself for grouping
+      case true =>
 
-    val alreadyIdentified =
-      joined
-      .filter{case (sourceIdentity, uuid) => uuid.isDefined}
-      .map{case (sourceIdentity, uuid) => (sourceIdentity, uuid.get)}
-      .persist(StorageLevel.MEMORY_AND_DISK_SER)
+        val inputKeyed: RDD[(SourceIdentity, JsObject)] =
+          rdd
+          .map{case record =>  (SourceIdentity.fromJson(record), record)}
 
-    var sourceIdentityToPersonId: RDD[(SourceIdentity, (Option[UUID], PersonIdentityColumns))] =
-      sourceIdentityToRecord
-      .join(joined)
-      .map{ case (sourceIdentity, (personIdentityColumns, personId)) => (sourceIdentity, (personId, personIdentityColumns)) }
+        val processingRdd: RDD[(SourceIdentity, PersonIdentityColumns)] =
+          rdd
+          .map{case record =>  (SourceIdentity.fromJson(record), record.as[PersonIdentityColumns])}
+          .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
-    val unidentifiedKey1Candidates: RDD[PersonIdentityColumns] =
-    sourceIdentityToPersonId
-    .filter {
-      case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns.toPersonMatchKey1.isDefined
-      case _ => false
+        val alreadyIdentified: RDD[(SourceIdentity, UUID)] =
+          processingRdd
+            .map{case (sourceIdentity, record) => sourceIdentity}
+            .distinct()
+            .joinWithCassandraTable[UUID](personIdentityConfig.keyspace, personIdentityConfig.sourceIdentityTable)
+            .select("person_id")
+            .persist(StorageLevel.MEMORY_AND_DISK_SER)
+
+        var recordsForMatching: RDD[(SourceIdentity, (Option[UUID], PersonIdentityColumns))] =
+          processingRdd
+            .leftOuterJoin(alreadyIdentified)
+            .filter{ case (sourceIdentity, (record, personId)) => personId.isEmpty}
+            .map{ case (sourceIdentity, (personIdentityColumns, personId)) => (sourceIdentity, (personId, personIdentityColumns)) }
+
+        val unidentifiedKey1Candidates: RDD[PersonIdentityColumns] =
+          recordsForMatching
+            .filter {
+            case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns.toPersonMatchKey1.isDefined
+            case _ => false
+          }
+            .map { case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns  }
+
+        val identifiedByKey1: RDD[(SourceIdentity, UUID)] = support.identifyByKey(unidentifiedKey1Candidates,
+          (personIdentityConfig.keyspace, personIdentityConfig.identity1Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
+
+        recordsForMatching = support.updateIdentifiedPersons(recordsForMatching, identifiedByKey1)
+
+        val unidentifiedKey2Candidates: RDD[PersonIdentityColumns] = recordsForMatching.filter {
+          case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns.toPersonMatchKey2.isDefined
+          case _ => false
+        }.map {
+          case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns
+        }
+
+        val identifiedByKey2: RDD[(SourceIdentity, UUID)] = support.identifyByKey(unidentifiedKey2Candidates,
+          (personIdentityConfig.keyspace, personIdentityConfig.identity2Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
+
+        recordsForMatching = support.updateIdentifiedPersons(recordsForMatching, identifiedByKey2)
+
+        val unidentifiedKey3Candidates: RDD[PersonIdentityColumns] = recordsForMatching.filter {
+          case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns.toPersonMatchKey3.isDefined
+          case _ => false
+        }.map {
+          case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns
+        }
+
+        val identifiedByKey3: RDD[(SourceIdentity, UUID)] = support.identifyByKey(unidentifiedKey3Candidates,
+          (personIdentityConfig.keyspace, personIdentityConfig.identity3Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
+
+        recordsForMatching = support.updateIdentifiedPersons(recordsForMatching, identifiedByKey3)
+
+        val matchedPersons: RDD[(SourceIdentity, UUID)] =
+          alreadyIdentified
+          .union(identifiedByKey1)
+          .union(identifiedByKey2)
+          .union(identifiedByKey3)
+
+        val newPersons: RDD[(SourceIdentity, UUID)] =
+          recordsForMatching
+          .filter{ case (sourceIdentity, (personId, record)) => personId.isEmpty}
+          .map{ case (sourceIdentity, (personId, record)) => sourceIdentity}
+          .distinct()
+          .map((_, UUID.randomUUID()))
+
+        val results = matchedPersons
+          .union(newPersons)
+          .join(inputKeyed)
+          .map{ case (sourceIdentity, (personId, jsObject)) => jsObject + ("personId", JsString(personId.toString))}
+
+        val allCount = rdd.count()
+        val allInboundPersons = inputKeyed.map{case (sourceIdentity, record) => sourceIdentity}.distinct().count()
+        val alreadyIdentifiedCount = alreadyIdentified.count()
+        val identityKey1Matches = identifiedByKey1.count()
+        val identityKey2Matches = identifiedByKey2.count()
+        val identityKey3Matches = identifiedByKey3.count()
+        val matchesCount = identityKey1Matches + identityKey2Matches + identityKey3Matches
+        val newPersonsCount = newPersons.count()
+        val resultCount = results.count()
+
+        println("allInboundPersonCount: " + allInboundPersons.toString)
+        println("newPersonsCount: " + newPersonsCount.toString)
+        println("alreadyIdentifiedCount: " + alreadyIdentifiedCount.toString)
+        println("identifiedCount: " + matchesCount.toString)
+        println("identifiedByKey1Count: " + identityKey1Matches.toString)
+        println("identifiedByKey2Count: " + identityKey2Matches.toString)
+        println("identifiedByKey3Count: " + identityKey3Matches.toString)
+        println("inboundRecordCount: " + allCount.toString)
+        println("outboundRecordCount: " + resultCount.toString)
+
+        support.sendToTopic(ProducerObject.get(kafkaProducerConfig), new ProducerRecord[String, String](personIdentityConfig.identityStatsTopic,
+          Json.stringify(JsObject(Seq(
+            "allInbounddPersonCount" -> JsNumber(allInboundPersons),
+            "newPersonsCount" -> JsNumber(newPersonsCount),
+            "alreadyIdentifiedCount" -> JsNumber(alreadyIdentifiedCount),
+            "identifiedCount" -> JsNumber(matchesCount),
+            "identifiedByKey1Count" -> JsNumber(identityKey1Matches),
+            "identifiedByKey2Count" -> JsNumber(identityKey2Matches),
+            "identifiedByKey3Count" -> JsNumber(identityKey3Matches),
+            "totalRecordCount" -> JsNumber(allCount))))))
+
+        processingRdd.unpersist()
+        alreadyIdentified.unpersist()
+        identifiedByKey1.unpersist()
+        identifiedByKey2.unpersist()
+        identifiedByKey3.unpersist()
+
+        results
+
+      case false =>
+        val inputKeyed: RDD[(SourceIdentityUntrusted, JsObject)] =
+          rdd
+            .map{case record =>  (SourceIdentityUntrusted.fromJson(record), record)}
+
+        val processingRdd: RDD[(SourceIdentityUntrusted, PersonIdentityColumns)] =
+          rdd
+            .map{case record =>  (SourceIdentityUntrusted.fromJson(record), record.as[PersonIdentityColumns])}
+
+        var recordsForMatching: RDD[(SourceIdentityUntrusted, (Option[UUID], PersonIdentityColumns))] =
+          processingRdd
+            .map{ case (sourceIdentity, personIdentityColumns) => (sourceIdentity, (None, personIdentityColumns)) }
+
+        val unidentifiedKey1Candidates: RDD[PersonIdentityColumns] =
+          recordsForMatching
+            .filter {
+            case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns.toPersonMatchKey1.isDefined
+            case _ => false
+          }
+            .map { case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns  }
+
+        val identifiedByKey1: RDD[(SourceIdentityUntrusted, UUID)] = support.identifyByKeyUntrusted(unidentifiedKey1Candidates,
+          (personIdentityConfig.keyspace, personIdentityConfig.identity1Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
+
+        recordsForMatching = support.updateIdentifiedPersonsUntrusted(recordsForMatching, identifiedByKey1)
+
+        val unidentifiedKey2Candidates: RDD[PersonIdentityColumns] = recordsForMatching.filter {
+          case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns.toPersonMatchKey2.isDefined
+          case _ => false
+        }.map {
+          case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns
+        }
+
+        val identifiedByKey2: RDD[(SourceIdentityUntrusted, UUID)] = support.identifyByKeyUntrusted(unidentifiedKey2Candidates,
+          (personIdentityConfig.keyspace, personIdentityConfig.identity2Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
+
+        recordsForMatching = support.updateIdentifiedPersonsUntrusted(recordsForMatching, identifiedByKey2)
+
+        val unidentifiedKey3Candidates: RDD[PersonIdentityColumns] = recordsForMatching.filter {
+          case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns.toPersonMatchKey3.isDefined
+          case _ => false
+        }.map {
+          case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns
+        }
+
+        val identifiedByKey3: RDD[(SourceIdentityUntrusted, UUID)] = support.identifyByKeyUntrusted(unidentifiedKey3Candidates,
+          (personIdentityConfig.keyspace, personIdentityConfig.identity3Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
+
+        recordsForMatching = support.updateIdentifiedPersonsUntrusted(recordsForMatching, identifiedByKey3)
+
+        val matchedPersons: RDD[(SourceIdentityUntrusted, UUID)] =
+          identifiedByKey1
+            .union(identifiedByKey2)
+            .union(identifiedByKey3)
+
+        val newPersons: RDD[(SourceIdentityUntrusted, UUID)] =
+          recordsForMatching
+            .filter{ case (sourceIdentity, (personId, record)) => personId.isEmpty}
+            .map{ case (sourceIdentity, (personId, record)) => sourceIdentity}
+            .distinct()
+            .map((_, UUID.randomUUID()))
+
+        val results = matchedPersons
+          .union(newPersons)
+          .join(inputKeyed)
+          .map{ case (sourceIdentity, (personId, jsObject)) => jsObject + ("personId", JsString(personId.toString))}
+
+        val allCount = rdd.count()
+        val allInboundPersons = inputKeyed.map{case (sourceIdentity, record) => sourceIdentity}.distinct().count()
+        val alreadyIdentifiedCount = 0
+        val identityKey1Matches = identifiedByKey1.count()
+        val identityKey2Matches = identifiedByKey2.count()
+        val identityKey3Matches = identifiedByKey3.count()
+        val matchesCount = identityKey1Matches + identityKey2Matches + identityKey3Matches
+        val newPersonsCount = newPersons.count()
+        val resultCount = results.count()
+
+        println("allInboundPersonCount: " + allInboundPersons.toString)
+        println("newPersonsCount: " + newPersonsCount.toString)
+        println("alreadyIdentifiedCount: " + alreadyIdentifiedCount.toString)
+        println("identifiedCount: " + matchesCount.toString)
+        println("identifiedByKey1Count: " + identityKey1Matches.toString)
+        println("identifiedByKey2Count: " + identityKey2Matches.toString)
+        println("identifiedByKey3Count: " + identityKey3Matches.toString)
+        println("inboundRecordCount: " + allCount.toString)
+        println("outboundRecordCount: " + resultCount.toString)
+
+        support.sendToTopic(ProducerObject.get(kafkaProducerConfig), new ProducerRecord[String, String](personIdentityConfig.identityStatsTopic,
+          Json.stringify(JsObject(Seq(
+            "allInbounddPersonCount" -> JsNumber(allInboundPersons),
+            "newPersonsCount" -> JsNumber(newPersonsCount),
+            "alreadyIdentifiedCount" -> JsNumber(alreadyIdentifiedCount),
+            "identifiedCount" -> JsNumber(matchesCount),
+            "identifiedByKey1Count" -> JsNumber(identityKey1Matches),
+            "identifiedByKey2Count" -> JsNumber(identityKey2Matches),
+            "identifiedByKey3Count" -> JsNumber(identityKey3Matches),
+            "totalRecordCount" -> JsNumber(allCount))))))
+
+        processingRdd.unpersist()
+        identifiedByKey1.unpersist()
+        identifiedByKey2.unpersist()
+        identifiedByKey3.unpersist()
+
+        results
     }
-    .map { case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns  }
-
-    val identifiedByKey1: RDD[(SourceIdentity, UUID)] = support.identifyByKey(unidentifiedKey1Candidates,
-      (personIdentityConfig.keyspace, personIdentityConfig.identity1Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
-
-    sourceIdentityToPersonId = support.updateIdentifiedPersons(sourceIdentityToPersonId, identifiedByKey1)
-
-    val unidentifiedKey2Candidates: RDD[PersonIdentityColumns] = sourceIdentityToPersonId.filter {
-      case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns.toPersonMatchKey2.isDefined
-      case _ => false
-    }.map {
-      case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns
-    }
-
-    val identifiedByKey2: RDD[(SourceIdentity, UUID)] = support.identifyByKey(unidentifiedKey2Candidates,
-      (personIdentityConfig.keyspace, personIdentityConfig.identity2Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
-
-    sourceIdentityToPersonId = support.updateIdentifiedPersons(sourceIdentityToPersonId, identifiedByKey2)
-
-    val unidentifiedKey3Candidates: RDD[PersonIdentityColumns] = sourceIdentityToPersonId.filter {
-      case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns.toPersonMatchKey3.isDefined
-      case _ => false
-    }.map {
-      case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns
-    }
-
-    val identifiedByKey3: RDD[(SourceIdentity, UUID)] = support.identifyByKey(unidentifiedKey3Candidates,
-      (personIdentityConfig.keyspace, personIdentityConfig.identity3Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
-
-    sourceIdentityToPersonId = support.updateIdentifiedPersons(sourceIdentityToPersonId, identifiedByKey3)
-
-    // Generate UUIDs for source identities that do not have
-    // a person id.
-    val newPersonsSourceIdentity =
-      sourceIdentityToPersonId
-      .filter {
-        case (_, (None, _)) => true
-        case _ => false
-      }.map((_, UUID.randomUUID()))
-
-    // Save source identity to person id mapping for new person ids.
-    val newPersonsSourceIdentityToPersonId = newPersonsSourceIdentity.map {
-      case ((sourceIdentity, (None, _)), personId) => (sourceIdentity, personId)
-    }.persist(StorageLevel.MEMORY_AND_DISK_SER)
-
-    newPersonsSourceIdentityToPersonId.map {
-      case (sourceIdentity, personId) => (sourceIdentity.customerId, sourceIdentity.sourcePersonId, sourceIdentity.source, sourceIdentity.sourceType, personId)
-    }.saveToCassandra(personIdentityConfig.keyspace, personIdentityConfig.sourceIdentityTable)
-
-    val newPersonsByExternalPersonId: RDD[(SourceIdentity, UUID)] =
-      newPersonsSourceIdentityToPersonId
-
-    def addPersonId(x: (SourceIdentity, (JsObject, UUID))): JsObject = x match {
-      case (_, (jsObj, personId)) =>
-        jsObj + ("personId", JsString(personId.toString))
-    }
-
-    val sampleNewPersonJoinIds: Array[SourceIdentity] = newPersonsByExternalPersonId.take(5).map(_._1)
-    val sampleRawJoinIds: Array[SourceIdentity] = externalPersonIdToRaw.take(5).map(_._1)
-
-    val newPersons: RDD[JsObject] = externalPersonIdToRaw.join(newPersonsByExternalPersonId).map(addPersonId)
-
-    // Get the persons by external person id to join to the externalPersonIdToRaw rdd.
-    val existingPersonsByExternalPersonId: RDD[(SourceIdentity, UUID)] =
-      alreadyIdentified
-      .union(identifiedByKey1)
-      .union(identifiedByKey2)
-      .union(identifiedByKey3)
-
-    val existingPersons =
-      externalPersonIdToRaw
-      .join(existingPersonsByExternalPersonId)
-      .map(addPersonId)
-
-    val results = newPersons.union(existingPersons)
-
-    sampleRawJoinIds.foreach{ case id => println("raw person join id sample: " + id.toString)}
-    sampleNewPersonJoinIds.foreach{ case id => println("new person join id sample: " + id.toString)}
-
-    val allCount = rdd.count()
-    val allInboundPersons = sourceIdentityToRecord.map{case (sourceIdentity, record) => sourceIdentity}.distinct().count()
-    val alreadyIdentifiedCount = alreadyIdentified.count()
-    val identityKey1Matches = identifiedByKey1.count()
-    val identityKey2Matches = identifiedByKey2.count()
-    val identityKey3Matches = identifiedByKey3.count()
-    val matchesCount = identityKey1Matches + identityKey2Matches + identityKey3Matches
-    val newPersonsCount = newPersons.count()
-    val resultCount = results.count()
-
-    println("allInboundPersonCount: " + allInboundPersons.toString)
-    println("newPersonsCount: " + newPersonsCount.toString)
-    println("alreadyIdentifiedCount: " + alreadyIdentifiedCount.toString)
-    println("identifiedCount: " + matchesCount.toString)
-    println("identifiedByKey1Count: " + identityKey1Matches.toString)
-    println("identifiedByKey2Count: " + identityKey2Matches.toString)
-    println("identifiedByKey3Count: " + identityKey3Matches.toString)
-    println("inboundRecordCount: " + allCount.toString)
-    println("outboundRecordCount: " + resultCount.toString)
-
-    support.sendToTopic(ProducerObject.get(kafkaProducerConfig), new ProducerRecord[String, String](personIdentityConfig.identityStatsTopic,
-      Json.stringify(JsObject(Seq(
-        "allInbounddPersonCount" -> JsNumber(allInboundPersons),
-        "newPersonsCount" -> JsNumber(newPersonsCount),
-        "alreadyIdentifiedCount" -> JsNumber(alreadyIdentifiedCount),
-        "identifiedCount" -> JsNumber(matchesCount),
-        "identifiedByKey1Count" -> JsNumber(identityKey1Matches),
-        "identifiedByKey2Count" -> JsNumber(identityKey2Matches),
-        "identifiedByKey3Count" -> JsNumber(identityKey3Matches),
-        "totalRecordCount" -> JsNumber(allCount))))))
-
-    joined.unpersist()
-    identifiedByKey1.unpersist()
-    identifiedByKey2.unpersist()
-    identifiedByKey3.unpersist()
-    alreadyIdentified.unpersist()
-    externalPersonIdToRaw.unpersist()
-    sourceIdentityToRecord.unpersist()
-    newPersonsSourceIdentityToPersonId.unpersist()
-
     results
   }
 

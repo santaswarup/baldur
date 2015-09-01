@@ -5,6 +5,7 @@ import java.util.UUID
 import com.datastax.spark.connector._
 import com.influencehealth.baldur.identity_load.person_identity.identity.support._
 import com.influencehealth.baldur.identity_load.person_identity.identity.support.SourceIdentity._
+import com.influencehealth.baldur.identity_load.person_identity.identity.support.SourceIdentityUntrusted._
 import com.influencehealth.baldur.support._
 import kafka.serializer.StringDecoder
 import org.apache.kafka.clients.producer._
@@ -68,7 +69,7 @@ trait Support {
     val unidentified = x._1
     val candidateIdentity = x._2
 
-    score += points(unidentified.mrn, candidateIdentity.getSet[String]("mrids"), 1000000)
+    score += points(Some(f"${unidentified.source}.${unidentified.sourceType}.${unidentified.sourcePersonId}"), candidateIdentity.getSet[String]("mrids"), 1000000)
 
     score += points(unidentified.rootFirstName, candidateIdentity.get[Option[String]]("root_first_name"), 1000000)
 
@@ -114,6 +115,10 @@ trait Support {
     case ((record, cassandraRow), _) => (record.sourceIdentity, cassandraRow.getUUID("person_id"))
   }
 
+  def mapSourceIdentityUntrustedToPersonId[V](x: ((PersonIdentityColumns, CassandraRow), V)): (SourceIdentityUntrusted, UUID) = x match {
+    case ((record, cassandraRow), _) => (record.sourceIdentityUntrusted, cassandraRow.getUUID("person_id"))
+  }
+
   def identifyByKey(unidentifiedRecords: RDD[PersonIdentityColumns],
     cassandraTable: (String, String)): RDD[(SourceIdentity, UUID)] =
   {
@@ -126,8 +131,30 @@ trait Support {
       .map(mapSourceIdentityToPersonId)
   }
 
+  def identifyByKeyUntrusted(unidentifiedRecords: RDD[PersonIdentityColumns],
+                    cassandraTable: (String, String)): RDD[(SourceIdentityUntrusted, UUID)] =
+  {
+    val joinedWithTable: RDD[(PersonIdentityColumns, CassandraRow)] = unidentifiedRecords
+      .joinWithCassandraTable(cassandraTable._1, cassandraTable._2)
+
+    joinedWithTable
+      .map(identityScore)
+      .filter(filterPositiveValue)
+      .map(mapSourceIdentityUntrustedToPersonId)
+  }
+
   def updateIdentifiedPersons(sourceIdentityToPersonId: RDD[(SourceIdentity, (Option[UUID], PersonIdentityColumns))],
     identified: RDD[(SourceIdentity, UUID)]): RDD[(SourceIdentity, (Option[UUID], PersonIdentityColumns))] =
+  {
+    sourceIdentityToPersonId.leftOuterJoin(identified).map {
+      case (sourceIdentity, ((Some(personId), personIdentityColumns ), _)) => (sourceIdentity, (Some(personId), personIdentityColumns))
+      case (sourceIdentity, ((None, personIdentityColumns), Some(personId))) => (sourceIdentity, (Some(personId), personIdentityColumns))
+      case (sourceIdentity, ((None, personIdentityColumns), None)) => (sourceIdentity, (None, personIdentityColumns))
+    }
+  }
+
+  def updateIdentifiedPersonsUntrusted(sourceIdentityToPersonId: RDD[(SourceIdentityUntrusted, (Option[UUID], PersonIdentityColumns))],
+                              identified: RDD[(SourceIdentityUntrusted, UUID)]): RDD[(SourceIdentityUntrusted, (Option[UUID], PersonIdentityColumns))] =
   {
     sourceIdentityToPersonId.leftOuterJoin(identified).map {
       case (sourceIdentity, ((Some(personId), personIdentityColumns ), _)) => (sourceIdentity, (Some(personId), personIdentityColumns))

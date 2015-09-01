@@ -21,7 +21,7 @@ object SourceIdentity {
 
   implicit class ConvertToSourceIdentity(personIdentityColumns: PersonIdentityColumns) {
     def sourceIdentity = {
-      SourceIdentity(personIdentityColumns.customerId, personIdentityColumns.externalPersonId, personIdentityColumns.source, personIdentityColumns.sourceType)
+      SourceIdentity(personIdentityColumns.customerId, personIdentityColumns.sourcePersonId, personIdentityColumns.source, personIdentityColumns.sourceType)
     }
   }
 }
