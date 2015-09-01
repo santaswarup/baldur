@@ -51,7 +51,7 @@ object IdentityStream {
             .select("person_id")
             .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
-        val alreadyIdentifiedCount = alreadyIdentified.count()
+        val alreadyIdentifiedCount = alreadyIdentified.count() // due to this being overriden by the cassandraCount method, we have to run this earlier than other count() calls
 
         // for non-processed records, set up the recordsForMatching RDD
         var recordsForMatching: RDD[(SourceIdentity, (Option[UUID], PersonIdentityColumns))] =

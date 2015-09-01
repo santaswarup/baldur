@@ -23,19 +23,19 @@ object HouseholdStream {
   def processHouseholds(householdConfig: HouseholdConfig, identifiedRdd: RDD[JsObject],
                         kafkaProducerConfig: Map[String, Object]): RDD[JsObject] = {
 
-    // Person ID to input record
-    val personIdToRecord: RDD[(UUID, JsObject)] = identifiedRdd
-      .map { record => ((record \ "personId").as[UUID], record) }
+    // HouesholdAddress to input record
+    val householdAddressToJs: RDD[(HouseholdAddress, JsObject)] = identifiedRdd
+      .map { record => (HouseholdAddress.create(record), record) }
 
-    // Creating an RDD of HouseholdAddress with input json
-    val records: RDD[HouseholdAddress] = identifiedRdd
-      .map(HouseholdAddress.create)
+    // Just household address
+    val records: RDD[HouseholdAddress] = householdAddressToJs
+      .map{ case (householdAddress, js) => householdAddress }
+      .distinct()
 
     // Get the records that we can not assign an address id to because we do not have enough information
     val unaddressable: RDD[HouseholdAddress] =
       records
         .filter(x => !x.hasAddressColumns)
-        .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     // Get the records that we can not assign a household id to because we do not have enough information
     val unhouseholdable: RDD[HouseholdAddress] =
@@ -116,16 +116,16 @@ object HouseholdStream {
       .saveToCassandra(householdConfig.keyspace, householdConfig.householdTable)
 
 
-    val result: RDD[JsObject] = personIdToRecord
+    val result: RDD[JsObject] = householdAddressToJs
       .join(
         existingAddressesWithNewHouseholdIds
           .union(existingHouseholds)
           .union(newAddressNewHouseholds)
           .union(unaddressable)
           .union(unhouseholdable)
-          .keyBy(_.personId))
+          .map((_,None)))
       .map {
-        case (_, (record, householdAddress)) =>
+        case (householdAddress, (record, nothing)) =>
           def addressId = if (householdAddress.addressId.isDefined)
             JsString(householdAddress.addressId.get.toString)
           else
