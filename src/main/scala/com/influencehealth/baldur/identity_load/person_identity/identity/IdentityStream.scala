@@ -118,6 +118,7 @@ object IdentityStream {
           .map{ case (sourceIdentity, (personId, record)) => sourceIdentity}
           .distinct()
           .map((_, UUID.randomUUID()))
+          .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
         // Save new persons to the source_identity table
         newPersons
@@ -167,6 +168,7 @@ object IdentityStream {
         identifiedByKey1.unpersist()
         identifiedByKey2.unpersist()
         identifiedByKey3.unpersist()
+        newPersons.unpersist()
 
         results
       /********************** UNTRUSTED SOURCE ID STREAM*************************************/
