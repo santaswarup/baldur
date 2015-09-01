@@ -139,7 +139,9 @@ object IdentityStream {
 
     val results = newPersons.union(existingPersons)
 
+
     val allCount = rdd.count()
+    val allInboundPersons = sourceIdentityToRecord.map{case (sourceIdentity, record) => sourceIdentity}.distinct().count
     val alreadyIdentifiedCount = alreadyIdentified.count()
     val identityKey1Matches = identifiedByKey1.count()
     val identityKey2Matches = identifiedByKey2.count()
@@ -147,23 +149,25 @@ object IdentityStream {
     val matchesCount = identityKey1Matches + identityKey2Matches + identityKey3Matches
     val newPersonsCount = newPersons.count()
 
+    println("allInbounddPersonCount: " + allInboundPersons.toString)
     println("newPersonsCount: " + newPersonsCount.toString)
     println("alreadyIdentifiedCount: " + alreadyIdentifiedCount.toString)
     println("identifiedCount: " + matchesCount.toString)
     println("identifiedByKey1Count: " + identityKey1Matches.toString)
     println("identifiedByKey2Count: " + identityKey2Matches.toString)
     println("identifiedByKey3Count: " + identityKey3Matches.toString)
-    println("totalCount: " + allCount.toString)
+    println("totalRecordCount: " + allCount.toString)
 
     support.sendToTopic(ProducerObject.get(kafkaProducerConfig), new ProducerRecord[String, String](personIdentityConfig.identityStatsTopic,
       Json.stringify(JsObject(Seq(
+        "allInbounddPersonCount" -> JsNumber(allInboundPersons),
         "newPersonsCount" -> JsNumber(newPersonsCount),
         "alreadyIdentifiedCount" -> JsNumber(alreadyIdentifiedCount),
         "identifiedCount" -> JsNumber(matchesCount),
         "identifiedByKey1Count" -> JsNumber(identityKey1Matches),
         "identifiedByKey2Count" -> JsNumber(identityKey2Matches),
         "identifiedByKey3Count" -> JsNumber(identityKey3Matches),
-        "totalCount" -> JsNumber(allCount))))))
+        "totalRecordCount" -> JsNumber(allCount))))))
 
     joined.unpersist()
     identifiedByKey1.unpersist()
