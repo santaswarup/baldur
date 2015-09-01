@@ -27,19 +27,22 @@ object IdentityStream {
     val trustSourceId = personIdentityConfig.trustSourceId
 
     val results: RDD[JsObject] = trustSourceId match{
-
+      /********************** TRUSTED SOURCE ID STREAM*************************************/
       // if we trust the source ID, we can use it by itself for grouping
       case true =>
 
+        // key the input by SourceIdentity. Used in final results
         val inputKeyed: RDD[(SourceIdentity, JsObject)] =
           rdd
           .map{case record =>  (SourceIdentity.fromJson(record), record)}
 
+        // table meant for processing through the person-keys
         val processingRdd: RDD[(SourceIdentity, PersonIdentityColumns)] =
           rdd
           .map{case record =>  (SourceIdentity.fromJson(record), record.as[PersonIdentityColumns])}
           .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
+        // determine if the data has already been processed
         val alreadyIdentified: RDD[(SourceIdentity, UUID)] =
           processingRdd
             .map{case (sourceIdentity, record) => sourceIdentity}
@@ -48,12 +51,14 @@ object IdentityStream {
             .select("person_id")
             .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
+        // for non-processed records, set up the recordsForMatching RDD
         var recordsForMatching: RDD[(SourceIdentity, (Option[UUID], PersonIdentityColumns))] =
           processingRdd
             .leftOuterJoin(alreadyIdentified)
             .filter{ case (sourceIdentity, (record, personId)) => personId.isEmpty}
             .map{ case (sourceIdentity, (personIdentityColumns, personId)) => (sourceIdentity, (personId, personIdentityColumns)) }
 
+        // grab key 1 candidates
         val unidentifiedKey1Candidates: RDD[PersonIdentityColumns] =
           recordsForMatching
             .filter {
@@ -62,11 +67,14 @@ object IdentityStream {
           }
             .map { case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns  }
 
+        // identify by key 1
         val identifiedByKey1: RDD[(SourceIdentity, UUID)] = support.identifyByKey(unidentifiedKey1Candidates,
           (personIdentityConfig.keyspace, personIdentityConfig.identity1Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
 
+        // update recordsForMatching
         recordsForMatching = support.updateIdentifiedPersons(recordsForMatching, identifiedByKey1)
 
+        // grab key 2 candidates
         val unidentifiedKey2Candidates: RDD[PersonIdentityColumns] = recordsForMatching.filter {
           case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns.toPersonMatchKey2.isDefined
           case _ => false
@@ -74,11 +82,14 @@ object IdentityStream {
           case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns
         }
 
+        // identify by key 2
         val identifiedByKey2: RDD[(SourceIdentity, UUID)] = support.identifyByKey(unidentifiedKey2Candidates,
           (personIdentityConfig.keyspace, personIdentityConfig.identity2Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
 
+        // update records for matching
         recordsForMatching = support.updateIdentifiedPersons(recordsForMatching, identifiedByKey2)
 
+        // grab key 3 candidates
         val unidentifiedKey3Candidates: RDD[PersonIdentityColumns] = recordsForMatching.filter {
           case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns.toPersonMatchKey3.isDefined
           case _ => false
@@ -86,17 +97,21 @@ object IdentityStream {
           case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns
         }
 
+        // identify by key 3
         val identifiedByKey3: RDD[(SourceIdentity, UUID)] = support.identifyByKey(unidentifiedKey3Candidates,
           (personIdentityConfig.keyspace, personIdentityConfig.identity3Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
 
+        // update records for matching
         recordsForMatching = support.updateIdentifiedPersons(recordsForMatching, identifiedByKey3)
 
+        // union everything that's already matched
         val matchedPersons: RDD[(SourceIdentity, UUID)] =
           alreadyIdentified
           .union(identifiedByKey1)
           .union(identifiedByKey2)
           .union(identifiedByKey3)
 
+        // everything else, assign a random UUID based on the grouping key
         val newPersons: RDD[(SourceIdentity, UUID)] =
           recordsForMatching
           .filter{ case (sourceIdentity, (personId, record)) => personId.isEmpty}
@@ -104,11 +119,18 @@ object IdentityStream {
           .distinct()
           .map((_, UUID.randomUUID()))
 
+        // Save new persons to the source_identity table
+        newPersons
+          .map{case (sourceIdentity, personId) => (sourceIdentity.customerId, sourceIdentity.sourcePersonId, sourceIdentity.source, sourceIdentity.sourceType, personId)}
+          .saveToCassandra(personIdentityConfig.keyspace, personIdentityConfig.sourceIdentityTable)
+
+        // final results are done by updating the jsObject with the newest personId value
         val results = matchedPersons
           .union(newPersons)
           .join(inputKeyed)
           .map{ case (sourceIdentity, (personId, jsObject)) => jsObject + ("personId", JsString(personId.toString))}
 
+        // calculate statistics
         val allCount = rdd.count()
         val allInboundPersons = inputKeyed.map{case (sourceIdentity, record) => sourceIdentity}.distinct().count()
         val alreadyIdentifiedCount = alreadyIdentified.count()
@@ -147,20 +169,24 @@ object IdentityStream {
         identifiedByKey3.unpersist()
 
         results
-
+      /********************** UNTRUSTED SOURCE ID STREAM*************************************/
       case false =>
+        // if we dont trust the source ID, we can use it with other data elements for grouping
         val inputKeyed: RDD[(SourceIdentityUntrusted, JsObject)] =
           rdd
             .map{case record =>  (SourceIdentityUntrusted.fromJson(record), record)}
 
+        // key the input by SourceIdentity. Used in final results
         val processingRdd: RDD[(SourceIdentityUntrusted, PersonIdentityColumns)] =
           rdd
             .map{case record =>  (SourceIdentityUntrusted.fromJson(record), record.as[PersonIdentityColumns])}
 
+        // table meant for processing through the person-keys
         var recordsForMatching: RDD[(SourceIdentityUntrusted, (Option[UUID], PersonIdentityColumns))] =
           processingRdd
             .map{ case (sourceIdentity, personIdentityColumns) => (sourceIdentity, (None, personIdentityColumns)) }
 
+        // grab key 1 candidates
         val unidentifiedKey1Candidates: RDD[PersonIdentityColumns] =
           recordsForMatching
             .filter {
@@ -169,11 +195,14 @@ object IdentityStream {
           }
             .map { case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns  }
 
+        // identify by key 1
         val identifiedByKey1: RDD[(SourceIdentityUntrusted, UUID)] = support.identifyByKeyUntrusted(unidentifiedKey1Candidates,
           (personIdentityConfig.keyspace, personIdentityConfig.identity1Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
 
+        // update recordsForMatching
         recordsForMatching = support.updateIdentifiedPersonsUntrusted(recordsForMatching, identifiedByKey1)
 
+        // grab key 2 candidates
         val unidentifiedKey2Candidates: RDD[PersonIdentityColumns] = recordsForMatching.filter {
           case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns.toPersonMatchKey2.isDefined
           case _ => false
@@ -181,11 +210,14 @@ object IdentityStream {
           case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns
         }
 
+        // identify by key 2
         val identifiedByKey2: RDD[(SourceIdentityUntrusted, UUID)] = support.identifyByKeyUntrusted(unidentifiedKey2Candidates,
           (personIdentityConfig.keyspace, personIdentityConfig.identity2Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
 
+        // update records for matching
         recordsForMatching = support.updateIdentifiedPersonsUntrusted(recordsForMatching, identifiedByKey2)
 
+        // grab key 3 candidates
         val unidentifiedKey3Candidates: RDD[PersonIdentityColumns] = recordsForMatching.filter {
           case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns.toPersonMatchKey3.isDefined
           case _ => false
@@ -193,16 +225,20 @@ object IdentityStream {
           case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns
         }
 
+        // identify by key 3
         val identifiedByKey3: RDD[(SourceIdentityUntrusted, UUID)] = support.identifyByKeyUntrusted(unidentifiedKey3Candidates,
           (personIdentityConfig.keyspace, personIdentityConfig.identity3Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
 
+        // update records for matching
         recordsForMatching = support.updateIdentifiedPersonsUntrusted(recordsForMatching, identifiedByKey3)
 
+        // union everything that's already matched
         val matchedPersons: RDD[(SourceIdentityUntrusted, UUID)] =
           identifiedByKey1
             .union(identifiedByKey2)
             .union(identifiedByKey3)
 
+        // everything else, assign a random UUID based on the grouping key
         val newPersons: RDD[(SourceIdentityUntrusted, UUID)] =
           recordsForMatching
             .filter{ case (sourceIdentity, (personId, record)) => personId.isEmpty}
@@ -210,11 +246,13 @@ object IdentityStream {
             .distinct()
             .map((_, UUID.randomUUID()))
 
+        // final results are done by updating the jsObject with the newest personId value
         val results = matchedPersons
           .union(newPersons)
           .join(inputKeyed)
           .map{ case (sourceIdentity, (personId, jsObject)) => jsObject + ("personId", JsString(personId.toString))}
 
+        // calculate statistics
         val allCount = rdd.count()
         val allInboundPersons = inputKeyed.map{case (sourceIdentity, record) => sourceIdentity}.distinct().count()
         val alreadyIdentifiedCount = 0
