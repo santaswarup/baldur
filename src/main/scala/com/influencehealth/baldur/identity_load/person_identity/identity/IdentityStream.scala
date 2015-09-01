@@ -143,6 +143,7 @@ object IdentityStream {
 
 
     val allCount = rdd.count()
+    val externalPersonIdToRawCount = externalPersonIdToRaw.count()
     val allInboundPersons = sourceIdentityToRecord.map{case (sourceIdentity, record) => sourceIdentity}.distinct().count()
     val alreadyIdentifiedCount = alreadyIdentified.count()
     val identityKey1Matches = identifiedByKey1.count()
@@ -153,6 +154,7 @@ object IdentityStream {
     val resultCount = results.count()
 
     println("allInboundPersonCount: " + allInboundPersons.toString)
+    println("externalPersonIdToRawCount: " + externalPersonIdToRawCount.toString)
     println("newPersonsCount: " + newPersonsCount.toString)
     println("alreadyIdentifiedCount: " + alreadyIdentifiedCount.toString)
     println("identifiedCount: " + matchesCount.toString)
