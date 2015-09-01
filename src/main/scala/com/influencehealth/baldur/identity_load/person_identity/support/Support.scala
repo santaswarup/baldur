@@ -91,18 +91,6 @@ trait Support {
     DateTime.parse(value, ISODateTimeFormat.basicDate())
   }
 
-  def getUniquePersonIdFromJson(jsObj: JsObject): String = {
-    try {
-      (jsObj \ support.ExternalPersonIdField).as[String] + "." + (jsObj \ "source").as[String] + "." + (jsObj \ "sourceType").as[String] + "." + (jsObj \ "customerId").as[Int]
-    } catch {
-      case e: Exception => throw new Exception(f"getUniquePersonIdFromJson: ${jsObj.toString()}", e)
-    }
-  }
-
-  def getUniquePersonIdFromSourceIdentity(sourceIdentity: SourceIdentity): String = {
-    sourceIdentity.sourcePersonId + "." + sourceIdentity.source + "." + sourceIdentity.sourceType + "." + sourceIdentity.customerId
-  }
-
   def toDateTimeOpt(value: Option[String]): Option[DateTime]= {
     value match{
       case None => None

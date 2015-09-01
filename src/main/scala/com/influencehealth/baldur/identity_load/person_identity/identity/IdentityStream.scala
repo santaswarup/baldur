@@ -30,11 +30,11 @@ object IdentityStream {
       .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     // Pair RDD keyed by the person id from the input source with value of the raw JSON received
-    val externalPersonIdToRaw: RDD[(String, JsObject)] =
+    val externalPersonIdToRaw: RDD[(SourceIdentity, JsObject)] =
       rdd
       .map { case jsObj =>
-        val uniqueID: String = support.getUniquePersonIdFromJson(jsObj)
-        (uniqueID, jsObj) }
+        val sourceIdentity: SourceIdentity = SourceIdentity.fromJson(jsObj)
+        (sourceIdentity, jsObj) }
       .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     val joined: RDD[(SourceIdentity, Option[UUID])] =
@@ -111,31 +111,25 @@ object IdentityStream {
       case (sourceIdentity, personId) => (sourceIdentity.customerId, sourceIdentity.sourcePersonId, sourceIdentity.source, sourceIdentity.sourceType, personId)
     }.saveToCassandra(personIdentityConfig.keyspace, personIdentityConfig.sourceIdentityTable)
 
-    val newPersonsByExternalPersonId: RDD[(String, UUID)] =
+    val newPersonsByExternalPersonId: RDD[(SourceIdentity, UUID)] =
       newPersonsSourceIdentityToPersonId
-      .map { case (sourceIdentity, personId) =>
-        val uniqueId: String = support.getUniquePersonIdFromSourceIdentity(sourceIdentity)
-        (uniqueId, personId) }
 
-    def addPersonId(x: (String, (JsObject, UUID))): JsObject = x match {
+    def addPersonId(x: (SourceIdentity, (JsObject, UUID))): JsObject = x match {
       case (_, (jsObj, personId)) =>
         jsObj + ("personId", JsString(personId.toString))
     }
 
-    val sampleNewPersonJoinIds: Array[String] = newPersonsByExternalPersonId.take(5).map(_._1)
-    val sampleRawJoinIds: Array[String] = externalPersonIdToRaw.take(5).map(_._1)
+    val sampleNewPersonJoinIds: Array[SourceIdentity] = newPersonsByExternalPersonId.take(5).map(_._1)
+    val sampleRawJoinIds: Array[SourceIdentity] = externalPersonIdToRaw.take(5).map(_._1)
 
     val newPersons: RDD[JsObject] = externalPersonIdToRaw.join(newPersonsByExternalPersonId).map(addPersonId)
 
     // Get the persons by external person id to join to the externalPersonIdToRaw rdd.
-    val existingPersonsByExternalPersonId: RDD[(String, UUID)] =
+    val existingPersonsByExternalPersonId: RDD[(SourceIdentity, UUID)] =
       alreadyIdentified
       .union(identifiedByKey1)
       .union(identifiedByKey2)
       .union(identifiedByKey3)
-      .map { case (sourceIdentity, personId) =>
-        val uniqueId: String = support.getUniquePersonIdFromSourceIdentity(sourceIdentity)
-          (uniqueId, personId) }
 
     val existingPersons =
       externalPersonIdToRaw
