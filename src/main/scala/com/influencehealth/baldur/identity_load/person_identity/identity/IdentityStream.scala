@@ -152,14 +152,14 @@ object IdentityStream {
     val newPersonsCount = newPersons.count()
     val resultCount = results.count()
 
-    println("allInbounddPersonCount: " + allInboundPersons.toString)
+    println("allInboundPersonCount: " + allInboundPersons.toString)
     println("newPersonsCount: " + newPersonsCount.toString)
     println("alreadyIdentifiedCount: " + alreadyIdentifiedCount.toString)
     println("identifiedCount: " + matchesCount.toString)
     println("identifiedByKey1Count: " + identityKey1Matches.toString)
     println("identifiedByKey2Count: " + identityKey2Matches.toString)
     println("identifiedByKey3Count: " + identityKey3Matches.toString)
-    println("totalRecordCount: " + allCount.toString)
+    println("inboundRecordCount: " + allCount.toString)
     println("outboundRecordCount: " + resultCount.toString)
 
     support.sendToTopic(ProducerObject.get(kafkaProducerConfig), new ProducerRecord[String, String](personIdentityConfig.identityStatsTopic,
