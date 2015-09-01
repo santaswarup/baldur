@@ -123,9 +123,9 @@ object HouseholdStream {
           .union(newAddressNewHouseholds)
           .union(unaddressable)
           .union(unhouseholdable)
-          .map((_,None)))
+          .map{case householdAddress => (householdAddress.copy(addressId = None, householdId = None),householdAddress)})
       .map {
-        case (householdAddress, (record, nothing)) =>
+        case (key, (record, householdAddress)) =>
           def addressId = if (householdAddress.addressId.isDefined)
             JsString(householdAddress.addressId.get.toString)
           else

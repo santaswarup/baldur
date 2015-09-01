@@ -16,8 +16,8 @@ case class HouseholdAddress(personId: UUID,
                                     lon: Option[Float],
                                     validAddressFlag: Option[Boolean]=Some(false),
                                     lastName: Option[String],
-                                    var addressId: Option[UUID],
-                                    var householdId: Option[UUID]){
+                                    var addressId: Option[UUID]=None,
+                                    var householdId: Option[UUID]=None){
   def hasAddressColumns = address1.isDefined && city.isDefined && state.isDefined && zip5.isDefined && zip4.isDefined && lat.isDefined && lon.isDefined && validAddressFlag.get
   def hasHouseholdColumns = addressId.isDefined && lastName.isDefined
 }
@@ -39,9 +39,7 @@ object HouseholdAddress {
         (jsObj \ "lat").asOpt[Float],
         (jsObj \ "lon").asOpt[Float],
         (jsObj \ "validAddressFlag").asOpt[Boolean],
-        (jsObj \ "lastName").asOpt[String],
-        (jsObj \ "addressId").asOpt[UUID],
-        (jsObj \ "householdId").asOpt[UUID]
+        (jsObj \ "lastName").asOpt[String]
   )
 
 }
