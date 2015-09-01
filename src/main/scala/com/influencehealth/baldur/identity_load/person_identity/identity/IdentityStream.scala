@@ -51,11 +51,13 @@ object IdentityStream {
             .select("person_id")
             .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
+        val alreadyIdentifiedCount = alreadyIdentified.count()
+
         // for non-processed records, set up the recordsForMatching RDD
         var recordsForMatching: RDD[(SourceIdentity, (Option[UUID], PersonIdentityColumns))] =
           processingRdd
             .leftOuterJoin(alreadyIdentified)
-            .filter{ case (sourceIdentity, (record, personId)) => personId.isEmpty}
+            .filter{ case (sourceIdentity, (personIdentityColumns, personId)) => personId.isEmpty}
             .map{ case (sourceIdentity, (personIdentityColumns, personId)) => (sourceIdentity, (personId, personIdentityColumns)) }
 
         // grab key 1 candidates
@@ -134,7 +136,6 @@ object IdentityStream {
         // calculate statistics
         val allCount = rdd.count()
         val allInboundPersons = inputKeyed.map{case (sourceIdentity, record) => sourceIdentity}.distinct().count()
-        val alreadyIdentifiedCount = alreadyIdentified.count()
         val identityKey1Matches = identifiedByKey1.count()
         val identityKey2Matches = identifiedByKey2.count()
         val identityKey3Matches = identifiedByKey3.count()
