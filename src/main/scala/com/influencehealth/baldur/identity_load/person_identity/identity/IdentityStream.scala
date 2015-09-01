@@ -109,9 +109,11 @@ object IdentityStream {
       case (sourceIdentity, personId) => (sourceIdentity.customerId, sourceIdentity.sourcePersonId, sourceIdentity.source, sourceIdentity.sourceType, personId)
     }.saveToCassandra(personIdentityConfig.keyspace, personIdentityConfig.sourceIdentityTable)
 
-    val newPersonsByExternalPersonId: RDD[(String, UUID)] = newPersonsSourceIdentityToPersonId.map {
-      case (sourceIdentity, personId) => (sourceIdentity.sourcePersonId, personId)
-    }
+    val newPersonsByExternalPersonId: RDD[(String, UUID)] =
+      newPersonsSourceIdentityToPersonId
+      .map { case (sourceIdentity, personId) =>
+        val uniqueId: String = support.getUniquePersonIdFromSourceIdentity(sourceIdentity)
+        (uniqueId, personId) }
 
     def addPersonId(x: (String, (JsObject, UUID))) = x match {
       case (_, (jsObj, personId)) =>
