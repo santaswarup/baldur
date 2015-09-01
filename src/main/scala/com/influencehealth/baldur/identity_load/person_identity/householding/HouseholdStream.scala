@@ -115,22 +115,6 @@ object HouseholdStream {
     existingAddressesWithNewHouseholdIds.map(_.toHousehold)
       .saveToCassandra(householdConfig.keyspace, householdConfig.householdTable)
 
-    val stats = Seq(
-      "existing addresses" -> existingAddresses.count(),
-      "existing addresses with new households" -> existingAddressesWithNewHouseholdIds.count(),
-      "existing addresses with existing households" -> existingHouseholds.count(),
-      "new addresses new households" -> newAddressNewHouseholds.count(),
-      "unaddressable" -> unaddressable.count(),
-      "unhouseholdable" -> unhouseholdable.count())
-      .map {
-        case (key, value) => (key, JsNumber(value))
-      }
-
-    stats.foreach(println)
-
-    support.sendToTopic(ProducerObject.get(kafkaProducerConfig),
-      new ProducerRecord[String, String](householdConfig.householdStatsTopic,
-      Json.stringify(JsObject(stats))))
 
     val result: RDD[JsObject] = personIdToRecord
       .join(
@@ -156,6 +140,26 @@ object HouseholdStream {
             ("addressId", addressId) +
             ("householdId", householdId)
       }
+
+    val stats = Seq(
+      "inbound records" -> identifiedRdd.count(),
+      "existing addresses" -> existingAddresses.count(),
+      "existing addresses with new households" -> existingAddressesWithNewHouseholdIds.count(),
+      "existing addresses with existing households" -> existingHouseholds.count(),
+      "new addresses new households" -> newAddressNewHouseholds.count(),
+      "unaddressable" -> unaddressable.count(),
+      "unhouseholdable" -> unhouseholdable.count(),
+      "outbound records" -> result.count())
+      .map {
+      case (key, value) => (key, JsNumber(value))
+    }
+
+    stats.foreach(println)
+
+    support.sendToTopic(ProducerObject.get(kafkaProducerConfig),
+      new ProducerRecord[String, String](householdConfig.householdStatsTopic,
+        Json.stringify(JsObject(stats))))
+
 
     records.unpersist()
     addressRecords.unpersist()
