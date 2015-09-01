@@ -40,7 +40,7 @@ object HouseholdStream {
     // Get the records that we can not assign a household id to because we do not have enough information
     val unhouseholdable: RDD[HouseholdAddress] =
       records
-        .filter(x => x.hasAddressColumns && !x.hasHouseholdColumns)
+        .filter(x => x.hasAddressColumns && x.lastName.isEmpty)
 
     // Defining records for addressing
     val addressRecords = records

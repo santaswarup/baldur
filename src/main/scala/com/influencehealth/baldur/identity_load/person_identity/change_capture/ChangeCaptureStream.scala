@@ -35,8 +35,8 @@ object ChangeCaptureStream {
         .distinct()
         .map{x => (x,None)}
         .leftOuterJoin(existingPersonsDetermined)
-        .filter{case (changeCapture, (message, columnChange)) => columnChange.isEmpty}
-        .map{ case (changeCapture, (message, columnChange)) => ChangeCaptureSupport.determineNewChanges(changeCapture, "person_master")}
+        .filter{case (changeCapture, (None, columnChange)) => columnChange.isEmpty}
+        .map{ case (changeCapture, (None, columnChange)) => ChangeCaptureSupport.determineNewChanges(changeCapture, "person_master")}
 
     val personMasterChanges: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       existingPersonsDetermined
@@ -59,8 +59,8 @@ object ChangeCaptureStream {
         .distinct()
         .map{x => (x,None)}
         .leftOuterJoin(existingActivitiesDetermined)
-        .filter{case (changeCapture, (message, columnChange)) => columnChange.isEmpty}
-        .map{ case (changeCapture, (message, columnChange)) => ChangeCaptureSupport.determineNewChanges(changeCapture, "person_activity")}
+        .filter{case (changeCapture, (None, columnChange)) => columnChange.isEmpty}
+        .map{ case (changeCapture, (None, columnChange)) => ChangeCaptureSupport.determineNewChanges(changeCapture, "person_activity")}
 
     val personActivityChanges: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       existingActivitiesDetermined
