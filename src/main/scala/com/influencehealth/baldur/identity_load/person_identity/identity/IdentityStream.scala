@@ -141,7 +141,7 @@ object IdentityStream {
 
 
     val allCount = rdd.count()
-    val allInboundPersons = sourceIdentityToRecord.map{case (sourceIdentity, record) => sourceIdentity}.distinct().count
+    val allInboundPersons = sourceIdentityToRecord.map{case (sourceIdentity, record) => sourceIdentity}.distinct().count()
     val alreadyIdentifiedCount = alreadyIdentified.count()
     val identityKey1Matches = identifiedByKey1.count()
     val identityKey2Matches = identifiedByKey2.count()
