@@ -56,6 +56,8 @@ object IdentityStream {
       .join(joined)
       .map{ case (sourceIdentity, (personIdentityColumns, personId)) => (sourceIdentity, (personId, personIdentityColumns)) }
 
+    val originalCount = sourceIdentityToPersonId.count()
+
     val unidentifiedKey1Candidates: RDD[PersonIdentityColumns] =
     sourceIdentityToPersonId
     .filter {
@@ -69,6 +71,8 @@ object IdentityStream {
 
     sourceIdentityToPersonId = support.updateIdentifiedPersons(sourceIdentityToPersonId, identifiedByKey1)
 
+    val identifiedByKey1Count = sourceIdentityToPersonId.count()
+
     val unidentifiedKey2Candidates: RDD[PersonIdentityColumns] = sourceIdentityToPersonId.filter {
       case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns.toPersonMatchKey2.isDefined
       case _ => false
@@ -81,6 +85,8 @@ object IdentityStream {
 
     sourceIdentityToPersonId = support.updateIdentifiedPersons(sourceIdentityToPersonId, identifiedByKey2)
 
+    val identifiedByKey2Count = sourceIdentityToPersonId.count()
+
     val unidentifiedKey3Candidates: RDD[PersonIdentityColumns] = sourceIdentityToPersonId.filter {
       case (sourceIdentity, (None, personIdentityColumns)) => personIdentityColumns.toPersonMatchKey3.isDefined
       case _ => false
@@ -92,6 +98,8 @@ object IdentityStream {
       (personIdentityConfig.keyspace, personIdentityConfig.identity3Table)).persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     sourceIdentityToPersonId = support.updateIdentifiedPersons(sourceIdentityToPersonId, identifiedByKey3)
+
+    val identifiedByKey3Count = sourceIdentityToPersonId.count()
 
     // Generate UUIDs for source identities that do not have
     // a person id.
@@ -144,8 +152,8 @@ object IdentityStream {
 
     val results = newPersons.union(existingPersons)
 
-    println("raw person join id sample: " + sampleRawJoinIds.toString)
-    println("new person join id sample: " + sampleNewPersonJoinIds.toString)
+    sampleRawJoinIds.foreach("raw person join id sample: " + _.toString)
+    sampleNewPersonJoinIds.foreach("new person join id sample: " + _.toString)
 
     val allCount = rdd.count()
     val allInboundPersons = sourceIdentityToRecord.map{case (sourceIdentity, record) => sourceIdentity}.distinct().count()
@@ -161,9 +169,10 @@ object IdentityStream {
     println("newPersonsCount: " + newPersonsCount.toString)
     println("alreadyIdentifiedCount: " + alreadyIdentifiedCount.toString)
     println("identifiedCount: " + matchesCount.toString)
-    println("identifiedByKey1Count: " + identityKey1Matches.toString)
-    println("identifiedByKey2Count: " + identityKey2Matches.toString)
-    println("identifiedByKey3Count: " + identityKey3Matches.toString)
+    println("originalCount: " + originalCount.toString)
+    println("identifiedByKey1Count: " + identifiedByKey1Count.toString)
+    println("identifiedByKey2Count: " + identifiedByKey2Count.toString)
+    println("identifiedByKey3Count: " + identifiedByKey3Count.toString)
     println("inboundRecordCount: " + allCount.toString)
     println("outboundRecordCount: " + resultCount.toString)
 
