@@ -95,10 +95,12 @@ object IdentityStream {
 
     // Generate UUIDs for source identities that do not have
     // a person id.
-    val newPersonsSourceIdentity = sourceIdentityToPersonId.filter {
-      case (_, (None, _)) => true
-      case _ => false
-    }.map((_, UUID.randomUUID()))
+    val newPersonsSourceIdentity =
+      sourceIdentityToPersonId
+      .filter {
+        case (_, (None, _)) => true
+        case _ => false
+      }.map((_, UUID.randomUUID()))
 
     // Save source identity to person id mapping for new person ids.
     val newPersonsSourceIdentityToPersonId = newPersonsSourceIdentity.map {
@@ -147,9 +149,16 @@ object IdentityStream {
     val identityKey2Matches = identifiedByKey2.count()
     val identityKey3Matches = identifiedByKey3.count()
     val matchesCount = identityKey1Matches + identityKey2Matches + identityKey3Matches
+    val newPersonsSourceIdentityCount = newPersonsSourceIdentity.count()
+    val newPersonsSourceIdentityToPersonIdCount = newPersonsSourceIdentityToPersonId.count()
+    val newPersonsByExternalPersonIdCount = newPersonsByExternalPersonId.count()
     val newPersonsCount = newPersons.count()
+    val resultCount = results.count()
 
     println("allInbounddPersonCount: " + allInboundPersons.toString)
+    println("newPersonsSourceIdentityCount: " + newPersonsSourceIdentityCount.toString)
+    println("newPersonsSourceIdentityToPersonIdCount: " + newPersonsSourceIdentityToPersonIdCount.toString)
+    println("newPersonsByExternalPersonIdCount: " + newPersonsByExternalPersonIdCount.toString)
     println("newPersonsCount: " + newPersonsCount.toString)
     println("alreadyIdentifiedCount: " + alreadyIdentifiedCount.toString)
     println("identifiedCount: " + matchesCount.toString)
@@ -157,6 +166,7 @@ object IdentityStream {
     println("identifiedByKey2Count: " + identityKey2Matches.toString)
     println("identifiedByKey3Count: " + identityKey3Matches.toString)
     println("totalRecordCount: " + allCount.toString)
+    println("outboundRecordCount: " + resultCount.toString)
 
     support.sendToTopic(ProducerObject.get(kafkaProducerConfig), new ProducerRecord[String, String](personIdentityConfig.identityStatsTopic,
       Json.stringify(JsObject(Seq(
