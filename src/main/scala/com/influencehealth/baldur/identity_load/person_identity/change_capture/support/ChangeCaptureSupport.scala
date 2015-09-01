@@ -309,7 +309,7 @@ object ChangeCaptureSupport {
     case m: MethodSymbol if m.isCaseAccessor => m
   }
 
-  def determineNewChanges(changeCaptureMessage: ChangeCaptureMessage, trackedTable: String): Seq[(ChangeCaptureMessage, ColumnChange)] = {
+  def determineNewChanges(changeCaptureMessage: ChangeCaptureMessage, trackedTable: String): (ChangeCaptureMessage, Seq[ColumnChange]) = {
     val columns: Seq[String] = trackedTable match {
       case "person_master" => personMasterColumns
       case "person_activity" => personActivityColumns
@@ -327,10 +327,42 @@ object ChangeCaptureSupport {
       case (field, typeArgs, value) => Some(field, value)
     }
 
-    newColumnChanges
-      .map{
-        case Some((columnName, value)) =>
-          Some((changeCaptureMessage, getChange(
+    trackedTable.equals("person_master") match {
+      case true =>
+        val changes = newColumnChanges
+          .map {
+          case Some((columnName, value)) =>
+            getChange(
+              value,
+              columnName,
+              changeCaptureMessage.customerId,
+              changeCaptureMessage.personId,
+              changeCaptureMessage.source,
+              changeCaptureMessage.sourceType,
+              changeCaptureMessage.sourceRecordId,
+              changeCaptureMessage.messageType,
+              trackedTable,
+              changeCaptureMessage.trackingDate,
+              None
+            )
+          case None => None
+        }
+          .filter (_.isDefined)
+          .map (_.get)
+
+        val mridChange = getMridsColumnChange(changeCaptureMessage)
+        val combinedChanges = mridChange._2.isDefined match {
+          case false => changes
+          case true => changes ++ Seq(mridChange._2.get)
+        }
+
+        (changeCaptureMessage,combinedChanges.toSeq)
+
+      case false =>
+        val changes = newColumnChanges
+        .map {
+        case Some ((columnName, value) ) =>
+          getChange (
             value,
             columnName,
             changeCaptureMessage.customerId,
@@ -342,12 +374,15 @@ object ChangeCaptureSupport {
             trackedTable,
             changeCaptureMessage.trackingDate,
             None
-          )))
-      case None => None}
-      .filter(_.isDefined)
-      .map(_.get)
-      .filter{case (changeCapture, columnChange) => columnChange.isDefined}
-      .map{case (changeCapture, columnChange) => (changeCapture, columnChange.get)}
+          )
+        case None => None
+      }
+        .filter (_.isDefined)
+        .map (_.get)
+
+        (changeCaptureMessage,changes.toSeq)
+    }
+
   }
 
   def getMridsColumnChange(changeCaptureMessage: ChangeCaptureMessage): (ChangeCaptureMessage, Option[ColumnChange]) = {
@@ -376,10 +411,10 @@ object ChangeCaptureSupport {
     }
   }
 
-  def determineExistingChanges(changeCaptureTuple: (ChangeCaptureMessage, Option[ColumnChange]), trackedTable: String): (ChangeCaptureMessage, Option[ColumnChange]) = {
+  def determineExistingChanges(changeCaptureTuple: (ChangeCaptureMessage, Seq[ColumnChange]), trackedTable: String): (ChangeCaptureMessage, Seq[ColumnChange]) = {
 
     val changeCapture: ChangeCaptureMessage = changeCaptureTuple._1
-    val lastChange: Option[ColumnChange] = changeCaptureTuple._2
+    val lastChanges: Seq[ColumnChange] = changeCaptureTuple._2
 
     val columns: Seq[String] = trackedTable match {
       case "person_master" => personMasterColumns
@@ -390,37 +425,51 @@ object ChangeCaptureSupport {
     val im = m.reflect(changeCapture)
     val columnToValue = filteredMethods
       .map(methodSymbol => {
-        (methodSymbol.name.toString, methodSymbol.returnType.typeArgs, im.reflectField(methodSymbol).get)
-      })
+      (methodSymbol.name.toString, methodSymbol.returnType.typeArgs, im.reflectField(methodSymbol).get)
+    })
 
     val newColumnChanges: Map[String, Any] = columnToValue.map {
       case (field, typeArgs, value: Option[_]) if value.isEmpty => None
       case (field, typeArgs, value: Option[_]) => Some(field, value.get)
       case (field, typeArgs, value) => Some(field, value)
     }.filter(_.isDefined)
-    .map(_.get)
-    .toMap
+      .map(_.get)
+      .toMap
 
-    val fieldName = lastChange.get.columnName
+    val determinedChanges = newColumnChanges.map { case newChange =>
 
-    val determinedChange = getChange(
-      newColumnChanges.getOrElse(fieldName,None),
-      fieldName,
-      changeCapture.customerId,
-      changeCapture.personId,
-      changeCapture.source,
-      changeCapture.sourceType,
-      changeCapture.sourceRecordId,
-      changeCapture.messageType,
-      trackedTable,
-      changeCapture.trackingDate,
-      changeCaptureTuple._2
-    )
+      val columnName: String = newChange._1
+      val changeValue: Any = newChange._2
 
-    (changeCapture, determinedChange)
+      getChange(
+        Some(changeValue),
+        columnName,
+        changeCapture.customerId,
+        changeCapture.personId,
+        changeCapture.source,
+        changeCapture.sourceType,
+        changeCapture.sourceRecordId,
+        changeCapture.messageType,
+        trackedTable,
+        changeCapture.trackingDate,
+        Some(lastChanges.filter{ case change => change.columnName.equals(columnName)}.head)
+      )
+    }.filter(_.isDefined).map(_.get).toSeq
 
+    val finalChanges = trackedTable.equals("person_master") match {
+      case true =>
+        val mridChange = getMridsColumnChange(changeCapture)
+
+        mridChange._2.isDefined match {
+          case false => determinedChanges
+          case true => determinedChanges ++ Seq(mridChange._2.get)
+        }
+
+      case false => determinedChanges
+    }
+
+    (changeCapture, finalChanges)
   }
-
 
   def getChange(changeValue: Any,
                 fieldName: String,

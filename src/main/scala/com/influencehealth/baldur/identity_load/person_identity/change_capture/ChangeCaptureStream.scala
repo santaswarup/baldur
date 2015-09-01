@@ -2,7 +2,6 @@ package com.influencehealth.baldur.identity_load.person_identity.change_capture
 
 import com.datastax.spark.connector._
 import com.datastax.spark.connector.cql.CassandraConnector
-import com.datastax.spark.connector.extensions._
 import com.influencehealth.baldur.identity_load.person_identity.change_capture.support._
 import com.influencehealth.baldur.identity_load.person_identity.identity_table.support.IdentityTableCreatorConfig
 import com.influencehealth.baldur.support.JsonSupport._
@@ -23,66 +22,49 @@ object ChangeCaptureStream {
     // Do a left join to the person-master-changes table in Cassandra
     // Keying by the customerID and personId because those are the partition keys in the table
     // Doing so prevents shuffles in the spanByKey function
-    val personChangesJoined: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
+    val existingPersonsDetermined: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       changeCaptureStream
         .distinct()
-        .leftOuterJoinWithCassandraTable[ColumnChange](changeCaptureConfig.keyspace, changeCaptureConfig.personChangeCaptureTable)
+        .joinWithCassandraTable[ColumnChange](changeCaptureConfig.keyspace, changeCaptureConfig.personChangeCaptureTable)
+        .spanByKey
+        .map(ChangeCaptureSupport.determineExistingChanges(_,"person_master"))
         .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
-    val existingPersonsDetermined: RDD[(ChangeCaptureMessage, ColumnChange)] =
-      personChangesJoined
-      .filter{case (changeCapture, columnChange) => columnChange.isDefined}
-      .map(ChangeCaptureSupport.determineExistingChanges(_,"person_master"))
-      .filter{case (personChange, columnChange) => columnChange.isDefined}
-      .map{case (personChange, columnChange) => (personChange, columnChange.get)}
-
-
-    val personMridsChanges: RDD[(ChangeCaptureMessage, ColumnChange)] =
+    val newPersonsDetermined: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       changeCaptureStream
         .distinct()
-        .map(ChangeCaptureSupport.getMridsColumnChange)
-        .filter{case (personChange, columnChange) => columnChange.isDefined}
-        .map{case (personChange, columnChange) => (personChange, columnChange.get)}
-
-    val newPersonsDetermined: RDD[(ChangeCaptureMessage, ColumnChange)] =
-      personChangesJoined
-        .filter{case (changeCapture, columnChange) => columnChange.isEmpty}
-        .map(_._1)
-        .flatMap(ChangeCaptureSupport.determineNewChanges(_, "person_master"))
+        .map{x => (x,None)}
+        .leftOuterJoin(existingPersonsDetermined)
+        .filter{case (changeCapture, (message, columnChange)) => columnChange.isEmpty}
+        .map{ case (changeCapture, (message, columnChange)) => ChangeCaptureSupport.determineNewChanges(changeCapture, "person_master")}
 
     val personMasterChanges: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       existingPersonsDetermined
       .union(newPersonsDetermined)
-      .union(personMridsChanges)
-      .spanByKey
       .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
-    val activityJoinColumns: SomeColumns = SomeColumns.seqToSomeColumns(Seq("customer_id", "person_id", "source_record_id", "source", "source_type"))
+    val activityJoinColumns: SomeColumns = Seq("customer_id", "person_id", "source_record_id", "source", "source_type")
 
-    val activityChangesJoined: RDD[(ChangeCaptureMessage, Option[ColumnChange])] =
+    val existingActivitiesDetermined: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       changeCaptureStream
         .distinct()
-        .filter{case x => x.messageType.equals("utilization")}
-        .leftOuterJoinWithCassandraTable[ColumnChange](changeCaptureConfig.keyspace, changeCaptureConfig.activityChangeCaptureTable, joinColumns = activityJoinColumns)
+        .joinWithCassandraTable[ColumnChange](changeCaptureConfig.keyspace, changeCaptureConfig.activityChangeCaptureTable)
+        .on(activityJoinColumns)
+        .spanByKey
+        .map(ChangeCaptureSupport.determineExistingChanges(_,"person_activity"))
         .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
-    val existingActivitiesDetermined: RDD[(ChangeCaptureMessage, ColumnChange)] =
-      activityChangesJoined
-      .filter{case (changeCapture, columnChange) => columnChange.isDefined}
-      .map(ChangeCaptureSupport.determineExistingChanges(_, "person_activity"))
-      .filter{case (activityChange, columnChange) => columnChange.isDefined}
-      .map{case (activityChange, columnChange) => (activityChange, columnChange.get)}
-
-    val newActivitiesDetermined: RDD[(ChangeCaptureMessage, ColumnChange)] =
-      activityChangesJoined
-        .filter{case (changeCapture, columnChange) => columnChange.isEmpty}
-        .map(_._1)
-        .flatMap(ChangeCaptureSupport.determineNewChanges(_, "person_activity"))
+    val newActivitiesDetermined: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
+      changeCaptureStream
+        .distinct()
+        .map{x => (x,None)}
+        .leftOuterJoin(existingActivitiesDetermined)
+        .filter{case (changeCapture, (message, columnChange)) => columnChange.isEmpty}
+        .map{ case (changeCapture, (message, columnChange)) => ChangeCaptureSupport.determineNewChanges(changeCapture, "person_activity")}
 
     val personActivityChanges: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       existingActivitiesDetermined
         .union(newActivitiesDetermined)
-        .spanByKey
         .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     val personMasterChangesFlattened: RDD[ColumnChange] =
@@ -163,10 +145,11 @@ object ChangeCaptureStream {
       }
     }
 
+    existingActivitiesDetermined.unpersist()
+    existingPersonsDetermined.unpersist()
     personMasterChanges.unpersist()
     personActivityChanges.unpersist()
-    personChangesJoined.unpersist()
-    activityChangesJoined.unpersist()
+
 
     personMasterChangesFlattened
   }
