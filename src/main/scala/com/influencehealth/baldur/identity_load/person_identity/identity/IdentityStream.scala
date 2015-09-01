@@ -117,7 +117,7 @@ object IdentityStream {
         val uniqueId: String = support.getUniquePersonIdFromSourceIdentity(sourceIdentity)
         (uniqueId, personId) }
 
-    def addPersonId(x: (String, (JsObject, UUID))) = x match {
+    def addPersonId(x: (String, (JsObject, UUID))): JsObject = x match {
       case (_, (jsObj, personId)) =>
         jsObj + ("personId", JsString(personId.toString))
     }
