@@ -43,7 +43,7 @@ object HouseholdStream {
         .filter(x => x.hasAddressColumns && x.lastName.isEmpty)
 
     // Defining records for addressing
-    val addressRecords = records
+    val addressRecords: RDD[HouseholdAddress] = records
       .filter(_.hasAddressColumns)
       .map { householdAddress =>
       if (householdAddress.address2.isEmpty)
@@ -61,11 +61,9 @@ object HouseholdStream {
     val newAddresses: RDD[HouseholdAddress] =
       addressRecords
       .filter(x => x.addressId.isEmpty)
-      .groupBy(x => (x.address1, x.address2, x.city, x.state, x.zip5, x.zip4))
-      .flatMap {
-      case (_, householdAddresses) =>
+      .map { case householdAddress =>
         val addressId = UUID.randomUUID()
-        householdAddresses.map(_.copy(addressId = Some(addressId)))
+        householdAddress.copy(addressId = Some(addressId))
     }.persist(StorageLevel.MEMORY_AND_DISK)
 
     newAddresses.map(_.toAddress).saveToCassandra(householdConfig.keyspace, householdConfig.addressTable)
@@ -73,14 +71,11 @@ object HouseholdStream {
     // Generate new household ids for the new addresses
     val newAddressNewHouseholds: RDD[HouseholdAddress] =
       newAddresses
-      .groupBy(x => x.addressId.toString + x.lastName)
-      .flatMap {
-        case (_, householdAddresses) =>
-          val householdId = UUID.randomUUID()
-          householdAddresses.map(_.copy(householdId = Some(householdId)))
-      }
       .filter(_.hasHouseholdColumns)
-      .persist(StorageLevel.MEMORY_AND_DISK)
+      .map { case householdAddress =>
+        val householdId = UUID.randomUUID()
+        householdAddress.copy(householdId = Some(householdId))
+      }.persist(StorageLevel.MEMORY_AND_DISK)
 
     newAddressNewHouseholds.map(_.toHousehold).saveToCassandra(householdConfig.keyspace, householdConfig.householdTable)
 
@@ -105,12 +100,10 @@ object HouseholdStream {
     val existingAddressesWithNewHouseholdIds: RDD[HouseholdAddress] =
       householdRecords
       .filter{x => x.householdId.isEmpty}
-      .groupBy(x => (x.addressId.get, x.lastName.get))
-      .flatMap {
-      case (_, householdAddress) =>
+      .map { case householdAddress =>
         val householdId = UUID.randomUUID()
-        householdAddress.map(_.copy(householdId = Some(householdId)))
-    }.persist(StorageLevel.MEMORY_AND_DISK)
+        householdAddress.copy(householdId = Some(householdId))
+      }.persist(StorageLevel.MEMORY_AND_DISK)
 
     existingAddressesWithNewHouseholdIds.map(_.toHousehold)
       .saveToCassandra(householdConfig.keyspace, householdConfig.householdTable)
@@ -143,6 +136,7 @@ object HouseholdStream {
 
     val stats = Seq(
       "inbound records" -> identifiedRdd.count(),
+      "inbound householdAddress" -> records.count(),
       "existing addresses" -> existingAddresses.count(),
       "existing addresses with new households" -> existingAddressesWithNewHouseholdIds.count(),
       "existing addresses with existing households" -> existingHouseholds.count(),
