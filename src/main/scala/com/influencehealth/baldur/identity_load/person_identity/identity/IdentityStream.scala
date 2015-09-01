@@ -119,7 +119,7 @@ object IdentityStream {
 
     def addPersonId(x: (String, (JsObject, UUID))) = x match {
       case (_, (jsObj, personId)) =>
-        jsObj ++ JsObject(Seq("personId" -> JsString(personId.toString)))
+        jsObj + ("personId", JsString(personId.toString))
     }
 
     val newPersons: RDD[JsObject] = externalPersonIdToRaw.join(newPersonsByExternalPersonId).map(addPersonId)
@@ -149,16 +149,10 @@ object IdentityStream {
     val identityKey2Matches = identifiedByKey2.count()
     val identityKey3Matches = identifiedByKey3.count()
     val matchesCount = identityKey1Matches + identityKey2Matches + identityKey3Matches
-    val newPersonsSourceIdentityCount = newPersonsSourceIdentity.count()
-    val newPersonsSourceIdentityToPersonIdCount = newPersonsSourceIdentityToPersonId.count()
-    val newPersonsByExternalPersonIdCount = newPersonsByExternalPersonId.count()
     val newPersonsCount = newPersons.count()
     val resultCount = results.count()
 
     println("allInbounddPersonCount: " + allInboundPersons.toString)
-    println("newPersonsSourceIdentityCount: " + newPersonsSourceIdentityCount.toString)
-    println("newPersonsSourceIdentityToPersonIdCount: " + newPersonsSourceIdentityToPersonIdCount.toString)
-    println("newPersonsByExternalPersonIdCount: " + newPersonsByExternalPersonIdCount.toString)
     println("newPersonsCount: " + newPersonsCount.toString)
     println("alreadyIdentifiedCount: " + alreadyIdentifiedCount.toString)
     println("identifiedCount: " + matchesCount.toString)
