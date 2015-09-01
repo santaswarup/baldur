@@ -122,7 +122,10 @@ object IdentityStream {
         jsObj + ("personId", JsString(personId.toString))
     }
 
-    val newPersons: RDD[JsObject] = externalPersonIdToRaw.join(newPersonsByExternalPersonId).map(addPersonId)
+    val newPersons: RDD[(String,(JsObject, UUID))] = externalPersonIdToRaw.join(newPersonsByExternalPersonId)
+
+    val newPersonsWithId = newPersons
+      .map(addPersonId)
 
     // Get the persons by external person id to join to the externalPersonIdToRaw rdd.
     val existingPersonsByExternalPersonId: RDD[(String, UUID)] =
@@ -139,11 +142,10 @@ object IdentityStream {
       .join(existingPersonsByExternalPersonId)
       .map(addPersonId)
 
-    val results = newPersons.union(existingPersons)
+    val results = newPersonsWithId.union(existingPersons)
 
 
     val allCount = rdd.count()
-    val externalPersonIdToRawCount = externalPersonIdToRaw.count()
     val allInboundPersons = sourceIdentityToRecord.map{case (sourceIdentity, record) => sourceIdentity}.distinct().count()
     val alreadyIdentifiedCount = alreadyIdentified.count()
     val identityKey1Matches = identifiedByKey1.count()
@@ -151,11 +153,12 @@ object IdentityStream {
     val identityKey3Matches = identifiedByKey3.count()
     val matchesCount = identityKey1Matches + identityKey2Matches + identityKey3Matches
     val newPersonsCount = newPersons.count()
+    val newPersonsWithIdCount = newPersonsWithId.count()
     val resultCount = results.count()
 
     println("allInboundPersonCount: " + allInboundPersons.toString)
-    println("externalPersonIdToRawCount: " + externalPersonIdToRawCount.toString)
     println("newPersonsCount: " + newPersonsCount.toString)
+    println("newPersonsWithIdCount: " + newPersonsWithIdCount.toString)
     println("alreadyIdentifiedCount: " + alreadyIdentifiedCount.toString)
     println("identifiedCount: " + matchesCount.toString)
     println("identifiedByKey1Count: " + identityKey1Matches.toString)

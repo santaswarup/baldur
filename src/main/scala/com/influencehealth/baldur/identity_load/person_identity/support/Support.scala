@@ -95,7 +95,7 @@ trait Support {
     try {
       (jsObj \ support.ExternalPersonIdField).as[String] + "." + (jsObj \ "source").as[String] + "." + (jsObj \ "sourceType").as[String] + "." + (jsObj \ "customerId").as[Int]
     } catch {
-      case e: Exception => throw new Exception(f"geUniquePersonIdFromJson: ${jsObj.toString()}", e)
+      case e: Exception => throw new Exception(f"getUniquePersonIdFromJson: ${jsObj.toString()}", e)
     }
   }
 
