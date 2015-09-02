@@ -67,9 +67,6 @@ object HouseholdStream {
         householdAddress.copy(addressId = Some(addressId))
     }.persist(StorageLevel.MEMORY_AND_DISK)
 
-    // save new address values
-    newAddresses.map(_.toAddress).saveToCassandra(householdConfig.keyspace, householdConfig.addressTable)
-
     // Generate new household ids for the new addresses
     val newAddressNewHouseholds: RDD[HouseholdAddress] =
       newAddresses
@@ -106,12 +103,7 @@ object HouseholdStream {
         householdAddress.copy(householdId = Some(householdId))
       }.persist(StorageLevel.MEMORY_AND_DISK)
 
-    // save new household values
-    newAddressNewHouseholds.map(_.toHousehold)
-      .saveToCassandra(householdConfig.keyspace, householdConfig.householdTable)
 
-    existingAddressesWithNewHouseholdIds.map(_.toHousehold)
-      .saveToCassandra(householdConfig.keyspace, householdConfig.householdTable)
 
 
     val result: RDD[JsObject] = householdAddressToJs
@@ -164,6 +156,16 @@ object HouseholdStream {
       new ProducerRecord[String, String](householdConfig.householdStatsTopic,
         Json.stringify(JsObject(stats))))
 
+    // save new address values
+    newAddresses.map(_.toAddress)
+      .saveToCassandra(householdConfig.keyspace, householdConfig.addressTable)
+
+    // save new household values
+    newAddressNewHouseholds.map(_.toHousehold)
+      .saveToCassandra(householdConfig.keyspace, householdConfig.householdTable)
+
+    existingAddressesWithNewHouseholdIds.map(_.toHousehold)
+      .saveToCassandra(householdConfig.keyspace, householdConfig.householdTable)
 
     records.unpersist()
     addressRecords.unpersist()

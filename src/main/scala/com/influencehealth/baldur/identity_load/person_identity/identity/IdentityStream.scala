@@ -294,7 +294,7 @@ object IdentityStream {
 
         results
     }
-    results
+    results.persist(StorageLevel.MEMORY_AND_DISK_SER)
   }
 
   implicit class IdentityStreamingContext(val streamingContext: StreamingContext) {
