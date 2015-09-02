@@ -31,6 +31,7 @@ object HouseholdStream {
     val records: RDD[HouseholdAddress] = householdAddressToJs
       .map{ case (householdAddress, js) => householdAddress }
       .distinct()
+      .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     // Get the records that we can not assign an address id to because we do not have enough information
     val unaddressable: RDD[HouseholdAddress] =
@@ -66,6 +67,7 @@ object HouseholdStream {
         householdAddress.copy(addressId = Some(addressId))
     }.persist(StorageLevel.MEMORY_AND_DISK)
 
+    // save new address values
     newAddresses.map(_.toAddress).saveToCassandra(householdConfig.keyspace, householdConfig.addressTable)
 
     // Generate new household ids for the new addresses
@@ -77,7 +79,6 @@ object HouseholdStream {
         householdAddress.copy(householdId = Some(householdId))
       }.persist(StorageLevel.MEMORY_AND_DISK)
 
-    newAddressNewHouseholds.map(_.toHousehold).saveToCassandra(householdConfig.keyspace, householdConfig.householdTable)
 
     val existingAddresses: RDD[HouseholdAddress] =
       addressRecords
@@ -105,6 +106,10 @@ object HouseholdStream {
         householdAddress.copy(householdId = Some(householdId))
       }.persist(StorageLevel.MEMORY_AND_DISK)
 
+    // save new household values
+    newAddressNewHouseholds.map(_.toHousehold)
+      .saveToCassandra(householdConfig.keyspace, householdConfig.householdTable)
+
     existingAddressesWithNewHouseholdIds.map(_.toHousehold)
       .saveToCassandra(householdConfig.keyspace, householdConfig.householdTable)
 
@@ -116,7 +121,12 @@ object HouseholdStream {
           .union(newAddressNewHouseholds)
           .union(unaddressable)
           .union(unhouseholdable)
-          .map{case householdAddress => (householdAddress.copy(addressId = None, householdId = None),householdAddress)})
+          .map{case householdAddress =>
+            val address2 = householdAddress.address2 match {
+              case Some("") => None
+              case _ => householdAddress.address2
+            }
+            (householdAddress.copy(addressId = None, householdId = None, address2 = address2),householdAddress)})
       .map {
         case (key, (record, householdAddress)) =>
           def addressId = if (householdAddress.addressId.isDefined)
@@ -132,7 +142,7 @@ object HouseholdStream {
           record +
             ("addressId", addressId) +
             ("householdId", householdId)
-      }
+      }.persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     val stats = Seq(
       "inbound records" -> identifiedRdd.count(),
