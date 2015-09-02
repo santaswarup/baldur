@@ -76,7 +76,6 @@ object HouseholdStream {
         householdAddress.copy(householdId = Some(householdId))
       }.persist(StorageLevel.MEMORY_AND_DISK)
 
-
     val existingAddresses: RDD[HouseholdAddress] =
       addressRecords
       .filter(_.addressId.isDefined)
@@ -102,9 +101,6 @@ object HouseholdStream {
         val householdId = UUID.randomUUID()
         householdAddress.copy(householdId = Some(householdId))
       }.persist(StorageLevel.MEMORY_AND_DISK)
-
-
-
 
     val result: RDD[JsObject] = householdAddressToJs
       .join(
