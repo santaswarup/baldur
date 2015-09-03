@@ -455,19 +455,38 @@ object ChangeCaptureSupport {
           changeCapture.trackingDate,
           None
         )
-        case false => getChange(
-          Some(changeValue),
-          columnName,
-          changeCapture.customerId,
-          changeCapture.personId,
-          changeCapture.source,
-          changeCapture.sourceType,
-          changeCapture.sourceRecordId,
-          changeCapture.messageType,
-          trackedTable,
-          changeCapture.trackingDate,
-          Some(lastChanges.filter{ case change => change.columnName.equals(columnName)}.head)
-        )
+        case false =>
+          val lastChange = lastChanges.filter{ case change => change.columnName.equals(columnName)}
+
+          lastChange.isEmpty match{
+              case true => getChange(
+                Some(changeValue),
+                columnName,
+                changeCapture.customerId,
+                changeCapture.personId,
+                changeCapture.source,
+                changeCapture.sourceType,
+                changeCapture.sourceRecordId,
+                changeCapture.messageType,
+                trackedTable,
+                changeCapture.trackingDate,
+                None
+              )
+
+              case false => getChange(
+                Some(changeValue),
+                columnName,
+                changeCapture.customerId,
+                changeCapture.personId,
+                changeCapture.source,
+                changeCapture.sourceType,
+                changeCapture.sourceRecordId,
+                changeCapture.messageType,
+                trackedTable,
+                changeCapture.trackingDate,
+                Some(lastChange.head)
+              )
+            }
       }
     }.filter(_.isDefined).map(_.get).toSeq
 
