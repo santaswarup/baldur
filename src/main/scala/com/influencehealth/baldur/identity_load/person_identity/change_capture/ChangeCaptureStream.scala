@@ -41,6 +41,7 @@ object ChangeCaptureStream {
     val personMasterChanges: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       existingPersonsDetermined
       .union(newPersonsDetermined)
+      .filter(x => x._2.nonEmpty)
       .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     val activityJoinColumns: SomeColumns = SomeColumns("customer_id", "person_id", "source_record_id", "source", "source_type")
@@ -65,6 +66,7 @@ object ChangeCaptureStream {
     val personActivityChanges: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       existingActivitiesDetermined
         .union(newActivitiesDetermined)
+        .filter(x => x._2.nonEmpty)
         .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     val personMasterChangesFlattened: RDD[ColumnChange] =
