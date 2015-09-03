@@ -441,19 +441,34 @@ object ChangeCaptureSupport {
       val columnName: String = newChange._1
       val changeValue: Any = newChange._2
 
-      getChange(
-        Some(changeValue),
-        columnName,
-        changeCapture.customerId,
-        changeCapture.personId,
-        changeCapture.source,
-        changeCapture.sourceType,
-        changeCapture.sourceRecordId,
-        changeCapture.messageType,
-        trackedTable,
-        changeCapture.trackingDate,
-        Some(lastChanges.filter{ case change => change.columnName.equals(columnName)}.head)
-      )
+      lastChanges.isEmpty match{
+        case true => getChange(
+          Some(changeValue),
+          columnName,
+          changeCapture.customerId,
+          changeCapture.personId,
+          changeCapture.source,
+          changeCapture.sourceType,
+          changeCapture.sourceRecordId,
+          changeCapture.messageType,
+          trackedTable,
+          changeCapture.trackingDate,
+          None
+        )
+        case false => getChange(
+          Some(changeValue),
+          columnName,
+          changeCapture.customerId,
+          changeCapture.personId,
+          changeCapture.source,
+          changeCapture.sourceType,
+          changeCapture.sourceRecordId,
+          changeCapture.messageType,
+          trackedTable,
+          changeCapture.trackingDate,
+          Some(lastChanges.filter{ case change => change.columnName.equals(columnName)}.head)
+        )
+      }
     }.filter(_.isDefined).map(_.get).toSeq
 
     val finalChanges = trackedTable.equals("person_master") match {
