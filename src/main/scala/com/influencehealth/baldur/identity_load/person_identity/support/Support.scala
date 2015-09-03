@@ -15,7 +15,6 @@ import org.apache.spark.streaming.dstream.InputDStream
 import org.apache.spark.streaming.kafka._
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
-import play.api.libs.json.JsObject
 
 trait Support {
   val ExternalPersonIdField = "sourcePersonId"
@@ -26,15 +25,6 @@ trait Support {
     topics: Set[String],
     config: Map[String, String]=Map("maxRatePerPartition" -> 0.toString)): InputDStream[(String, String)] =
     MoreKafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, config, topics)
-
-  def soundex(w: String) = {
-    w.toLowerCase
-  }
-
-  def soundex(w: Option[String]): Option[String] = w match {
-    case Some(word) => Some(word.toLowerCase)
-    case _ => None
-  }
 
   def rootFirstName(firstName: Option[String], sex: Option[String]): Option[String] = {
     FirstNameRoot.getRootName(firstName, sex)

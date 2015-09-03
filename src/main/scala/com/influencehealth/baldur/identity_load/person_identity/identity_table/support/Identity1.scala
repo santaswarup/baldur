@@ -3,6 +3,7 @@ package com.influencehealth.baldur.identity_load.person_identity.identity_table.
 import com.influencehealth.baldur.identity_load.person_identity.support._
 
 import java.util.UUID
+import com.rockymadden.stringmetric.StringAlgorithm._
 import org.joda.time.DateTime
 
 case class Identity1(
@@ -26,7 +27,12 @@ object Identity1 {
   var support: Support = SupportImpl
 
   def create(personIdentity: PersonIdentity) = {
-    Identity1(personIdentity.customerId, personIdentity.address1.get, personIdentity.zip5.get, support.rootFirstName(personIdentity.firstName, personIdentity.sex).get, support.soundex(personIdentity.lastName.get),
+    val soundexLastName: Option[String] = personIdentity.lastName match {
+      case Some(name) => Soundex.compute(name)
+      case None => None
+    }
+
+    Identity1(personIdentity.customerId, personIdentity.address1.get, personIdentity.zip5.get, support.rootFirstName(personIdentity.firstName, personIdentity.sex).get, soundexLastName.get,
       personIdentity.personId, personIdentity.streetSecondNumber, personIdentity.dob, personIdentity.emails.toSet, personIdentity.sex, personIdentity.middleName,
       personIdentity.mrids, personIdentity.address2, personIdentity.personalSuffix)
   }
