@@ -492,13 +492,16 @@ object ChangeCaptureSupport {
 
     val finalChanges = trackedTable.equals("person_master") match {
       case true =>
-        val mridChange = getMridsColumnChange(changeCapture)
+        changeCapture.messageType match{
+          case "prospect" => determinedChanges
+          case _ =>
+            val mridChange = getMridsColumnChange(changeCapture)
 
-        mridChange._2.isDefined match {
-          case false => determinedChanges
-          case true => determinedChanges ++ Seq(mridChange._2.get)
+            mridChange._2.isDefined match {
+              case false => determinedChanges
+              case true => determinedChanges ++ Seq(mridChange._2.get)
+            }
         }
-
       case false => determinedChanges
     }
 
