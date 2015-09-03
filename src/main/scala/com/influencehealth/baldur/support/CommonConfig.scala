@@ -12,6 +12,7 @@ object CommonConfig {
   private val PersonChangeCaptureTableKey = "spark.app.table.person_change_capture"
   private val ActivityChangeCaptureTableKey = "spark.app.table.activity_change_capture"
   private val ActivityTableKey = "spark.app.table.activity"
+  private val FilePartitionKey = "spark.app.intake_partitions"
 
   def personIdentityTables(sparkConf: SparkConf) =
     (1 to 4).map(x => sparkConf.get(s"spark.app.table.identity$x", s"person_master_identity$x"))
@@ -45,4 +46,7 @@ object CommonConfig {
 
   def kafkaBrokerList(sparkConf: SparkConf) =
     sparkConf.get("spark.app.kafka.metadata.broker.list", "localhost:9092")
+
+  def filePartitions(sparkConf: SparkConf) =
+    sparkConf.get(FilePartitionKey, "2")
 }

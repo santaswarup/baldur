@@ -16,6 +16,7 @@ case class PersonIdentityConfig(identityInputTopics: String,
                                 identity3Table: String,
                                 identity4Table: String,
                                 trustSourceId: Boolean,
+                                filePartitions: Int,
                                 kafkaReset: String) {
 
   def kafkaParams: Map[String, String] = Map("metadata.broker.list" -> brokerList,
@@ -48,6 +49,8 @@ object PersonIdentityConfig {
     //Defaults to largest
     val kafkaReset = CommonConfig.kafkaReset(sc)
 
+    val filePartitions = CommonConfig.filePartitions(sc).toInt
+
     PersonIdentityConfig(identityInputTopics,
       identityStatsTopic,
       brokerList,
@@ -59,6 +62,7 @@ object PersonIdentityConfig {
       identity3Table,
       identity4Table,
       trustSourceId,
+      filePartitions,
       kafkaReset)
   }
 }

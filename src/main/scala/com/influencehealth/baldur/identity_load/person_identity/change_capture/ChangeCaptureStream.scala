@@ -43,7 +43,7 @@ object ChangeCaptureStream {
       .union(newPersonsDetermined)
       .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
-    val activityJoinColumns: SomeColumns = Seq("customer_id", "person_id", "source_record_id", "source", "source_type")
+    val activityJoinColumns: SomeColumns = SomeColumns("customer_id", "person_id", "source_record_id", "source", "source_type")
 
     val existingActivitiesDetermined: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       changeCaptureStream
