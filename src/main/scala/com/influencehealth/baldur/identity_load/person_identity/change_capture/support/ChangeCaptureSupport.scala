@@ -443,7 +443,7 @@ object ChangeCaptureSupport {
 
       lastChanges.isEmpty match{
         case true => getChange(
-          Some(changeValue),
+          changeValue,
           columnName,
           changeCapture.customerId,
           changeCapture.personId,
@@ -460,7 +460,7 @@ object ChangeCaptureSupport {
 
           lastChange.isEmpty match{
               case true => getChange(
-                Some(changeValue),
+                changeValue,
                 columnName,
                 changeCapture.customerId,
                 changeCapture.personId,
@@ -474,7 +474,7 @@ object ChangeCaptureSupport {
               )
 
               case false => getChange(
-                Some(changeValue),
+                changeValue,
                 columnName,
                 changeCapture.customerId,
                 changeCapture.personId,
