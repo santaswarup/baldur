@@ -1,7 +1,7 @@
 package com.influencehealth.baldur.identity_load.person_identity.identity.support
 
 import com.influencehealth.baldur.identity_load.person_identity.support._
-
+import com.rockymadden.stringmetric.StringAlgorithm.Soundex
 import java.util.UUID
 import org.joda.time.DateTime
 
@@ -25,16 +25,8 @@ case class PersonIdentityColumns(customerId: Int,
   var rootFirstName: Option[String] = support.rootFirstName(firstName, sex)
  
   val soundexLastName: Option[String] = lastName match {
-    case Some(lastName) => Some(soundex(lastName))
+    case Some(name) => Soundex.compute(name)
     case None => None
-  }
-
-  def soundex(originalName: String): String = {
-    /*RefinedSoundexAlgorithm.compute(originalName) match {
-      case Some(name) => name
-      case None => originalName
-    }*/
-    originalName.toLowerCase
   }
 
 }
