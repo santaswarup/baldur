@@ -583,7 +583,7 @@ object ChangeCaptureSupport {
             messageType match {
               // Invokes a most-recent-experian-value change to the person-master. Note that Experian can only update itself
               case "prospect" =>
-                if (lastChange.isEmpty || (newValue != lastChange.get.newValue && trackingDate.compareTo (lastChange.get.trackingDate) >= 0 && lastChange.get.source.equals ("experian") ) ) {
+                if (lastChange.isEmpty || (!newValue.equalsIgnoreCase(lastChange.get.newValue) && trackingDate.compareTo (lastChange.get.trackingDate) >= 0 && lastChange.get.source.equalsIgnoreCase("experian") ) ) {
                   Some (ColumnChange (customerId, personId, fieldName,
                   if (lastChange.isEmpty) None else Some (lastChange.get.newValue), newValue, source, sourceType, sourceRecordId, trackingDate) )
                 } else {
@@ -592,7 +592,7 @@ object ChangeCaptureSupport {
 
                 // Invokes a most-recent-utilization-value change to the person-master.
               case "utilization" =>
-                if (lastChange.isEmpty || (newValue != lastChange.get.newValue && trackingDate.compareTo (lastChange.get.trackingDate) >= 0) ) {
+                if (lastChange.isEmpty || (!newValue.equalsIgnoreCase(lastChange.get.newValue) && trackingDate.compareTo (lastChange.get.trackingDate) >= 0) ) {
                   Some (ColumnChange (customerId, personId, fieldName,
                 if (lastChange.isEmpty)
                   None
@@ -605,7 +605,7 @@ object ChangeCaptureSupport {
               // person_activity changes are not checked for the source values as they are used as a part of the key. Simply pass
               // it through if it is a new value for the activity in question. Tracking date is not needed to compare either
             case "person_activity" =>
-              if (lastChange.isEmpty || newValue != lastChange.get.newValue) {
+              if (lastChange.isEmpty || !newValue.equalsIgnoreCase(lastChange.get.newValue)) {
                 Some (ColumnChange (customerId, personId, fieldName,
               if (lastChange.isEmpty)
                 None

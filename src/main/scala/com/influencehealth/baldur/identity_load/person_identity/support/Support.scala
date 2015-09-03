@@ -63,27 +63,62 @@ trait Support {
     }
   }
 
+  def toUpperCaseOption(str: Option[String]): Option[String] = {
+    str.isDefined match {
+      case false => None
+      case true => Some(str.get.toUpperCase)
+    }
+  }
+
   def identityScore(x: (PersonIdentityColumns, CassandraRow)): ((PersonIdentityColumns, CassandraRow), Int) = {
 
     var score = 0
     val unidentified = x._1
     val candidateIdentity = x._2
 
-    score += points(Some(f"${unidentified.source}.${unidentified.sourceType}.${unidentified.sourcePersonId}"), candidateIdentity.getSet[String]("mrids"), 1000000)
+    // adding comparison vals. ensuring that string comparisons are not case sensitive by using toUpperCase
 
-    score += points(unidentified.rootFirstName, candidateIdentity.get[Option[String]]("root_first_name"), 1000000)
+    val unidentifiedMrid: Option[String] = Some(f"${unidentified.source}.${unidentified.sourceType}.${unidentified.sourcePersonId}".toUpperCase)
+    val identifiedMrid: Set[String] = candidateIdentity.getSet[String]("mrids").isEmpty match{
+      case true => Set()
+      case false => candidateIdentity.getSet[String]("mrids").map(_.toUpperCase)
+    }
+
+    val unidentifiedRootFirstName: Option[String] = toUpperCaseOption(unidentified.rootFirstName)
+    val identifiedRootFirstName: Option[String] = toUpperCaseOption(candidateIdentity.get[Option[String]]("root_first_name"))
+
+    val unidentifiedSex: Option[String] = toUpperCaseOption(unidentified.sex)
+    val identifiedSex: Option[String] = toUpperCaseOption(candidateIdentity.get[Option[String]]("sex"))
+
+    val unidentifiedAddress2: Option[String] = toUpperCaseOption(unidentified.address2)
+    val identifiedAddress2: Option[String] = toUpperCaseOption(candidateIdentity.get[Option[String]]("address2"))
+
+    val unidentifiedStreetSecondNumber: Option[String] = toUpperCaseOption(unidentified.streetSecondNumber)
+    val identifiedStreetSecondNumber: Option[String] = toUpperCaseOption(candidateIdentity.get[Option[String]]("street_second_number"))
+
+    val unidentifiedMiddleName: Option[String] = toUpperCaseOption(unidentified.middleName)
+    val identifiedMiddleName: Option[String] = toUpperCaseOption(candidateIdentity.get[Option[String]]("middle_name"))
+
+    val unidentifiedSuffix: Option[String] = toUpperCaseOption(unidentified.suffix)
+    val identifiedSuffix: Option[String] = toUpperCaseOption(candidateIdentity.get[Option[String]]("suffix"))
+
+
+
+    score += points(unidentifiedMrid, identifiedMrid, 1000000)
+
+    score += points(unidentifiedRootFirstName, identifiedRootFirstName, 1000000)
 
     score += points(unidentified.dob, candidateIdentity.get[Option[DateTime]]("dob"), 100000)
 
-    score += points(unidentified.sex, candidateIdentity.get[Option[String]]("sex"), 10000)
+    score += points(unidentifiedSex, identifiedSex, 10000)
 
-    score += points(unidentified.address2, candidateIdentity.get[Option[String]]("address2"), 1000)
+    score += points(unidentifiedAddress2, identifiedAddress2, 1000)
 
-    score += points(unidentified.streetSecondNumber, candidateIdentity.get[Option[String]]("street_second_number"), 1000)
+    score += points(unidentifiedStreetSecondNumber, identifiedStreetSecondNumber, 1000)
 
-    score += points(unidentified.middleName, candidateIdentity.get[Option[String]]("middle_name"), 100)
+    score += points(unidentifiedMiddleName, identifiedMiddleName, 100)
 
-    score += points(unidentified.suffix, candidateIdentity.get[Option[String]]("suffix"), 10)
+    score += points(unidentifiedSuffix, identifiedSuffix, 10)
 
     (x, score)
   }
