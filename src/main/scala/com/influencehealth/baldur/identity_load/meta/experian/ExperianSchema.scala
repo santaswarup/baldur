@@ -174,7 +174,7 @@ object ExperianSchema extends FileInputMeta with Serializable {
       childAgeBuckets = FileInputSupport.getSetOptValue(input, "childAgeBuckets"),
       wealthRating = FileInputSupport.getIntOptValue(input, "wealthRating"),
       addressQualityIndicator = FileInputSupport.getStringOptValue(input, "addressQualityIndicator"),
-      education = FileInputSupport.getStringOptValue(input, "education"),
+      education = FileInputSupport.getIntOptValue(input, "education"),
       addressType = FileInputSupport.getStringOptValue(input, "addressType"),
       validAddressFlag = validAddressFlag,
       address1 = FileInputSupport.getAddressStringValue(input, "address1", validAddressFlag),

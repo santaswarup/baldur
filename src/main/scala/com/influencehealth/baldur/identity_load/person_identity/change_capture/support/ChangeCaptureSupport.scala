@@ -217,7 +217,7 @@ object ChangeCaptureSupport {
     ("childAgeBuckets", "set"),
     ("wealthRating", "int"),
     ("addressQualityIndicator", "string"),
-    ("education", "string"),
+    ("education", "int"),
     ("addressType", "string"),
     ("validAddressFlag", "boolean"),
     ("address1", "string"),
