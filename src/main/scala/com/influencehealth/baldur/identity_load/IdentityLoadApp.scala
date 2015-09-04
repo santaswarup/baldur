@@ -4,6 +4,7 @@ import java.util.UUID
 
 import com.datastax.spark.connector.cql.CassandraConnector
 import com.influencehealth.baldur.identity_load.meta._
+import com.influencehealth.baldur.identity_load.meta.experian.ExperianSupport
 import com.influencehealth.baldur.support._
 import com.influencehealth.baldur.identity_load.config._
 import com.influencehealth.baldur.identity_load.person_identity.change_capture.ChangeCaptureStream
@@ -56,7 +57,7 @@ object IdentityLoadApp {
 
     // Leveraging the baldur "Clean" class to parse the file into standard data types
     // TODO - put the Clean class in its own repo, import it to whatever projects need it
-    val input: RDD[JsObject] = sc.textFile(config.in.getPath,personIdentityConfig.filePartitions)
+    val input: RDD[Seq[(String, Any)]] = sc.textFile(config.in.getPath,personIdentityConfig.filePartitions)
       .map(line => line.split(delimiter))
       .map(fields => {
         try {
@@ -72,11 +73,24 @@ object IdentityLoadApp {
       })
       .map(fieldNames.zip(_))
       .distinct()
-      .map{ line => Json.toJson(ActivityOutput.mapJsonFields(fileInputMeta.mapping(line.toMap[String, Any]))).as[JsObject]}
-      .persist(StorageLevel.MEMORY_AND_DISK_SER)
+
+    // Experian files need to append a customer id and limit the data to defined zips for said clients. an added flatMap
+    // handles this
+    val inputMapped = config.inputSource match{
+      case "baldur" =>
+        input.map{ line => Json.toJson(ActivityOutput.mapJsonFields(fileInputMeta.mapping(line.toMap[String, Any]))).as[JsObject]}
+        .persist(StorageLevel.MEMORY_AND_DISK_SER)
+
+      case "experian" =>
+        input
+          .flatMap{ line => ExperianSupport.appendClientIds(line.toMap[String, Any])}
+          .map{ line => Json.toJson(ActivityOutput.mapJsonFields(fileInputMeta.mapping(line))).as[JsObject]}
+          .persist(StorageLevel.MEMORY_AND_DISK_SER)
+    }
+
 
     val output =
-      input
+      inputMapped
       .addIdentity(personIdentityConfig, kafkaParams, kafkaProducerConfig)
       .addHouseholds(householdConfig, kafkaProducerConfig)
       .toChangeCaptureMessages

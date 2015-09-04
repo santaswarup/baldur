@@ -35,7 +35,7 @@ object BaldurSchema extends FileInputMeta with Serializable {
     ("ethnicInsight", "string"),
     ("race", "string"),
     ("religion", "string"),
-    ("language", "int"),
+    ("language", "string"),
     ("occupationGroup", "string"),
     ("occupation", "string"),
     ("phoneNumbers", "string"),

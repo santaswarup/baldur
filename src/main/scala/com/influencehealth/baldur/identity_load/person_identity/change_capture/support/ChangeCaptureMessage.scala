@@ -33,7 +33,7 @@ case class ChangeCaptureMessage(
     ethnicInsight: Option[String],
     race: Option[String],
     religion: Option[String],
-    language: Option[Int],
+    language: Option[String],
     occupationGroup: Option[String],
     occupation: Option[String],
     phoneNumbers: Option[List[String]],

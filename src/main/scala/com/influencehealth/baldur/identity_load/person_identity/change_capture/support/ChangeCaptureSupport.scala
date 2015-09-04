@@ -186,7 +186,7 @@ object ChangeCaptureSupport {
     ("ethnicInsight", "string"),
     ("race", "string"),
     ("religion", "string"),
-    ("language", "int"),
+    ("language", "string"),
     ("occupationGroup", "string"),
     ("occupation", "string"),
     ("phoneNumbers", "list"),

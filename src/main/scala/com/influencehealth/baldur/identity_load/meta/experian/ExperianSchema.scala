@@ -58,7 +58,7 @@ object ExperianSchema extends FileInputMeta with Serializable {
     ("carrierRouteOld", "string"),
     ("homeLandValue", "float"),
     ("addressType", "string"),
-    ("language", "int"),
+    ("language", "string"),
     ("childSevenToNineBkt", "string"),
     ("personsInLivingUnit", "int"),
     ("dob", "date","yyyyMMdd"),
@@ -73,6 +73,7 @@ object ExperianSchema extends FileInputMeta with Serializable {
     ("dwellType", "string"),
     ("homeYearBuilt", "int"),
     ("childFourToSixBkt", "string"),
+    ("filler", "string"),
     ("address1", "string"),
     ("address2", "string"),
     ("city", "string"),
@@ -117,7 +118,7 @@ object ExperianSchema extends FileInputMeta with Serializable {
     val lon = getAnchorLatLon(FileInputSupport.getAddressStringValue(input, "lon", validAddressFlag))
 
     ActivityOutput(
-      personId = FileInputSupport.getUUIDOptValue(input, "personId"),
+      personId = None,
       customerId = FileInputSupport.getIntValue(input, "customerId"),
       addressId = FileInputSupport.getUUIDOptValue(input, "addressId"),
       householdId = FileInputSupport.getUUIDOptValue(input, "householdId"),
