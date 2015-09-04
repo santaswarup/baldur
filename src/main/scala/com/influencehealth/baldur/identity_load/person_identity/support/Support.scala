@@ -136,24 +136,48 @@ trait Support {
 
   def filterPositiveValue[K](x: (K, Int)) = x._2 > 0
 
-  def mapSourceIdentityToPersonId[V](x: ((PersonIdentityColumns, CassandraRow), V)): (SourceIdentity, UUID) = x match {
-    case ((record, cassandraRow), _) => (record.sourceIdentity, cassandraRow.getUUID("person_id"))
+  def mapSourceIdentityToPersonId(x: (PersonIdentityColumns, Seq[(CassandraRow, Int)])): (SourceIdentity, UUID) = {
+    val matches = x._2
+    val personIdentity = x._1
+
+    val maxScore: Int = matches.map{case (row, score) => score}.max
+    val matchedId: UUID =
+      matches
+      .filter{ case (row, score) => score.equals(maxScore)}
+      .map{ case (row, score) => row.getUUID("person_id")}
+      .head
+
+    (personIdentity.sourceIdentity, matchedId)
   }
 
-  def mapSourceIdentityUntrustedToPersonId[V](x: ((PersonIdentityColumns, CassandraRow), V)): (SourceIdentityUntrusted, UUID) = x match {
-    case ((record, cassandraRow), _) => (record.sourceIdentityUntrusted, cassandraRow.getUUID("person_id"))
+  def mapSourceIdentityUntrustedToPersonId(x: (PersonIdentityColumns, Seq[(CassandraRow, Int)])): (SourceIdentityUntrusted, UUID) = {
+    val matches = x._2
+    val personIdentity = x._1
+
+    val maxScore: Int = matches.map{case (row, score) => score}.max
+    val matchedId: UUID =
+      matches
+        .filter{ case (row, score) => score.equals(maxScore)}
+        .map{ case (row, score) => row.getUUID("person_id")}
+        .head
+
+    (personIdentity.sourceIdentityUntrusted, matchedId)
   }
 
   def identifyByKey(unidentifiedRecords: RDD[PersonIdentityColumns],
-    cassandraTable: (String, String)): RDD[(SourceIdentity, UUID)] =
+                    cassandraTable: (String, String)): RDD[(SourceIdentity, UUID)] =
   {
     val joinedWithTable: RDD[(PersonIdentityColumns, CassandraRow)] = unidentifiedRecords
       .joinWithCassandraTable(cassandraTable._1, cassandraTable._2)
 
-    joinedWithTable
+    val grouped: RDD[(PersonIdentityColumns, Seq[(CassandraRow, Int)])] = joinedWithTable
       .map(identityScore)
       .filter(filterPositiveValue)
-      .map(mapSourceIdentityToPersonId)
+      .map{ case ((personIdentity, cassRow), score) => (personIdentity, (cassRow, score))}
+      .spanByKey
+
+      grouped
+        .map(mapSourceIdentityToPersonId)
   }
 
   def identifyByKeyUntrusted(unidentifiedRecords: RDD[PersonIdentityColumns],
@@ -162,9 +186,13 @@ trait Support {
     val joinedWithTable: RDD[(PersonIdentityColumns, CassandraRow)] = unidentifiedRecords
       .joinWithCassandraTable(cassandraTable._1, cassandraTable._2)
 
-    joinedWithTable
+    val grouped: RDD[(PersonIdentityColumns, Seq[(CassandraRow, Int)])] = joinedWithTable
       .map(identityScore)
       .filter(filterPositiveValue)
+      .map{ case ((personIdentity, cassRow), score) => (personIdentity, (cassRow, score))}
+      .spanByKey
+
+    grouped
       .map(mapSourceIdentityUntrustedToPersonId)
   }
 
