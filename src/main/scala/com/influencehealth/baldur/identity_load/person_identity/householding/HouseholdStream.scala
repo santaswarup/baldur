@@ -56,7 +56,7 @@ object HouseholdStream {
       .map {
       case (address, Some(addressId)) => address.copy(addressId = Some(addressId))
       case (address, None) => address
-    }.persist(StorageLevel.MEMORY_AND_DISK)
+    }.persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     // Generate new address ids for those records that do not have an address id
     val newAddresses: RDD[HouseholdAddress] =
@@ -65,7 +65,7 @@ object HouseholdStream {
       .map { case householdAddress =>
         val addressId = UUID.randomUUID()
         householdAddress.copy(addressId = Some(addressId))
-    }.persist(StorageLevel.MEMORY_AND_DISK)
+    }.persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     // Generate new household ids for the new addresses
     val newAddressNewHouseholds: RDD[HouseholdAddress] =
@@ -74,12 +74,12 @@ object HouseholdStream {
       .map { case householdAddress =>
         val householdId = UUID.randomUUID()
         householdAddress.copy(householdId = Some(householdId))
-      }.persist(StorageLevel.MEMORY_AND_DISK)
+      }.persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     val existingAddresses: RDD[HouseholdAddress] =
       addressRecords
       .filter(_.addressId.isDefined)
-      .persist(StorageLevel.MEMORY_AND_DISK)
+      .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     // Get household ids for existing addresses
     val householdRecords: RDD[HouseholdAddress] =
@@ -90,7 +90,7 @@ object HouseholdStream {
       .map {
       case (address, Some(householdId)) => address.copy(householdId = Some(householdId))
       case (address, None) => address
-    }.persist(StorageLevel.MEMORY_AND_DISK)
+    }.persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     val existingHouseholds: RDD[HouseholdAddress] = householdRecords.filter(_.householdId.isDefined)
 
@@ -100,7 +100,7 @@ object HouseholdStream {
       .map { case householdAddress =>
         val householdId = UUID.randomUUID()
         householdAddress.copy(householdId = Some(householdId))
-      }.persist(StorageLevel.MEMORY_AND_DISK)
+      }.persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     val result: RDD[JsObject] = householdAddressToJs
       .join(
