@@ -231,7 +231,7 @@ object BaldurSchema extends FileInputMeta with Serializable {
       ethnicInsight = FileInputSupport.getStringOptValue(input, "ethnicInsight"),
       race = FileInputSupport.getStringOptValue(input, "race"),
       religion = FileInputSupport.getStringOptValue(input, "religion"),
-      language = FileInputSupport.getIntOptValue(input, "language"),
+      language = FileInputSupport.getStringOptValue(input, "language"),
       occupationGroup = FileInputSupport.getStringOptValue(input, "occupationGroup"),
       occupation = FileInputSupport.getStringOptValue(input, "occupation"),
       phoneNumbers = FileInputSupport.getListOptValue(input, "phoneNumbers"),

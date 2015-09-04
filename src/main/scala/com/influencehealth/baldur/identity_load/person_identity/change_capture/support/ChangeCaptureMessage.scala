@@ -202,7 +202,7 @@ object ChangeCaptureMessage {
       ethnicInsight = (json \ "ethnicInsight").asOpt[String],
       race = (json \ "race").asOpt[String],
       religion = (json \ "religion").asOpt[String],
-      language = (json \ "language").asOpt[Int],
+      language = (json \ "language").asOpt[String],
       occupationGroup = (json \ "occupationGroup").asOpt[String],
       occupation = (json \ "occupation").asOpt[String],
       phoneNumbers = (json \ "phoneNumbers").asOpt[List[String]],
