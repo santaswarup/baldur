@@ -64,6 +64,9 @@ object Clean {
 
     if (cleansed.matches("(?i)null"))
       return ""
+    
+    if (cleansed.matches("(?i)None"))
+      return ""
 
     cleansed
   }
