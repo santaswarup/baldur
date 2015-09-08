@@ -104,7 +104,7 @@ object ExperianSchema extends FileInputMeta with Serializable {
     ("ncoaActionCode", "string"),
     ("ncoaAnkCode", "string"),
     ("ncoaMoveType", "string"),
-    ("ncoaMoveDate", "string","yyyyMMdd"),
+    ("ncoaMoveDate", "date","yyyyMMdd"),
     ("lacsFootnote", "string"),
     ("barcode", "string"),
     ("lacs", "string"),
