@@ -49,6 +49,7 @@ object ChangeCaptureStream {
     val existingActivitiesDetermined: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       changeCaptureStream
         .distinct()
+        .filter{ case changeMessage => changeMessage.messageType.equals("utilization")}
         .joinWithCassandraTable[ColumnChange](changeCaptureConfig.keyspace, changeCaptureConfig.activityChangeCaptureTable)
         .on(activityJoinColumns)
         .spanByKey
@@ -57,6 +58,7 @@ object ChangeCaptureStream {
 
     val newActivitiesDetermined: RDD[(ChangeCaptureMessage, Seq[ColumnChange])] =
       changeCaptureStream
+        .filter{ case changeMessage => changeMessage.messageType.equals("utilization")}
         .distinct()
         .map{x => (x,None)}
         .leftOuterJoin(existingActivitiesDetermined)
