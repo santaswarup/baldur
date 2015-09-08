@@ -149,8 +149,8 @@ object ExperianSupport {
         case false => Iterable()
         case true =>
           ExperianConstants.zipToClient
-          .filter{ case (clientId, zip) => zip.equals(zip5.get)}
-          .keys
+          .filter{ case (clientId, zip) => zip.equals(zip5.get) }
+          .map{ case (clientId, zip) => clientId }
       }
 
     clientIdSeq.nonEmpty match {

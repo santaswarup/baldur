@@ -95,12 +95,12 @@ object ExperianConstants {
       .map { case line => (line(0).toInt, line(1))}
       .toMap
 
-  val zipToClient: Map[Int, String] =
+  val zipToClient: Seq[(Int, String)] =
     Source.fromURL(getClass.getResource("/client_experian_zips.csv"))
       .getLines()
       .map(line => line.split(","))
       .map { case line => (line(0).toInt, line(1))}
-      .toMap
+      .toSeq
 
   val lastNameCodes: Map[String, String] =
     Source.fromURL(getClass.getResource("/beehive_ethnic_cw.csv"))
