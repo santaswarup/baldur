@@ -31,7 +31,7 @@ object ExperianSchema extends FileInputMeta with Serializable {
     ("ethnicInsight", "string"),
     ("source", "string"),
     ("householdId", "string"),
-    ("estimatedHomeValue", "float"),
+    ("estimatedHomeValue", "string"),
     ("lonOld", "float"),
     ("childrenInLivingUnit", "int"),
     ("childZeroToThreeBkt", "string"),
