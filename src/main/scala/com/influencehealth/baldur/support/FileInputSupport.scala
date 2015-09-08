@@ -38,8 +38,8 @@ object FileInputSupport {
     val ageCalculated: Option[Int] = dob.isDefined match {
       case false => ageRaw
       case true =>
-        val dobGet = dob.get
-        val today = DateTime.now()
+        val dobGet = dob.get.toLocalDateTime
+        val today = DateTime.now().toLocalDateTime
         try {
           Some(new Period(dobGet, today, PeriodType.yearMonthDay).getYears)
         } catch {
