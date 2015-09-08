@@ -155,7 +155,7 @@ object ExperianSupport {
 
     var mapList: Set[Map[String, Any]] = Set(Map())
 
-    clientIdSeq.foreach{ case id => mapList ++= Set(map + ("customerId" -> id))}
+    clientIdSeq.foreach{ case id => mapList += (map + ("customerId" -> id))}
 
     mapList
   }
