@@ -35,12 +35,12 @@ object FileInputSupport {
       case true => dobMap.head
     }
 
-    val ageCalculated: Option[Int] = dob.nonEmpty match {
+    val ageCalculated: Option[Int] = dob.isDefined match {
       case false => ageRaw
       case true => Some(new Period(dob.get, DateTime.now(), PeriodType.yearMonthDay).getYears)
     }
 
-    val ageGroup = ageCalculated.nonEmpty match {
+    val ageGroup = ageCalculated.isDefined match {
       case false => None
       case true => ageCalculated.get match{
         case x if x <= 4 => Some("A")
