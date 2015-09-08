@@ -140,7 +140,7 @@ object ExperianSupport {
     }
   }
 
-  def appendClientIds(map: Map[String, Any]): Set[Map[String, Any]] = {
+  def appendClientIds(map: Map[String, Any]): Seq[Map[String, Any]] = {
     val validAddressFlag = FileInputSupport.getValidAddressFlag(FileInputSupport.getStringOptValue(map, "ncoaActionCode"))
     val zip5 = FileInputSupport.getAddressStringValue(map, "zip5", validAddressFlag)
 
@@ -153,11 +153,10 @@ object ExperianSupport {
           .keysIterator
       }
 
-    var mapList: Set[Map[String, Any]] = Set(Map())
-
-    clientIdSeq.foreach{ case id => mapList += (map + ("customerId" -> id))}
-
-    mapList
+    clientIdSeq.nonEmpty match {
+      case false => Seq()
+      case true => clientIdSeq.map{ case id => map + ("customerId" -> id) }.toSeq
+    }
   }
 
 }
