@@ -81,7 +81,7 @@ object IdentityLoadApp {
         input.map{ line => Json.toJson(ActivityOutput.mapJsonFields(fileInputMeta.mapping(line.toMap[String, Any]))).as[JsObject]}
         .persist(StorageLevel.MEMORY_AND_DISK_SER)
 
-      case "experian" =>
+      case "prospects" =>
         input
           .flatMap{ line => ExperianSupport.appendClientIds(line.toMap[String, Any])}
           .map{ line => Json.toJson(ActivityOutput.mapJsonFields(fileInputMeta.mapping(line))).as[JsObject]}
