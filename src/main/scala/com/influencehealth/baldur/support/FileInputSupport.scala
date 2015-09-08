@@ -37,7 +37,14 @@ object FileInputSupport {
 
     val ageCalculated: Option[Int] = dob.isDefined match {
       case false => ageRaw
-      case true => Some(new Period(dob.get, DateTime.now(), PeriodType.yearMonthDay).getYears)
+      case true =>
+        val dobGet = dob.get
+        val today = DateTime.now()
+        try {
+          Some(new Period(dobGet, today, PeriodType.yearMonthDay).getYears)
+        } catch {
+          case err: Throwable => throw new Error(f"issue getting time period for $dobGet",err)
+        }
     }
 
     val ageGroup = ageCalculated.isDefined match {
