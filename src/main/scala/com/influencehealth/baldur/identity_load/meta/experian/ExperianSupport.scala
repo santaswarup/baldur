@@ -144,13 +144,13 @@ object ExperianSupport {
     val validAddressFlag = FileInputSupport.getValidAddressFlag(FileInputSupport.getStringOptValue(map, "ncoaActionCode"))
     val zip5 = FileInputSupport.getAddressStringValue(map, "zip5", validAddressFlag)
 
-    val clientIdSeq: Iterator[Int] =
+    val clientIdSeq: Iterable[Int] =
       zip5.isDefined match{
-        case false => Iterator()
+        case false => Iterable()
         case true =>
           ExperianConstants.zipToClient
           .filter{ case (clientId, zip) => zip.equals(zip5.get)}
-          .keysIterator
+          .keys
       }
 
     clientIdSeq.nonEmpty match {
