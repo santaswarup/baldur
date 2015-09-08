@@ -2,11 +2,86 @@ package com.influencehealth.baldur.identity_load.meta.experian
 
 import com.influencehealth.baldur.identity_load.meta._
 import com.influencehealth.baldur.support._
+import org.joda.time.DateTime
 
 /**
  * Experian schema
  */
 object ExperianSupport {
+
+  def getFinancialClass(beehive: Option[Int]): (Option[Int], Option[String], Option[String]) = {
+    beehive.isDefined match {
+      case false => (None, None, None)
+      case true => ExperianConstants.beehiveToFinancialClass.getOrElse(beehive.get, (None,None,None))
+    }
+
+  }
+
+  def getBeehiveCluster(map: Map[String, Any]): Option[Int] = {
+    val ageDob: (Option[DateTime], Option[Int], Option[String]) = FileInputSupport.getAgeDob(map, "age", "dob")
+    val age: Option[Int] = ageDob._2
+
+    val education: Option[Int] = FileInputSupport.getIntOptValue(map, "education")
+    val maritalStatus: Option[String] = FileInputSupport.getStringOptValue(map, "maritalStatus")
+    val occupationGroup: Option[String] = FileInputSupport.getStringOptValue(map, "occupationGroup")
+    val lastName: Option[String] = FileInputSupport.getStringOptValue(map, "lastName")
+    val householdIncome: Option[String] = FileInputSupport.getStringOptValue(map, "householdIncome")
+    val presenceOfChild: Option[String] = FileInputSupport.getStringOptValue(map, "presenceOfChild")
+
+    val educationCode: Option[String] =
+      education.isDefined match{
+        case false => None
+        case true => ExperianConstants.educationCodes.get(education.get)
+      }
+
+    val maritalStatusCode: Option[String] =
+      maritalStatus.isDefined match{
+        case false => None
+        case true => ExperianConstants.maritalStatusCodes.get(maritalStatus.get.toUpperCase)
+      }
+
+    val occupationGroupCode: Option[String] =
+      occupationGroup.isDefined match{
+        case false => None
+        case true => ExperianConstants.occupationCodes.get(occupationGroup.get.last.toInt)
+      }
+
+    val householdIncomeCode: Option[String] =
+      householdIncome.isDefined match{
+        case false => None
+        case true => ExperianConstants.incomeCodes.get(householdIncome.get.toUpperCase)
+      }
+
+    val ageCode: Option[String] =
+      age.isDefined match{
+        case false => None
+        case true => ExperianConstants.ageCodes.get(age.get)
+      }
+
+    val pocCode: Option[String] =
+      presenceOfChild.isDefined match {
+        case false => None
+        case true => Some(ExperianConstants.presenceOfChildCodes.getOrElse(presenceOfChild.get.toUpperCase, "44"))
+      }
+
+    val ethnicCode: Option[String] =
+      lastName.isDefined match {
+        case false => Some("34")
+        case true => Some(ExperianConstants.presenceOfChildCodes.getOrElse(lastName.get.toUpperCase, "34"))
+      }
+
+    val allDefined: Boolean = educationCode.isDefined && maritalStatusCode.isDefined && householdIncomeCode.isDefined &&
+      ageCode.isDefined && ethnicCode.isDefined && occupationGroupCode.isDefined && pocCode.isDefined
+
+    val combinedCode: String = allDefined match {
+      case false => ""
+      case true => educationCode.get + maritalStatusCode.get + householdIncomeCode.get + ageCode.get + ethnicCode.get +
+        occupationGroupCode.get + pocCode.get
+    }
+
+    Some(ExperianConstants.combinedToCluster.getOrElse(combinedCode,99))
+  }
+
 
   def getPhoneNumbers(map: Map[String, Any]): Option[List[String]] = {
     val phoneString: Option[String] = FileInputSupport.getStringOptValue(map, "phoneNumbers")
@@ -63,7 +138,7 @@ object ExperianSupport {
       zip5.isDefined match{
         case false => Iterator()
         case true =>
-          zipToClient
+          ExperianConstants.zipToClient
           .filter{ case (clientId, zip) => zip.equals(zip5.get)}
           .keysIterator
       }
@@ -75,116 +150,4 @@ object ExperianSupport {
     mapList
   }
 
-  val zipToClient: Map[Int, String] =
-    Map(1 -> "30032",
-      1 -> "30034",
-      1 -> "30035",
-      1 -> "30080",
-      1 -> "30303",
-      1 -> "30305",
-      1 -> "30306",
-      1 -> "30308",
-      1 -> "30309",
-      1 -> "30310",
-      1 -> "30311",
-      1 -> "30312",
-      1 -> "30313",
-      1 -> "30314",
-      1 -> "30315",
-      1 -> "30316",
-      1 -> "30318",
-      1 -> "30319",
-      1 -> "30324",
-      1 -> "30326",
-      1 -> "30327",
-      1 -> "30331",
-      1 -> "30334",
-      1 -> "30339",
-      1 -> "30342",
-      1 -> "30344",
-      1 -> "30349",
-      1 -> "30363",
-      1 -> "30002",
-      1 -> "30021",
-      1 -> "30030",
-      1 -> "30033",
-      1 -> "30038",
-      1 -> "30058",
-      1 -> "30062",
-      1 -> "30066",
-      1 -> "30067",
-      1 -> "30068",
-      1 -> "30075",
-      1 -> "30079",
-      1 -> "30082",
-      1 -> "30083",
-      1 -> "30084",
-      1 -> "30087",
-      1 -> "30088",
-      1 -> "30122",
-      1 -> "30126",
-      1 -> "30135",
-      1 -> "30168",
-      1 -> "30213",
-      1 -> "30214",
-      1 -> "30215",
-      1 -> "30236",
-      1 -> "30238",
-      1 -> "30252",
-      1 -> "30253",
-      1 -> "30260",
-      1 -> "30263",
-      1 -> "30268",
-      1 -> "30273",
-      1 -> "30274",
-      1 -> "30281",
-      1 -> "30288",
-      1 -> "30291",
-      1 -> "30294",
-      1 -> "30296",
-      1 -> "30297",
-      1 -> "30307",
-      1 -> "30317",
-      1 -> "30322",
-      1 -> "30328",
-      1 -> "30329",
-      1 -> "30336",
-      1 -> "30337",
-      1 -> "30338",
-      1 -> "30340",
-      1 -> "30341",
-      1 -> "30345",
-      1 -> "30346",
-      1 -> "30350",
-      1 -> "30354",
-      1 -> "30269",
-      1 -> "30276",
-      1 -> "30290",
-      1 -> "30205",
-      1 -> "30228",
-      1 -> "30265",
-      1 -> "30277",
-      1 -> "30248",
-      1 -> "30223",
-      1 -> "30233",
-      1 -> "30234",
-      1 -> "30107",
-      1 -> "30143",
-      1 -> "30148",
-      1 -> "30151",
-      1 -> "30175",
-      1 -> "30177",
-      1 -> "30540",
-      1 -> "30114",
-      1 -> "30115",
-      1 -> "30139",
-      1 -> "30183",
-      1 -> "30536",
-      1 -> "30734",
-      1 -> "30217",
-      1 -> "30220",
-      1 -> "30230",
-      1 -> "30251",
-      1 -> "30259"
-    )
 }

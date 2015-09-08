@@ -10,7 +10,7 @@ import org.joda.time.DateTime
 object ExperianSchema extends FileInputMeta with Serializable {
   override def originalFields(): Seq[Product] = wrapRefArray(Array(
     ("addressId", "string"),
-    ("lastName", "string"),
+    ("lastName", "title"),
     ("personType", "string"),
     ("maritalStatus", "string"),
     ("updatedAt", "date", "yyyyMMdd"),
@@ -25,7 +25,7 @@ object ExperianSchema extends FileInputMeta with Serializable {
     ("zip5Old", "string"),
     ("occupation", "string"),
     ("addressQualityIndicator", "string"),
-    ("firstName", "string"),
+    ("firstName", "title"),
     ("combinedOwner", "string"),
     ("wealthRating", "int"),
     ("ethnicInsight", "string"),
@@ -54,8 +54,9 @@ object ExperianSchema extends FileInputMeta with Serializable {
     ("trackingDate", "date","yyyyMMdd"),
     ("lengthOfResidence", "int"),
     ("latOld", "float"),
-    ("middleName", "string"),
+    ("middleName", "title"),
     ("mosaicZip4", "string"),
+    ("education", "int"),
     ("carrierRouteOld", "string"),
     ("homeLandValue", "float"),
     ("addressType", "string"),
@@ -74,7 +75,6 @@ object ExperianSchema extends FileInputMeta with Serializable {
     ("dwellType", "string"),
     ("homeYearBuilt", "int"),
     ("childFourToSixBkt", "string"),
-    ("filler", "string"),
     ("address1", "string"),
     ("address2", "string"),
     ("city", "string"),
@@ -118,9 +118,12 @@ object ExperianSchema extends FileInputMeta with Serializable {
     val lat = getAnchorLatLon(FileInputSupport.getAddressStringValue(input, "lat", validAddressFlag))
     val lon = getAnchorLatLon(FileInputSupport.getAddressStringValue(input, "lon", validAddressFlag))
 
-    val ageDob: (Option[DateTime], Option[Int], Option[String]) = FileInputSupport.getAgeDob(input, "age", "dob")
+    val (dob, age, ageGroup): (Option[DateTime], Option[Int], Option[String]) = FileInputSupport.getAgeDob(input, "age", "dob")
     val phoneNumbers: Option[List[String]] = ExperianSupport.getPhoneNumbers(input)
     val childAgeBuckets: Option[Set[String]] = ExperianSupport.getChildAgeBuckets(input)
+    val beehiveCluster: Option[Int] = ExperianSupport.getBeehiveCluster(input)
+
+    val (financialClassID, financialClass, payerType) = ExperianSupport.getFinancialClass(beehiveCluster)
 
     ActivityOutput(
       personId = None,
@@ -139,11 +142,11 @@ object ExperianSchema extends FileInputMeta with Serializable {
       lastName = FileInputSupport.getStringOptValue(input, "lastName"),
       prefix = FileInputSupport.getStringOptValue(input, "prefix"),
       personalSuffix = FileInputSupport.getStringOptValue(input, "personalSuffix"),
-      dob = ageDob._1,
-      age = ageDob._2,
-      ageGroup = ageDob._3,
+      dob = dob,
+      age = age,
+      ageGroup = ageGroup,
       sex = FileInputSupport.getStringOptValue(input, "sex"),
-      payerType = FileInputSupport.getStringOptValue(input, "payerType"),
+      payerType = payerType,
       maritalStatus = FileInputSupport.getStringOptValue(input, "maritalStatus"),
       ethnicInsight = FileInputSupport.getStringOptValue(input, "ethnicInsight"),
       race = FileInputSupport.getStringOptValue(input, "race"),
@@ -205,9 +208,9 @@ object ExperianSchema extends FileInputMeta with Serializable {
       countyCode = FileInputSupport.getAddressStringValue(input, "countyCode", validAddressFlag),
       censusBlock = FileInputSupport.getAddressStringValue(input, "censusBlock", validAddressFlag),
       censusTract = FileInputSupport.getAddressStringValue(input, "censusTract", validAddressFlag),
-      beehiveCluster = None, // TODO Replace this with beehive logic
-      financialClassId = None, // TODO Replace this with beehive conversion
-      financialClass = None // TODO Replace this with beehive conversion
+      beehiveCluster = beehiveCluster,
+      financialClassId = financialClassID,
+      financialClass = financialClass
 
     )
   }
