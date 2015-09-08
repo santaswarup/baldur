@@ -7,6 +7,54 @@ import com.influencehealth.baldur.support._
  * Experian schema
  */
 object ExperianSupport {
+
+  def getPhoneNumbers(map: Map[String, Any]): Option[List[String]] = {
+    val phoneString: Option[String] = FileInputSupport.getStringOptValue(map, "phoneNumbers")
+    val phoneStringCleansed: Option[String] = phoneString.isDefined match {
+      case false => None
+      case true => Some(phoneString.get.replace("[","").replace("]","").replace("u","").replace("'","").replace(" ",""))
+    }
+
+    phoneStringCleansed.isDefined match {
+      case false => None
+      case true => Some(phoneStringCleansed.get.split(",").toList)
+    }
+
+  }
+
+  def getChildAgeBuckets(map: Map[String, Any]): Option[Set[String]] = {
+    val childZeroToThreeBkt = FileInputSupport.getStringOptValue(map, "childZeroToThreeBkt")
+    val childFourToSixBkt = FileInputSupport.getStringOptValue(map, "childFourToSixBkt")
+    val childSevenToNineBkt = FileInputSupport.getStringOptValue(map, "childSevenToNineBkt")
+    val childTenToTwelveBkt = FileInputSupport.getStringOptValue(map, "childTenToTwelveBkt")
+    val childThirteenToFifteenBkt = FileInputSupport.getStringOptValue(map, "childThirteenToFifteenBkt")
+    val childSixteenToEighteenBkt = FileInputSupport.getStringOptValue(map, "childSixteenToEighteenBkt")
+
+    var childAgeBuckets: Option[Set[String]] = Some(Set())
+
+    childAgeBuckets = appendToChildAgeBuckets(childZeroToThreeBkt, childAgeBuckets, "A")
+    childAgeBuckets = appendToChildAgeBuckets(childFourToSixBkt, childAgeBuckets, "B")
+    childAgeBuckets = appendToChildAgeBuckets(childSevenToNineBkt, childAgeBuckets, "C")
+    childAgeBuckets = appendToChildAgeBuckets(childTenToTwelveBkt, childAgeBuckets, "D")
+    childAgeBuckets = appendToChildAgeBuckets(childThirteenToFifteenBkt, childAgeBuckets, "E")
+    childAgeBuckets = appendToChildAgeBuckets(childSixteenToEighteenBkt, childAgeBuckets, "F")
+
+    childAgeBuckets.get.isEmpty match{
+      case true => None
+      case false => childAgeBuckets
+    }
+  }
+
+  def appendToChildAgeBuckets(stringOpt: Option[String], setOpt: Option[Set[String]], setValue: String) = {
+    stringOpt.isDefined match {
+      case false => setOpt
+      case true => stringOpt.get match {
+        case "Y" => Some(setOpt.get + setValue)
+        case _ => setOpt
+      }
+    }
+  }
+
   def appendClientIds(map: Map[String, Any]): Set[Map[String, Any]] = {
     val validAddressFlag = FileInputSupport.getValidAddressFlag(FileInputSupport.getStringOptValue(map, "ncoaActionCode"))
     val zip5 = FileInputSupport.getAddressStringValue(map, "zip5", validAddressFlag)

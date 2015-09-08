@@ -2,6 +2,7 @@ package com.influencehealth.baldur.identity_load.meta.experian
 
 import com.influencehealth.baldur.identity_load.meta._
 import com.influencehealth.baldur.support._
+import org.joda.time.DateTime
 
 /**
  * Experian schema
@@ -38,7 +39,7 @@ object ExperianSchema extends FileInputMeta with Serializable {
     ("stateOld", "string"),
     ("personalSuffix", "string"),
     ("validAddressFlagOld", "boolean"),
-    ("personId", "string"),
+    ("sourcePersonId", "string"),
     ("mailResponder", "string"),
     ("zip4Old", "string"),
     ("childSixteenToEighteenBkt", "string"),
@@ -117,26 +118,30 @@ object ExperianSchema extends FileInputMeta with Serializable {
     val lat = getAnchorLatLon(FileInputSupport.getAddressStringValue(input, "lat", validAddressFlag))
     val lon = getAnchorLatLon(FileInputSupport.getAddressStringValue(input, "lon", validAddressFlag))
 
+    val ageDob: (Option[DateTime], Option[Int], Option[String]) = FileInputSupport.getAgeDob(input, "age", "dob")
+    val phoneNumbers: Option[List[String]] = ExperianSupport.getPhoneNumbers(input)
+    val childAgeBuckets: Option[Set[String]] = ExperianSupport.getChildAgeBuckets(input)
+
     ActivityOutput(
       personId = None,
       customerId = FileInputSupport.getIntValue(input, "customerId"),
-      addressId = FileInputSupport.getUUIDOptValue(input, "addressId"),
-      householdId = FileInputSupport.getUUIDOptValue(input, "householdId"),
+      addressId = None,
+      householdId = None,
       messageType = FileInputSupport.getStringValue(input, "messageType"),
       source = FileInputSupport.getStringValue(input, "source"),
       sourceType = FileInputSupport.getStringValue(input, "sourceType"),
       personType = FileInputSupport.getStringValue(input, "personType"),
       sourcePersonId = FileInputSupport.getStringValue(input, "sourcePersonId"),
-      sourceRecordId = FileInputSupport.getStringValue(input, "sourceRecordId"),
+      sourceRecordId = FileInputSupport.getStringValue(input, "sourcePersonId"),
       trackingDate = FileInputSupport.getDateValue(input, "trackingDate"),
       firstName = FileInputSupport.getStringOptValue(input, "firstName"),
       middleName = FileInputSupport.getStringOptValue(input, "middleName"),
       lastName = FileInputSupport.getStringOptValue(input, "lastName"),
       prefix = FileInputSupport.getStringOptValue(input, "prefix"),
       personalSuffix = FileInputSupport.getStringOptValue(input, "personalSuffix"),
-      dob = FileInputSupport.getDateOptValue(input, "dob"),
-      age = FileInputSupport.getIntOptValue(input, "age"),
-      ageGroup = FileInputSupport.getStringOptValue(input, "ageGroup"),
+      dob = ageDob._1,
+      age = ageDob._2,
+      ageGroup = ageDob._3,
       sex = FileInputSupport.getStringOptValue(input, "sex"),
       payerType = FileInputSupport.getStringOptValue(input, "payerType"),
       maritalStatus = FileInputSupport.getStringOptValue(input, "maritalStatus"),
@@ -146,8 +151,7 @@ object ExperianSchema extends FileInputMeta with Serializable {
       language = FileInputSupport.getStringOptValue(input, "language"),
       occupationGroup = FileInputSupport.getStringOptValue(input, "occupationGroup"),
       occupation = FileInputSupport.getStringOptValue(input, "occupation"),
-      phoneNumbers = FileInputSupport.getListOptValue(input, "phoneNumbers"),
-      emails = FileInputSupport.getListOptValue(input, "emails"),
+      phoneNumbers = phoneNumbers,
       dwellType = FileInputSupport.getStringOptValue(input, "dwellType"),
       combinedOwner = FileInputSupport.getStringOptValue(input, "combinedOwner"),
       householdIncome = FileInputSupport.getStringOptValue(input, "householdIncome"),
@@ -171,7 +175,7 @@ object ExperianSchema extends FileInputMeta with Serializable {
       childTenToTwelveBkt = FileInputSupport.getStringOptValue(input, "childTenToTwelveBkt"),
       childThirteenToFifteenBkt = FileInputSupport.getStringOptValue(input, "childThirteenToFifteenBkt"),
       childSixteenToEighteenBkt = FileInputSupport.getStringOptValue(input, "childSixteenToEighteenBkt"),
-      childAgeBuckets = FileInputSupport.getSetOptValue(input, "childAgeBuckets"),
+      childAgeBuckets = childAgeBuckets,
       wealthRating = FileInputSupport.getIntOptValue(input, "wealthRating"),
       addressQualityIndicator = FileInputSupport.getStringOptValue(input, "addressQualityIndicator"),
       education = FileInputSupport.getIntOptValue(input, "education"),
@@ -201,63 +205,10 @@ object ExperianSchema extends FileInputMeta with Serializable {
       countyCode = FileInputSupport.getAddressStringValue(input, "countyCode", validAddressFlag),
       censusBlock = FileInputSupport.getAddressStringValue(input, "censusBlock", validAddressFlag),
       censusTract = FileInputSupport.getAddressStringValue(input, "censusTract", validAddressFlag),
-      beehiveCluster = FileInputSupport.getIntOptValue(input, "beehiveCluster"),
-      primaryCarePhysician = FileInputSupport.getLongOptValue(input, "primaryCarePhysician"),
-      servicedOn = FileInputSupport.getDateOptValue(input, "servicedOn"),
-      locationId = FileInputSupport.getIntOptValue(input, "locationId"),
-      activityType = FileInputSupport.getStringOptValue(input, "activityType"),
-      mxCodes = FileInputSupport.getListOptValue(input, "mxCodes"),
-      mxGroups = FileInputSupport.getIntSetOptValue(input, "mxGroups"),
-      providers = FileInputSupport.getSetOptValue(input, "providers"),
-      erPatient = FileInputSupport.getBoolOptValue(input, "erPatient"),
-      financialClassId = FileInputSupport.getIntOptValue(input, "financialClassId"),
-      financialClass = FileInputSupport.getStringOptValue(input, "financialClass"),
-      serviceLines = FileInputSupport.getSetOptValue(input, "serviceLines"),
-      patientType = FileInputSupport.getStringOptValue(input, "patientType"),
-      dischargeStatus = FileInputSupport.getIntOptValue(input, "dischargeStatus"),
-      admittedAt = FileInputSupport.getDateOptValue(input, "admittedAt"),
-      dischargedAt = FileInputSupport.getDateOptValue(input, "dischargedAt"),
-      finalBillDate = FileInputSupport.getDateOptValue(input, "finalBillDate"),
-      transactionDate = FileInputSupport.getDateOptValue(input, "transactionDate"),
-      activityDate = FileInputSupport.getDateOptValue(input, "activityDate"),
-      hospitalId = FileInputSupport.getStringOptValue(input, "hospitalId"),
-      hospital = FileInputSupport.getStringOptValue(input, "hospital"),
-      businessUnitId = FileInputSupport.getStringOptValue(input, "businessUnitId"),
-      businessUnit = FileInputSupport.getStringOptValue(input, "businessUnit"),
-      siteId = FileInputSupport.getStringOptValue(input, "siteId"),
-      site = FileInputSupport.getStringOptValue(input, "site"),
-      clinicId = FileInputSupport.getStringOptValue(input, "clinicId"),
-      clinic = FileInputSupport.getStringOptValue(input, "clinic"),
-      practiceLocationId = FileInputSupport.getStringOptValue(input, "practiceLocationId"),
-      practiceLocation = FileInputSupport.getStringOptValue(input, "practiceLocation"),
-      facilityId = FileInputSupport.getStringOptValue(input, "facilityId"),
-      facility = FileInputSupport.getStringOptValue(input, "facility"),
-      insuranceId = FileInputSupport.getStringOptValue(input, "insuranceId"),
-      insurance = FileInputSupport.getStringOptValue(input, "insurance"),
-      charges = FileInputSupport.getDoubleOptValue(input, "charges"),
-      cost = FileInputSupport.getDoubleOptValue(input, "cost"),
-      revenue = FileInputSupport.getDoubleOptValue(input, "revenue"),
-      contributionMargin = FileInputSupport.getDoubleOptValue(input, "contributionMargin"),
-      profit = FileInputSupport.getDoubleOptValue(input, "profit"),
-      systolic = FileInputSupport.getDoubleOptValue(input, "systolic"),
-      diastolic = FileInputSupport.getDoubleOptValue(input, "diastolic"),
-      height = FileInputSupport.getDoubleOptValue(input, "height"),
-      weight = FileInputSupport.getDoubleOptValue(input, "weight"),
-      bmi = FileInputSupport.getDoubleOptValue(input, "bmi"),
-      guarantorFirstName = FileInputSupport.getStringOptValue(input, "guarantorFirstName"),
-      guarantorLastName = FileInputSupport.getStringOptValue(input, "guarantorLastName"),
-      guarantorMiddleName = FileInputSupport.getStringOptValue(input, "guarantorMiddleName"),
-      activityId = FileInputSupport.getStringOptValue(input, "activityId"),
-      activity = FileInputSupport.getStringOptValue(input, "activity"),
-      activityGroupId = FileInputSupport.getStringOptValue(input, "activityGroupId"),
-      activityGroup = FileInputSupport.getStringOptValue(input, "activityGroup"),
-      activityLocationId = FileInputSupport.getStringOptValue(input, "activityLocationId"),
-      activityLocation = FileInputSupport.getStringOptValue(input, "activityLocation"),
-      assessments = FileInputSupport.getSetOptValue(input, "assessments"),
-      assessmentQuestions = FileInputSupport.getSetOptValue(input, "assessmentQuestions"),
-      assessmentAnswers = FileInputSupport.getSetOptValue(input, "assessmentAnswers"),
-      reasonId = FileInputSupport.getStringOptValue(input, "reasonId"),
-      reason = FileInputSupport.getStringOptValue(input, "reason")
+      beehiveCluster = None, // TODO Replace this with beehive logic
+      financialClassId = None, // TODO Replace this with beehive conversion
+      financialClass = None // TODO Replace this with beehive conversion
+
     )
   }
 }
