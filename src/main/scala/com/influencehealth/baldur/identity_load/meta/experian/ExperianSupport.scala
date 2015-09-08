@@ -9,12 +9,22 @@ import org.joda.time.DateTime
  */
 object ExperianSupport {
 
-  def getFinancialClass(beehive: Option[Int]): (Option[Int], Option[String], Option[String]) = {
-    beehive.isDefined match {
-      case false => (None, None, None)
-      case true => ExperianConstants.beehiveToFinancialClass.getOrElse(beehive.get, (None,None,None))
+  def getFinancialClass(beehive: Option[Int], age: Option[Int]): (Option[Int], Option[String], Option[String]) = {
+    age.isDefined match{
+      case false =>
+        beehive.isDefined match {
+          case false => (None, None, None)
+          case true => ExperianConstants.beehiveToFinancialClass.getOrElse(beehive.get, (None,None,None))
+      }
+      case true => age.get match {
+        case value if value >= 65 => (Some(9930), Some("TARGET PAYER  - MEDICARE"), Some("MI"))
+        case _ =>
+          beehive.isDefined match {
+            case false => (None, None, None)
+            case true => ExperianConstants.beehiveToFinancialClass.getOrElse(beehive.get, (None,None,None))
+        }
+      }
     }
-
   }
 
   def getBeehiveCluster(map: Map[String, Any]): Option[Int] = {

@@ -123,7 +123,7 @@ object ExperianSchema extends FileInputMeta with Serializable {
     val childAgeBuckets: Option[Set[String]] = ExperianSupport.getChildAgeBuckets(input)
     val beehiveCluster: Option[Int] = ExperianSupport.getBeehiveCluster(input)
 
-    val (financialClassID, financialClass, payerType) = ExperianSupport.getFinancialClass(beehiveCluster)
+    val (financialClassID, financialClass, payerType) = ExperianSupport.getFinancialClass(beehiveCluster, age)
 
     ActivityOutput(
       personId = None,
