@@ -93,6 +93,12 @@ object IdentityLoadApp {
 
     inputSample.foreach(println)
 
+    input
+      .flatMap{ line => ExperianSupport.appendClientIds(line.toMap[String, Any]) }
+        .filter(_.nonEmpty)
+        .take(5)
+        .foreach(ExperianSupport.printBeehiveCluster)
+
     val output =
       inputMapped
       .addIdentity(personIdentityConfig, kafkaParams, kafkaProducerConfig)
