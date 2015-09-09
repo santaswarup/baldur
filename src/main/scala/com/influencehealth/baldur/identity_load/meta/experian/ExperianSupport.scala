@@ -89,6 +89,8 @@ object ExperianSupport {
         occupationGroupCode.get + pocCode.get
     }
 
+    val beehive = ExperianConstants.combinedToCluster.getOrElse(combinedCode,99)
+
     val printSeq: Seq[(String, String)] = Seq(
       ("education: ", education.toString),
       ("maritalStatus: ", maritalStatus.toString),
@@ -104,7 +106,8 @@ object ExperianSupport {
       ("pocCode: ", pocCode.toString),
       ("ethnicCode: ", ethnicCode.toString),
       ("allDefined: ", allDefined.toString),
-      ("combinedCode: ", combinedCode.toString)
+      ("combinedCode: ", combinedCode.toString),
+      ("beehive: ", beehive.toString)
     )
 
     printSeq.foreach(println)
