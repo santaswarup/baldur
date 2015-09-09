@@ -85,7 +85,7 @@ object IdentityLoadApp {
         input
           .flatMap{ line => ExperianSupport.appendClientIds(line.toMap[String, Any]) }
           .filter(_.nonEmpty)
-          .map{ line => Json.toJson(ActivityOutput.mapJsonFields(fileInputMeta.mapping(line))).as[JsObject]}
+          .map{ line => Json.toJson(ActivityOutput.mapJsonFields(fileInputMeta.mapping(line))).as[JsObject] }
           .persist(StorageLevel.MEMORY_AND_DISK_SER)
     }
 

@@ -89,7 +89,7 @@ object ExperianSupport {
         occupationGroupCode.get + pocCode.get
     }
 
-    val beehive = ExperianConstants.combinedToCluster.getOrElse(combinedCode,99)
+    val beehive: Int = ExperianConstants.combinedToCluster.getOrElse(combinedCode,99)
 
     val printSeq: Seq[(String, String)] = Seq(
       ("education: ", education.toString),
@@ -176,7 +176,9 @@ object ExperianSupport {
         occupationGroupCode.get + pocCode.get
     }
 
-    Some(ExperianConstants.combinedToCluster.getOrElse(combinedCode,99))
+    val beehive: Int = ExperianConstants.combinedToCluster.getOrElse(combinedCode,99)
+
+    Some(beehive)
   }
 
 
