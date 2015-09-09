@@ -89,10 +89,6 @@ object IdentityLoadApp {
           .persist(StorageLevel.MEMORY_AND_DISK_SER)
     }
 
-    val inputSample = inputMapped.take(5)
-
-    inputSample.foreach(println)
-
     val output =
       inputMapped
       .addIdentity(personIdentityConfig, kafkaParams, kafkaProducerConfig)
