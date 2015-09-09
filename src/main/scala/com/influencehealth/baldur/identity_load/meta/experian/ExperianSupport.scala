@@ -27,7 +27,7 @@ object ExperianSupport {
     }
   }
 
-  def printBeehiveCluster(map: Map[String, Any]) = {
+  def getBeehiveCluster(map: Map[String, Any]): Option[Int] = {
     val ageDob: (Option[DateTime], Option[Int], Option[String]) = FileInputSupport.getAgeDob(map, "age", "dob")
     val age: Option[Int] = ageDob._2
 
@@ -91,96 +91,8 @@ object ExperianSupport {
 
     val beehive: Int = ExperianConstants.combinedToCluster.getOrElse(combinedCode,99)
 
-    val printSeq: Seq[(String, String)] = Seq(
-      ("education: ", education.toString),
-      ("maritalStatus: ", maritalStatus.toString),
-      ("occupationGroup: ", occupationGroup.toString),
-      ("lastName: ", lastName.toString),
-      ("householdIncome: ", householdIncome.toString),
-      ("presenceOfChild: ", presenceOfChild.toString),
-      ("educationCode: ", educationCode.toString),
-      ("maritalStatusCode: ", maritalStatusCode.toString),
-      ("occupationGroupCode: ", occupationGroupCode.toString),
-      ("householdIncomeCode: ", householdIncomeCode.toString),
-      ("ageCode: ", ageCode.toString),
-      ("pocCode: ", pocCode.toString),
-      ("ethnicCode: ", ethnicCode.toString),
-      ("allDefined: ", allDefined.toString),
-      ("combinedCode: ", combinedCode.toString),
-      ("beehive: ", beehive.toString)
-    )
-
-    printSeq.foreach(println)
-  }
-
-
-  def getBeehiveCluster(map: Map[String, Any]): Option[Int] = {
-    val ageDob: (Option[DateTime], Option[Int], Option[String]) = FileInputSupport.getAgeDob(map, "age", "dob")
-    val age: Option[Int] = ageDob._2
-
-    val education: Option[Int] = FileInputSupport.getIntOptValue(map, "education")
-    val maritalStatus: Option[String] = FileInputSupport.getStringOptValue(map, "maritalStatus")
-    val occupationGroup: Option[String] = FileInputSupport.getStringOptValue(map, "occupationGroup")
-    val lastName: Option[String] = FileInputSupport.getStringOptValue(map, "lastName")
-    val householdIncome: Option[String] = FileInputSupport.getStringOptValue(map, "householdIncome")
-    val presenceOfChild: Option[String] = FileInputSupport.getStringOptValue(map, "presenceOfChild")
-
-    val educationCode: Option[String] =
-      education.isDefined match{
-        case false => None
-        case true => ExperianConstants.educationCodes.get(education.get)
-      }
-
-    val maritalStatusCode: Option[String] =
-      maritalStatus.isDefined match{
-        case false => None
-        case true => ExperianConstants.maritalStatusCodes.get(maritalStatus.get.toUpperCase)
-      }
-
-    val occupationGroupCode: Option[String] =
-      occupationGroup.isDefined match{
-        case false => None
-        case true => ExperianConstants.occupationCodes.get(occupationGroup.get.last.toInt)
-      }
-
-    val householdIncomeCode: Option[String] =
-      householdIncome.isDefined match{
-        case false => None
-        case true => ExperianConstants.incomeCodes.get(householdIncome.get.toUpperCase)
-      }
-
-    val ageCode: Option[String] =
-      age.isDefined match{
-        case false => None
-        case true => ExperianConstants.ageCodes.get(age.get)
-      }
-
-    val pocCode: Option[String] =
-      presenceOfChild.isDefined match {
-        case false => None
-        case true => Some(ExperianConstants.presenceOfChildCodes.getOrElse(presenceOfChild.get.toUpperCase, "44"))
-      }
-
-    val ethnicCode: Option[String] =
-      lastName.isDefined match {
-        case false => Some("34")
-        case true => Some(ExperianConstants.lastNameCodes.getOrElse(lastName.get.toUpperCase, "34"))
-      }
-
-    val allDefined: Boolean = educationCode.isDefined && maritalStatusCode.isDefined && householdIncomeCode.isDefined &&
-      ageCode.isDefined && ethnicCode.isDefined && occupationGroupCode.isDefined && pocCode.isDefined
-
-    val combinedCode: String = allDefined match {
-      case false => ""
-      case true => educationCode.get + maritalStatusCode.get + householdIncomeCode.get + ageCode.get + ethnicCode.get +
-        occupationGroupCode.get + pocCode.get
-    }
-
-    val beehive: Int = ExperianConstants.combinedToCluster.getOrElse(combinedCode,99)
-
     Some(beehive)
   }
-
 
   def getPhoneNumbers(map: Map[String, Any]): Option[List[String]] = {
     val phoneString: Option[String] = FileInputSupport.getStringOptValue(map, "phoneNumbers")
