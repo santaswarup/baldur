@@ -53,7 +53,7 @@ object ExperianSupport {
     val occupationGroupCode: Option[String] =
       occupationGroup.isDefined match{
         case false => None
-        case true => ExperianConstants.occupationCodes.get(occupationGroup.get.last.toInt)
+        case true => ExperianConstants.occupationCodes.get(occupationGroup.get.takeRight(1).toInt)
       }
 
     val householdIncomeCode: Option[String] =
