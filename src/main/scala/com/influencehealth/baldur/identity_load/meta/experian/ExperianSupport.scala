@@ -77,7 +77,7 @@ object ExperianSupport {
     val ethnicCode: Option[String] =
       lastName.isDefined match {
         case false => Some("34")
-        case true => Some(ExperianConstants.presenceOfChildCodes.getOrElse(lastName.get.toUpperCase, "34"))
+        case true => Some(ExperianConstants.lastNameCodes.getOrElse(lastName.get.toUpperCase, "34"))
       }
 
     val allDefined: Boolean = educationCode.isDefined && maritalStatusCode.isDefined && householdIncomeCode.isDefined &&
@@ -164,7 +164,7 @@ object ExperianSupport {
     val ethnicCode: Option[String] =
       lastName.isDefined match {
         case false => Some("34")
-        case true => Some(ExperianConstants.presenceOfChildCodes.getOrElse(lastName.get.toUpperCase, "34"))
+        case true => Some(ExperianConstants.lastNameCodes.getOrElse(lastName.get.toUpperCase, "34"))
       }
 
     val allDefined: Boolean = educationCode.isDefined && maritalStatusCode.isDefined && householdIncomeCode.isDefined &&
