@@ -29,7 +29,7 @@ object ExperianSchema extends FileInputMeta with Serializable {
     ("combinedOwner", "string"),
     ("wealthRating", "int"),
     ("ethnicInsight", "string"),
-    ("source", "string"),
+    ("cbsaTypeOld", "string"),
     ("householdId", "string"),
     ("estimatedHomeValue", "string"),
     ("lonOld", "float"),
@@ -40,7 +40,7 @@ object ExperianSchema extends FileInputMeta with Serializable {
     ("personalSuffix", "string"),
     ("validAddressFlagOld", "boolean"),
     ("sourcePersonId", "string"),
-    ("mailResponder", "string"),
+    ("mosaicGlobalZip4", "string"),
     ("zip4Old", "string"),
     ("childSixteenToEighteenBkt", "string"),
     ("dpbcOld", "string"),
@@ -71,9 +71,11 @@ object ExperianSchema extends FileInputMeta with Serializable {
     ("customerId", "int"),
     ("hhComp", "string"),
     ("householdIncome", "string"),
-    ("mosaicGlobalZip4", "string"),
+    ("cbsaOld", "string"),
+    ("source", "string"),
     ("dwellType", "string"),
     ("homeYearBuilt", "int"),
+    ("mailResponder", "string"),
     ("childFourToSixBkt", "string"),
     ("address1", "string"),
     ("address2", "string"),
@@ -124,6 +126,8 @@ object ExperianSchema extends FileInputMeta with Serializable {
     val beehiveCluster: Option[Int] = ExperianSupport.getBeehiveCluster(input)
 
     val (financialClassID, financialClass, payerType) = ExperianSupport.getFinancialClass(beehiveCluster, age)
+
+    val (cbsa, cbsa_type) = FileInputSupport.getCbsaValues(input, validAddressFlag)
 
     ActivityOutput(
       personId = None,
@@ -204,6 +208,8 @@ object ExperianSchema extends FileInputMeta with Serializable {
       streetHouseNum = FileInputSupport.getAddressStringValue(input, "streetHouseNum", validAddressFlag),
       msa = FileInputSupport.getAddressStringValue(input, "msa", validAddressFlag),
       pmsa = FileInputSupport.getAddressStringValue(input, "pmsa", validAddressFlag),
+      cbsa = cbsa,
+      cbsa_type = cbsa_type,
       dpv = FileInputSupport.getAddressStringValue(input, "dpv", validAddressFlag),
       countyCode = FileInputSupport.getAddressStringValue(input, "countyCode", validAddressFlag),
       censusBlock = FileInputSupport.getAddressStringValue(input, "censusBlock", validAddressFlag),

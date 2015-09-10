@@ -3,6 +3,8 @@ package com.influencehealth.baldur.support
 import java.util.UUID
 import org.joda.time.{PeriodType, Period, DateTime}
 
+import scala.io.Source
+
 /**
  * Defines the contract for input metadata defining implementors.
  */
@@ -95,6 +97,35 @@ object FileInputSupport {
       case true => validAddressFlag.get match{
         case true => getFloatOptValue(map, columnName)
         case _ => None
+      }
+    }
+  }
+
+  def getCbsaValues(map: Map[String, Any], validAddressFlag: Option[Boolean]): (Option[String], Option[String]) = {
+    val county = getAddressStringValue(map, "county", validAddressFlag)
+
+    // County -> (CBSA, Type)
+    val countyToCbsa: Map[String, (String, String)] =
+      Source.fromURL(getClass.getResource("/county_cbsa_cw.csv"))
+        .getLines()
+        .drop(1)
+        .map(line => line.split(","))
+        .map { case line => (line(0), (line(1), line(2)))}
+        .toMap
+
+    validAddressFlag.isDefined match{
+      case false => (None, Some("C"))
+      case true => validAddressFlag.get match{
+        case false => (None, Some("C"))
+        case true => county.isDefined match {
+          case false => (None, Some("C"))
+          case true => countyToCbsa.get(county.get).isDefined match {
+            case false => (None, Some("C"))
+            case true =>
+              val tuple = countyToCbsa.get(county.get).get
+              (Some(tuple._1), Some(tuple._2))
+          }
+        }
       }
     }
   }

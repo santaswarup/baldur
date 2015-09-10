@@ -90,6 +90,8 @@ case class ActivityOutput(
     streetHouseNum: Option[String]=None,
     msa: Option[String]=None,
     pmsa: Option[String]=None,
+    cbsa: Option[String]=None,
+    cbsaType: Option[String]=None,
     dpv: Option[String]=None,
     countyCode: Option[String]=None,
     censusBlock: Option[String]=None,
@@ -244,9 +246,23 @@ object ActivityOutput {
       "dpbc" -> jsStringFromOptionString(activityOutput.dpbc),
       "lat" -> jsNumberFromOptionFloat(activityOutput.lat),
       "lon" -> jsNumberFromOptionFloat(activityOutput.lon),
+      "streetPreDir" -> jsStringFromOptionString(activityOutput.streetPreDir),
+      "streetName" -> jsStringFromOptionString(activityOutput.streetName),
+      "streetPostDir" -> jsStringFromOptionString(activityOutput.streetPostDir),
+      "streetSuffix" -> jsStringFromOptionString(activityOutput.streetSuffix),
+      "streetSecondNumber" -> jsStringFromOptionString(activityOutput.streetSecondNumber),
+      "streetSecondUnit" -> jsStringFromOptionString(activityOutput.streetSecondUnit),
+      "streetHouseNum" -> jsStringFromOptionString(activityOutput.streetHouseNum),
+      "msa" -> jsStringFromOptionString(activityOutput.msa),
+      "pmsa" -> jsStringFromOptionString(activityOutput.pmsa),
+      "cbsa" -> jsStringFromOptionString(activityOutput.cbsa),
+      "cbsaType" -> jsStringFromOptionString(activityOutput.cbsaType),
+      "dpv" -> jsStringFromOptionString(activityOutput.dpv),
+      "countyCode" -> jsStringFromOptionString(activityOutput.countyCode),
+      "censusBlock" -> jsStringFromOptionString(activityOutput.censusBlock),
+      "censusTract" -> jsStringFromOptionString(activityOutput.censusTract),
       "beehiveCluster" -> jsNumberFromOptionInt(activityOutput.beehiveCluster),
       "primaryCarePhysician" -> jsNumberFromOptionLong(activityOutput.primaryCarePhysician),
-
       "servicedOn" -> jsDateFromOption(activityOutput.servicedOn),
       "locationId" -> jsNumberFromOptionInt(activityOutput.locationId),
       "activityType" -> jsStringFromOptionString(activityOutput.activityType),
@@ -259,13 +275,11 @@ object ActivityOutput {
       "serviceLines" -> jsArrayFromOptionSetString(activityOutput.serviceLines),
       "patientType" -> jsStringFromOptionString(activityOutput.patientType),
       "dischargeStatus" -> jsNumberFromOptionInt(activityOutput.dischargeStatus),
-
       "admittedAt" -> jsDateFromOption(activityOutput.admittedAt),
       "dischargedAt" -> jsDateFromOption(activityOutput.dischargedAt),
       "finalBillDate" -> jsDateFromOption(activityOutput.finalBillDate),
       "transactionDate" -> jsDateFromOption(activityOutput.transactionDate),
       "activityDate" -> jsDateFromOption(activityOutput.activityDate),
-
       "hospitalId" -> jsStringFromOptionString(activityOutput.hospitalId),
       "hospital" -> jsStringFromOptionString(activityOutput.hospital),
       "businessUnitId" -> jsStringFromOptionString(activityOutput.businessUnitId),
@@ -278,7 +292,6 @@ object ActivityOutput {
       "practiceLocation" -> jsStringFromOptionString(activityOutput.practiceLocation),
       "facilityId" -> jsStringFromOptionString(activityOutput.facilityId),
       "facility" -> jsStringFromOptionString(activityOutput.facility),
-
       "insuranceId" -> jsStringFromOptionString(activityOutput.insuranceId),
       "insurance" -> jsStringFromOptionString(activityOutput.insurance),
       "charges" -> jsNumberFromOptionDouble(activityOutput.charges),
@@ -286,30 +299,26 @@ object ActivityOutput {
       "revenue" -> jsNumberFromOptionDouble(activityOutput.revenue),
       "contributionMargin" -> jsNumberFromOptionDouble(activityOutput.contributionMargin),
       "profit" -> jsNumberFromOptionDouble(activityOutput.profit),
-
       "systolic" -> jsNumberFromOptionDouble(activityOutput.systolic),
       "diastolic" -> jsNumberFromOptionDouble(activityOutput.diastolic),
       "height" -> jsNumberFromOptionDouble(activityOutput.height),
       "weight" -> jsNumberFromOptionDouble(activityOutput.weight),
       "bmi" -> jsNumberFromOptionDouble(activityOutput.bmi),
-
       "guarantorFirstName" -> jsStringFromOptionString(activityOutput.guarantorFirstName),
       "guarantorLastName" -> jsStringFromOptionString(activityOutput.guarantorLastName),
       "guarantorMiddleName" -> jsStringFromOptionString(activityOutput.guarantorMiddleName),
-
       "activityId" -> jsStringFromOptionString(activityOutput.activityId),
       "activity" -> jsStringFromOptionString(activityOutput.activity),
       "activityGroupId" -> jsStringFromOptionString(activityOutput.activityGroupId),
       "activityGroup" -> jsStringFromOptionString(activityOutput.activityGroup),
       "activityLocationId" -> jsStringFromOptionString(activityOutput.activityLocationId),
       "activityLocation" -> jsStringFromOptionString(activityOutput.activityLocation),
-
       "assessments" -> jsArrayFromOptionSetString(activityOutput.assessments),
       "assessmentQuestions" -> jsArrayFromOptionSetString(activityOutput.assessmentQuestions),
       "assessmentAnswers" -> jsArrayFromOptionSetString(activityOutput.assessmentAnswers),
-
       "reasonId" -> jsStringFromOptionString(activityOutput.reasonId),
       "reason" -> jsStringFromOptionString(activityOutput.reason)
+
 
     )
   }
