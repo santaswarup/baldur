@@ -195,7 +195,7 @@ object BaldurSchema extends FileInputMeta with Serializable {
     val lat = getAnchorLatLon(FileInputSupport.getAddressStringValue(input, "lat", validAddressFlag))
     val lon = getAnchorLatLon(FileInputSupport.getAddressStringValue(input, "lon", validAddressFlag))
 
-    val (cbsa, cbsa_type) = FileInputSupport.getCbsaValues(input, validAddressFlag)
+    val (cbsa, cbsaType) = FileInputSupport.getCbsaValues(input, validAddressFlag)
 
     // Logic below temporarily added to handle Piedmont's duplicate issue in the physician office data set
     val customerId = FileInputSupport.getIntValue(input, "customerId")
@@ -290,7 +290,7 @@ object BaldurSchema extends FileInputMeta with Serializable {
       msa = FileInputSupport.getAddressStringValue(input, "msa", validAddressFlag),
       pmsa = FileInputSupport.getAddressStringValue(input, "pmsa", validAddressFlag),
       cbsa = cbsa,
-      cbsa_type = cbsa_type,
+      cbsaType = cbsaType,
       dpv = FileInputSupport.getAddressStringValue(input, "dpv", validAddressFlag),
       countyCode = FileInputSupport.getAddressStringValue(input, "countyCode", validAddressFlag),
       censusBlock = FileInputSupport.getAddressStringValue(input, "censusBlock", validAddressFlag),

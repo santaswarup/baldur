@@ -127,7 +127,7 @@ object ExperianSchema extends FileInputMeta with Serializable {
 
     val (financialClassID, financialClass, payerType) = ExperianSupport.getFinancialClass(beehiveCluster, age)
 
-    val (cbsa, cbsa_type) = FileInputSupport.getCbsaValues(input, validAddressFlag)
+    val (cbsa, cbsaType) = FileInputSupport.getCbsaValues(input, validAddressFlag)
 
     ActivityOutput(
       personId = None,
@@ -209,7 +209,7 @@ object ExperianSchema extends FileInputMeta with Serializable {
       msa = FileInputSupport.getAddressStringValue(input, "msa", validAddressFlag),
       pmsa = FileInputSupport.getAddressStringValue(input, "pmsa", validAddressFlag),
       cbsa = cbsa,
-      cbsa_type = cbsa_type,
+      cbsaType = cbsaType,
       dpv = FileInputSupport.getAddressStringValue(input, "dpv", validAddressFlag),
       countyCode = FileInputSupport.getAddressStringValue(input, "countyCode", validAddressFlag),
       censusBlock = FileInputSupport.getAddressStringValue(input, "censusBlock", validAddressFlag),
