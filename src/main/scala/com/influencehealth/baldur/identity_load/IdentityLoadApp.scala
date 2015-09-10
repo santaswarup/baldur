@@ -59,7 +59,6 @@ object IdentityLoadApp {
     // TODO - put the Clean class in its own repo, import it to whatever projects need it
     val input: RDD[Seq[(String, Any)]] = sc.textFile(config.in.getPath,personIdentityConfig.filePartitions)
       .map(line => line.split(delimiter))
-      .filter( line => !line(0).equals("address_id"))
       .map(fields => {
         try {
           val cleansedFields = fields.zip(fieldsMapping.value).map(Clean.byType)
