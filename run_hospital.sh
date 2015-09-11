@@ -7,7 +7,7 @@ $SPARK_HOME/bin/spark-submit \
   --class com.influencehealth.baldur.intake.IntakeApp \
   target/scala-2.11/baldur_2.11-1.0.jar \
   -i $1 \
-  -o /data/Baldur/input \
+  -o /data/Baldur/ \
   -c piedmont \
   --source-type "hospital" \
   --source epic \
