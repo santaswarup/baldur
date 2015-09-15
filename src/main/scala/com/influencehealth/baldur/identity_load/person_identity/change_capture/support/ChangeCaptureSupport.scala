@@ -35,6 +35,7 @@ object ChangeCaptureSupport {
     "language",
     "occupationGroup",
     "occupation",
+    "emails",
     "phoneNumbers",
     "dwellType",
     "combinedOwner",
