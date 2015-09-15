@@ -1,7 +1,7 @@
 package com.influencehealth.baldur.identity_load.person_identity.householding.support
 
 import java.util.UUID
-
+import com.influencehealth.baldur.identity_load.person_identity.support.{SupportImpl, Support}
 import play.api.libs.json.JsObject
 
 case class HouseholdAddress(personId: UUID,
@@ -24,22 +24,22 @@ case class HouseholdAddress(personId: UUID,
 
 
 object HouseholdAddress {
-
+  var support: Support = SupportImpl
   def create(jsObj: JsObject): HouseholdAddress =
 
       HouseholdAddress(
         (jsObj \ "personId").as[UUID],
         (jsObj \ "customerId").as[Int],
-        (jsObj \ "address1").asOpt[String],
-        (jsObj \ "address2").asOpt[String],
-        (jsObj \ "city").asOpt[String],
-        (jsObj \ "state").asOpt[String],
+        support.toLowerCaseOption((jsObj \ "address1").asOpt[String]),
+        support.toLowerCaseOption((jsObj \ "address2").asOpt[String]),
+        support.toLowerCaseOption((jsObj \ "city").asOpt[String]),
+        support.toLowerCaseOption((jsObj \ "state").asOpt[String]),
         (jsObj \ "zip5").asOpt[String],
         (jsObj \ "zip4").asOpt[String],
         (jsObj \ "lat").asOpt[Float],
         (jsObj \ "lon").asOpt[Float],
         (jsObj \ "validAddressFlag").asOpt[Boolean],
-        (jsObj \ "lastName").asOpt[String]
+        support.toLowerCaseOption((jsObj \ "lastName").asOpt[String])
   )
 
 }
