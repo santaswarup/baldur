@@ -75,29 +75,29 @@ trait Support {
 
     // adding comparison vals. ensuring that string comparisons are not case sensitive by using toUpperCase
 
-    val unidentifiedMrid: Option[String] = Some(f"${unidentified.source}.${unidentified.sourceType}.${unidentified.sourcePersonId}".toUpperCase)
+    val unidentifiedMrid: Option[String] = Some(f"${unidentified.source}.${unidentified.sourceType}.${unidentified.sourcePersonId}".toLowerCase)
     val identifiedMrid: Set[String] = candidateIdentity.getSet[String]("mrids").isEmpty match{
       case true => Set()
-      case false => candidateIdentity.getSet[String]("mrids").map(_.toUpperCase)
+      case false => candidateIdentity.getSet[String]("mrids").map(_.toLowerCase)
     }
 
-    val unidentifiedRootFirstName: Option[String] = toUpperCaseOption(unidentified.rootFirstName)
-    val identifiedRootFirstName: Option[String] = toUpperCaseOption(candidateIdentity.get[Option[String]]("root_first_name"))
+    val unidentifiedRootFirstName: Option[String] = toLowerCaseOption(unidentified.rootFirstName)
+    val identifiedRootFirstName: Option[String] = toLowerCaseOption(candidateIdentity.get[Option[String]]("root_first_name"))
 
-    val unidentifiedSex: Option[String] = toUpperCaseOption(unidentified.sex)
-    val identifiedSex: Option[String] = toUpperCaseOption(candidateIdentity.get[Option[String]]("sex"))
+    val unidentifiedSex: Option[String] = toLowerCaseOption(unidentified.sex)
+    val identifiedSex: Option[String] = toLowerCaseOption(candidateIdentity.get[Option[String]]("sex"))
 
-    val unidentifiedAddress2: Option[String] = toUpperCaseOption(unidentified.address2)
-    val identifiedAddress2: Option[String] = toUpperCaseOption(candidateIdentity.get[Option[String]]("address2"))
+    val unidentifiedAddress2: Option[String] = toLowerCaseOption(unidentified.address2)
+    val identifiedAddress2: Option[String] = toLowerCaseOption(candidateIdentity.get[Option[String]]("address2"))
 
-    val unidentifiedStreetSecondNumber: Option[String] = toUpperCaseOption(unidentified.streetSecondNumber)
-    val identifiedStreetSecondNumber: Option[String] = toUpperCaseOption(candidateIdentity.get[Option[String]]("street_second_number"))
+    val unidentifiedStreetSecondNumber: Option[String] = toLowerCaseOption(unidentified.streetSecondNumber)
+    val identifiedStreetSecondNumber: Option[String] = toLowerCaseOption(candidateIdentity.get[Option[String]]("street_second_number"))
 
-    val unidentifiedMiddleName: Option[String] = toUpperCaseOption(unidentified.middleName)
-    val identifiedMiddleName: Option[String] = toUpperCaseOption(candidateIdentity.get[Option[String]]("middle_name"))
+    val unidentifiedMiddleName: Option[String] = toLowerCaseOption(unidentified.middleName)
+    val identifiedMiddleName: Option[String] = toLowerCaseOption(candidateIdentity.get[Option[String]]("middle_name"))
 
-    val unidentifiedSuffix: Option[String] = toUpperCaseOption(unidentified.suffix)
-    val identifiedSuffix: Option[String] = toUpperCaseOption(candidateIdentity.get[Option[String]]("suffix"))
+    val unidentifiedSuffix: Option[String] = toLowerCaseOption(unidentified.suffix)
+    val identifiedSuffix: Option[String] = toLowerCaseOption(candidateIdentity.get[Option[String]]("suffix"))
 
 
 

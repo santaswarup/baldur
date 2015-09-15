@@ -332,60 +332,43 @@ object ChangeCaptureSupport {
       case (field, typeArgs, value) => Some(field, value)
     }
 
+    val changes = newColumnChanges
+      .map {
+      case Some ((columnName, value) ) =>
+        getChange (
+          value,
+          columnName,
+          changeCaptureMessage.customerId,
+          changeCaptureMessage.personId,
+          changeCaptureMessage.source,
+          changeCaptureMessage.sourceType,
+          changeCaptureMessage.sourceRecordId,
+          changeCaptureMessage.messageType,
+          trackedTable,
+          changeCaptureMessage.trackingDate,
+          None
+        )
+      case None => None
+    }
+      .filter (_.isDefined)
+      .map (_.get)
+
     trackedTable.equals("person_master") match {
       case true =>
-        val changes = newColumnChanges
-          .map {
-          case Some((columnName, value)) =>
-            getChange(
-              value,
-              columnName,
-              changeCaptureMessage.customerId,
-              changeCaptureMessage.personId,
-              changeCaptureMessage.source,
-              changeCaptureMessage.sourceType,
-              changeCaptureMessage.sourceRecordId,
-              changeCaptureMessage.messageType,
-              trackedTable,
-              changeCaptureMessage.trackingDate,
-              None
-            )
-          case None => None
-        }
-          .filter (_.isDefined)
-          .map (_.get)
-
         val mridChange = getMridsColumnChange(changeCaptureMessage)
-        val combinedChanges = mridChange._2.isDefined match {
-          case false => changes
-          case true => changes ++ Seq(mridChange._2.get)
+
+        val combinedChanges = changeCaptureMessage.messageType match {
+          case "prospect" => changes
+          case _ =>
+            mridChange._2.isDefined match {
+            case false => changes
+            case true => changes ++ Seq(mridChange._2.get)
+          }
         }
 
         (changeCaptureMessage,combinedChanges.toSeq)
 
-      case false =>
-        val changes = newColumnChanges
-        .map {
-        case Some ((columnName, value) ) =>
-          getChange (
-            value,
-            columnName,
-            changeCaptureMessage.customerId,
-            changeCaptureMessage.personId,
-            changeCaptureMessage.source,
-            changeCaptureMessage.sourceType,
-            changeCaptureMessage.sourceRecordId,
-            changeCaptureMessage.messageType,
-            trackedTable,
-            changeCaptureMessage.trackingDate,
-            None
-          )
-        case None => None
-      }
-        .filter (_.isDefined)
-        .map (_.get)
-
-        (changeCaptureMessage,changes.toSeq)
+      case false =>  (changeCaptureMessage,changes.toSeq)
     }
 
   }
