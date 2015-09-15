@@ -15,13 +15,17 @@ object SourceIdentity {
 
   def fromJson(obj: JsObject) = SourceIdentity(
     (obj \ "customerId").as[Int],
-    (obj \ support.ExternalPersonIdField).as[String],
-    (obj \ "source").as[String],
-    (obj \ "sourceType").as[String])
+    (obj \ support.ExternalPersonIdField).as[String].toLowerCase,
+    (obj \ "source").as[String].toLowerCase,
+    (obj \ "sourceType").as[String].toLowerCase)
 
   implicit class ConvertToSourceIdentity(personIdentityColumns: PersonIdentityColumns) {
     def sourceIdentity = {
-      SourceIdentity(personIdentityColumns.customerId, personIdentityColumns.sourcePersonId, personIdentityColumns.source, personIdentityColumns.sourceType)
+      SourceIdentity(
+        personIdentityColumns.customerId,
+        personIdentityColumns.sourcePersonId.toLowerCase,
+        personIdentityColumns.source.toLowerCase,
+        personIdentityColumns.sourceType.toLowerCase)
     }
   }
 }
