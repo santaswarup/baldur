@@ -32,8 +32,20 @@ object Identity2 {
       case None => None
     }
 
-    Identity2(personIdentity.customerId, personIdentity.address1.get, personIdentity.zip5.get, soundexLastName.get,
-      personIdentity.personId, support.rootFirstName(personIdentity.firstName, personIdentity.sex), personIdentity.streetSecondNumber, personIdentity.dob, personIdentity.emails.toSet, personIdentity.sex, personIdentity.middleName,
-      personIdentity.mrids, personIdentity.address2, personIdentity.personalSuffix)
+    Identity2(
+      personIdentity.customerId,
+      personIdentity.address1.get.toLowerCase,
+      personIdentity.zip5.get,
+      soundexLastName.get.toLowerCase,
+      personIdentity.personId,
+      support.rootFirstName(personIdentity.firstName, personIdentity.sex),
+      personIdentity.streetSecondNumber,
+      personIdentity.dob,
+      personIdentity.emails.toSet,
+      personIdentity.sex,
+      personIdentity.middleName,
+      personIdentity.mrids,
+      personIdentity.address2,
+      personIdentity.personalSuffix)
   }
 }

@@ -60,6 +60,13 @@ trait Support {
     }
   }
 
+  def toLowerCaseOption(str: Option[String]): Option[String] = {
+    str.isDefined match {
+      case false => None
+      case true => Some(str.get.toLowerCase)
+    }
+  }
+
   def identityScore(x: (PersonIdentityColumns, CassandraRow)): ((PersonIdentityColumns, CassandraRow), Int) = {
 
     var score = 0

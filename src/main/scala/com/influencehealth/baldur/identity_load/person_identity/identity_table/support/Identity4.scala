@@ -34,9 +34,22 @@ object Identity4 {
     }
 
     personIdentity.mrids.map { mrid =>
-      Identity4(personIdentity.customerId,  personIdentity.zip5.get, support.rootFirstName(personIdentity.firstName, personIdentity.sex).get, soundexLastName.get,
-        mrid, personIdentity.personId, personIdentity.address1, personIdentity.streetSecondNumber, personIdentity.dob, personIdentity.emails.toSet, personIdentity.sex, personIdentity.middleName,
-        personIdentity.mrids, personIdentity.address2, personIdentity.personalSuffix)
+      Identity4(
+        personIdentity.customerId,
+        personIdentity.zip5.get,
+        support.rootFirstName(personIdentity.firstName, personIdentity.sex).get.toLowerCase,
+        soundexLastName.get.toLowerCase,
+        mrid.toLowerCase,
+        personIdentity.personId,
+        personIdentity.address1,
+        personIdentity.streetSecondNumber,
+        personIdentity.dob,
+        personIdentity.emails.toSet,
+        personIdentity.sex,
+        personIdentity.middleName,
+        personIdentity.mrids,
+        personIdentity.address2,
+        personIdentity.personalSuffix)
     }
   }
 }
