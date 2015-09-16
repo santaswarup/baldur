@@ -21,13 +21,14 @@ case class PersonIdentityColumns(customerId: Int,
   sex: Option[String]=None,
   var personId: Option[UUID]=None) {
 
-  var support: Support = SupportImpl
-  var rootFirstName: Option[String] = support.rootFirstName(firstName, sex)
+  val support: Support = SupportImpl
+  val rootFirstName: Option[String] = support.toLowerCaseOption(support.rootFirstName(firstName, sex))
  
-  val soundexLastName: Option[String] = lastName match {
+  val soundexLastName: Option[String] = support.toLowerCaseOption(lastName match {
     case Some(name) => Soundex.compute(name)
     case None => None
-  }
+  })
+
 
 }
 

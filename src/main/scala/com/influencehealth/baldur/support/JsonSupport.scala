@@ -16,19 +16,19 @@ object JsonSupport {
 
   implicit val personIdentityColumnsReads: Reads[PersonIdentityColumns] = (
     (JsPath \ "customerId").read[Int] and
-    (JsPath \ "sourcePersonId").read[String] and
-    (JsPath \ "source").read[String] and
-    (JsPath \ "sourceType").read[String] and
-    (JsPath \ "address1").readNullable[String] and
-    (JsPath \ "address2").readNullable[String] and
-    (JsPath \ "addressSecondaryNumber").readNullable[String] and
+    (JsPath \ "sourcePersonId").read[String].map[String](_.toLowerCase) and
+    (JsPath \ "source").read[String].map[String](_.toLowerCase) and
+    (JsPath \ "sourceType").read[String].map[String](_.toLowerCase) and
+    (JsPath \ "address1").readNullable[String].map[Option[String]](support.toLowerCaseOption) and
+    (JsPath \ "address2").readNullable[String].map[Option[String]](support.toLowerCaseOption) and
+    (JsPath \ "streetSecondNumber").readNullable[String].map[Option[String]](support.toLowerCaseOption) and
     (JsPath \ "zip5").readNullable[String] and
-    (JsPath \ "firstName").readNullable[String] and
-    (JsPath \ "middleName").readNullable[String] and
-    (JsPath \ "lastName").readNullable[String] and
-    (JsPath \ "suffix").readNullable[String] and
+    (JsPath \ "firstName").readNullable[String].map[Option[String]](support.toLowerCaseOption) and
+    (JsPath \ "middleName").readNullable[String].map[Option[String]](support.toLowerCaseOption) and
+    (JsPath \ "lastName").readNullable[String].map[Option[String]](support.toLowerCaseOption) and
+    (JsPath \ "suffix").readNullable[String].map[Option[String]](support.toLowerCaseOption) and
     (JsPath \ "dob").readNullable[String].map[Option[DateTime]](support.toDateTimeOpt) and
-    (JsPath \ "sex").readNullable[String] and
+    (JsPath \ "sex").readNullable[String].map[Option[String]](support.toLowerCaseOption) and
     (JsPath \ "personId").readNullable[UUID] 
   )(PersonIdentityColumns.apply _)
 
