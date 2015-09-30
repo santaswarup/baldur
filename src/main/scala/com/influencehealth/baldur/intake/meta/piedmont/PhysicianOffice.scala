@@ -138,6 +138,7 @@ object PhysicianOffice extends ClientInputMeta with Piedmont with Serializable {
       .map(_.get)
       .mkString(",")
       .split(",")
+      .map(FileInputSupport.cleanseMedicalCodes)
       .toList)
   }
 

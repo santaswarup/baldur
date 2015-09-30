@@ -159,7 +159,9 @@ object FileInputSupport {
   var codeTypes: Seq[(Int, String)] = Seq(
     (11, "cpt"),
     (31, "icd9_diag"),
+    (32, "icd10_diag"),
     (41, "icd9_proc"),
+    (42, "icd10_proc"),
     (51, "ms_drg")
   )
 
@@ -189,6 +191,23 @@ object FileInputSupport {
       case "" => None
       case _ => Some(value.toString.replace(delimiter, ";" + getCodeType(codeType) + ",") + ";" + getCodeType(codeType))
     }
+  }
+
+  def cleanseMedicalCodes(codeAndType: String): String = {
+    val split = codeAndType.split(";")
+    val code: String = split(0)
+    val codeType: String = split(1)
+
+    val cleansedCode = codeType match{
+      case "11" => Clean.cpt(code)
+      case "31" => Clean.icdDiag(code, 9)
+      case "32" => Clean.icdDiag(code, 10)
+      case "41" => Clean.icdProc(code, 9)
+      case "42" => Clean.icdProc(code, 10)
+      case "51" => Clean.msDrg(code)
+    }
+
+    cleansedCode + ";" + codeType
   }
 
   def getStringValue(map: Map[String, Any], columnName: String): String = {
