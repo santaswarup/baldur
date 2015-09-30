@@ -142,6 +142,108 @@ object Clean {
 
   }
 
+  // Cleansing routine created against the following documentation: https://www.unitypoint.org/waterloo/filesimages/For%20Providers/ICD9-ICD10-Differences.pdf
+  def icd_diag(x: String, codeType: Int): Any = {
+    val y = string(x)
+
+    // ICD9 codes can only be 5 digits. ICD10 can be 7
+    val (minLength, maxLength) = codeType match {
+      case 9 => (3, 5) // must be 3-5 characters for icd-9
+      case 10 => (3, 7) // must be 3-7 characters for icd-10
+    }
+
+    y match {
+      case "" => None
+      case _ =>
+        // Strip decimal
+        val cleansed = y.replace(".","")
+
+        val validCleansed = codeType match {
+          // Between min/max length, first digit can be alphanumeric, last digits must be numeric
+          case 9 => cleansed.length >= minLength && cleansed.length <= maxLength && cleansed.head.isLetterOrDigit && cleansed.drop(1).forall(_.isDigit)
+
+          // Between min/max length, first digit can be alpha, 2nd and 3rd digit must be numeric, last digits must be alphanumeric
+          case 10 => cleansed.length >= minLength && cleansed.length <= maxLength && cleansed.head.isLetter && cleansed.slice(1,2).forall(_.isDigit) && cleansed.drop(3).forall(_.isLetterOrDigit)
+        }
+
+        validCleansed match {
+          case false => None
+          case true => cleansed
+        }
+
+    }
+  }
+
+  // Cleansing routine created against the following documentation: https://www.unitypoint.org/waterloo/filesimages/For%20Providers/ICD9-ICD10-Differences.pdf
+  def icd_proc(x: String, codeType: Int): Any = {
+    val y = string(x)
+
+    // ICD9 codes can only be 5 digits. ICD10 can be 7
+    val (minLength, maxLength) = codeType match {
+      case 9 => (3, 4) // must be 3-4 characters for icd-9
+      case 10 => (7, 7) // must be 7 characters for icd-10
+    }
+
+    y match {
+      case "" => None
+      case _ =>
+        // Strip decimal
+        val cleansed = y.replace(".","")
+
+        val validCleansed = codeType match {
+          // Between min/max length, all must be numeric
+          case 9 => cleansed.length >= minLength && cleansed.length <= maxLength && cleansed.forall(_.isDigit)
+
+          // Between min/max length, all must be alphanumeric
+          case 10 => cleansed.length >= minLength && cleansed.length <= maxLength && cleansed.forall(_.isLetterOrDigit)
+        }
+
+        validCleansed match {
+          case false => None
+          case true => cleansed
+        }
+
+    }
+  }
+
+  def cpt(x: String): Any = {
+    val y = string(x)
+
+    y match {
+      case "" => None
+      case _ =>
+        // Strip decimal, take the first 5 characters
+        val cleansed = y.replace(".","").take(5)
+
+        // Check if all characters are alphanumeric and length is 5, return none if not
+        val validCleansed = cleansed.length.equals(5) && cleansed.forall(_.isLetterOrDigit)
+
+        validCleansed match {
+          case false => None
+          case true => cleansed
+        }
+    }
+  }
+
+  def drg(x: String): Any = {
+    val y = string(x)
+
+    y match {
+      case "" => None
+      case _ =>
+        // Strip decimal
+        val cleansed = y.replace(".","")
+
+        // Length can be up to 3 characters, all numbers
+        val validCleansed = cleansed.length <= 3 && cleansed.forall(_.isDigit)
+
+        validCleansed match {
+          case false => None
+          case true => cleansed
+        }
+    }
+  }
+
   val dateParsers = Array(DateTimeFormat.forPattern("yyyy/MM/dd").getParser,
     DateTimeFormat.forPattern("yyyyMMdd").getParser,
     DateTimeFormat.forPattern("yyyy-MM-dd").getParser,
