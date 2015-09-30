@@ -34,6 +34,30 @@ object Clean {
       } catch {
         case err: Throwable => throw new Error(f"$fieldName is not an boolean: $fieldValue",err)
       }
+    case (fieldName, "icdDiag", codeType: Int) =>
+      try {
+        Clean.icdDiag(fieldValue, codeType)
+      } catch {
+        case err: Throwable => throw new Error(f"$fieldName is not an icd-Diag code (code, codeType): ($fieldValue,$codeType)",err)
+      }
+    case (fieldName, "icdProc", codeType: Int) =>
+      try {
+        Clean.icdProc(fieldValue, codeType)
+      } catch {
+        case err: Throwable => throw new Error(f"$fieldName is not an icd-Proc code (code, codeType): ($fieldValue,$codeType)",err)
+      }
+    case (fieldName, "cpt") =>
+      try {
+        Clean.cpt(fieldValue)
+      } catch {
+        case err: Throwable => throw new Error(f"$fieldName is not a cpt code: $fieldValue",err)
+      }
+    case (fieldName, "msDrg") =>
+      try {
+        Clean.msDrg(fieldValue)
+      } catch {
+        case err: Throwable => throw new Error(f"$fieldName is not an msDrg code: $fieldValue",err)
+      }
     case (fieldName, "date") =>
       try {
       Clean.date(fieldValue)
@@ -143,7 +167,7 @@ object Clean {
   }
 
   // Cleansing routine created against the following documentation: https://www.unitypoint.org/waterloo/filesimages/For%20Providers/ICD9-ICD10-Differences.pdf
-  def icd_diag(x: String, codeType: Int): Any = {
+  def icdDiag(x: String, codeType: Int): Any = {
     val y = string(x)
 
     // ICD9 codes can only be 5 digits. ICD10 can be 7
@@ -175,7 +199,7 @@ object Clean {
   }
 
   // Cleansing routine created against the following documentation: https://www.unitypoint.org/waterloo/filesimages/For%20Providers/ICD9-ICD10-Differences.pdf
-  def icd_proc(x: String, codeType: Int): Any = {
+  def icdProc(x: String, codeType: Int): Any = {
     val y = string(x)
 
     // ICD9 codes can only be 5 digits. ICD10 can be 7
@@ -225,7 +249,7 @@ object Clean {
     }
   }
 
-  def drg(x: String): Any = {
+  def msDrg(x: String): Any = {
     val y = string(x)
 
     y match {
