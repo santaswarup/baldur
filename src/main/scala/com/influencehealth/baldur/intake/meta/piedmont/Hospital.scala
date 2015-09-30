@@ -50,6 +50,9 @@ object Hospital extends ClientInputMeta with Piedmont with Serializable {
 
   override def mapping(map: Map[String, Any]): ActivityOutput = {
 
+    val medicalCodes = getMedicalCodes(map)
+    val codeGroups = FileInputSupport.getCodeGroups(medicalCodes)
+
     val zipInput = FileInputSupport.getStringOptValue(map, "zip5")
 
     val zip5: Option[String] = FileInputSupport.containsHyphen(zipInput) match {
@@ -95,7 +98,8 @@ object Hospital extends ClientInputMeta with Piedmont with Serializable {
       dischargedAt = FileInputSupport.getDateOptValue(map, "dischargeDate"),
       servicedOn = FileInputSupport.getDateOptValue(map, "dischargeDate"),
       activityDate = FileInputSupport.getDateOptValue(map, "dischargeDate"),
-      mxCodes = getMedicalCodes(map),
+      mxCodes = medicalCodes,
+      mxGroups = codeGroups,
       patientType = getPatientType(map),
       erPatient = getErFlag(map),
       financialClassId = financialClass._1,

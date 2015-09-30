@@ -180,7 +180,7 @@ object Clean {
       case "" => None
       case _ =>
         // Strip decimal
-        val cleansed = y.replace(".","")
+        val cleansed = y.replace(".","").toLowerCase
 
         val validCleansed = codeType match {
           // Between min/max length, first digit can be alphanumeric, last digits must be numeric
@@ -212,7 +212,7 @@ object Clean {
       case "" => None
       case _ =>
         // Strip decimal
-        val cleansed = y.replace(".","")
+        val cleansed = y.replace(".","").toLowerCase
 
         val validCleansed = codeType match {
           // Between min/max length, all must be numeric
@@ -237,7 +237,7 @@ object Clean {
       case "" => None
       case _ =>
         // Strip decimal, take the first 5 characters
-        val cleansed = y.replace(".","").take(5)
+        val cleansed = y.replace(".","").take(5).toLowerCase
 
         // Check if all characters are alphanumeric and length is 5, return none if not
         val validCleansed = cleansed.length.equals(5) && cleansed.forall(_.isLetterOrDigit)
@@ -256,7 +256,7 @@ object Clean {
       case "" => None
       case _ =>
         // Strip decimal
-        val cleansed = y.replace(".","")
+        val cleansed = y.replace(".","").toLowerCase
 
         // Length can be up to 3 characters, all numbers
         val validCleansed = cleansed.length <= 3 && cleansed.forall(_.isDigit)

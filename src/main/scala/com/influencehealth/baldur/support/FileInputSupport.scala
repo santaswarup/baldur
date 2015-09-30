@@ -10,6 +10,51 @@ import scala.io.Source
  */
 object FileInputSupport {
 
+  // County -> (CBSA, Type)
+  val countyToCbsa: Map[String, (String, String)] =
+    Source.fromURL(getClass.getResource("/county_cbsa_cw.csv"))
+      .getLines()
+      .drop(1)
+      .map(line => line.split(","))
+      .map { case line => (line(0), (line(1), line(2)))}
+      .toMap
+
+  val codeGroups: Map[Int, Set[(String, Int)]] =
+    Source.fromURL(getClass.getResource("/code_groups.txt"))
+      .getLines()
+      .drop(1)
+      .map(line => line.split("\\|"))
+      .map{ case line => (line(0).toInt, (line(1).toInt, line(2))) }
+      .toSeq
+      .groupBy{ case (a,b) => a }
+      .map{
+        case (codeGroup, sequence) =>
+          val newSet = sequence.map{ case (x, (codeType, code)) => (code.toLowerCase, codeType) }.toSet
+          (codeGroup, newSet)  }
+
+
+  def getCodeGroups(codes: Option[List[String]]): Option[Set[Int]] = {
+
+    val codeGrps: Option[Set[Int]] = codes.isEmpty match {
+      case true => None
+      case false =>
+        val codesSplit: List[(String, Int)] =
+          codes.get.map{ case codeAndType =>
+            val split = codeAndType.split(";")
+            (split(0).toLowerCase, split(1).toInt) }
+
+        val groups = codeGroups.filter{ case (codeGroup, codeSeq) => codeSeq.exists( codeAndType => codesSplit.contains(codeAndType)) }.keys.toSet
+
+        groups.isEmpty match {
+          case true => None
+          case false => Some(groups)
+        }
+
+    }
+
+    codeGrps
+  }
+
   def getAgeDob(map: Map[String, Any], ageColumn: String, dobColumn: String): (Option[DateTime], Option[Int], Option[String]) = {
     val dobMap =
       map
@@ -103,15 +148,6 @@ object FileInputSupport {
 
   def getCbsaValues(map: Map[String, Any], validAddressFlag: Option[Boolean]): (Option[String], Option[String]) = {
     val county = getAddressStringValue(map, "county", validAddressFlag)
-
-    // County -> (CBSA, Type)
-    val countyToCbsa: Map[String, (String, String)] =
-      Source.fromURL(getClass.getResource("/county_cbsa_cw.csv"))
-        .getLines()
-        .drop(1)
-        .map(line => line.split(","))
-        .map { case line => (line(0), (line(1), line(2)))}
-        .toMap
 
     validAddressFlag.isDefined match{
       case false => (None, Some("C"))
