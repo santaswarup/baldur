@@ -65,6 +65,131 @@ object FileInputSupport {
       .map{ case line => ((line(0).toInt, line(1).toInt, line(2)),(line(3).toInt, line(4)))}
       .toMap
 
+  def getServiceLines(codes: Option[List[String]], gender: Option[String]): Option[Set[String]] = {
+
+    val serviceLines: Option[Set[String]] = codes.isEmpty match {
+      case true => None
+      case false =>
+        val codesSplit: List[(String, Int)] =
+          codes.get.map{ case codeAndType =>
+            val split = codeAndType.split(";")
+            (split(0).toLowerCase, split(1).toInt) }
+
+        mapServiceLines(codesSplit, gender)
+    }
+
+    serviceLines
+
+  }
+
+  def mapServiceLines(codes: List[(String, Int)], gender: Option[String]): Option[Set[String]] = {
+
+    val diagCodes = codes.filter{ case (code, codeType) => codeType.equals(31) || codeType.equals(32) }
+    val procCodes = codes.filter{ case (code, codeType) => codeType.equals(41) || codeType.equals(42) }.take(5)
+    val cptCodes = codes.filter{ case (code, codeType) => codeType.equals(11) }.take(5)
+    val msDrg = codes.filter{ case (code, codeType) => codeType.equals(51) }
+
+    val msDrgServiceLines: Option[String] = getMsDrgServiceLines(msDrg, gender)
+    val diagServiceLines: Option[String] = getDiagServiceLines(diagCodes, gender)
+    val procServiceLines: Option[String] = getProcServiceLines(procCodes, cptCodes, gender, 5)
+
+  }
+
+  def getProcServiceLines(procCodes: List[(String, Int)], cptCodes: List[(String, Int)], gender: Option[String], maxIndexToSearch: Int): Option[String] = {
+    procCodes.isEmpty match {
+      case true => None
+      case false =>
+
+        var index: Int = 0
+        var serviceLines: Option[String] = None
+        var updated: Boolean = false
+
+        while(index <= maxIndexToSearch || updated.equals(true)) {
+
+          val procLookup = procedureServiceLines.get(procCodes(index))
+
+          val (serviceLineCheck, updateCheck) = checkProcedure(procLookup, gender)
+
+          if(updateCheck.equals(false)) {
+              val cptLookup = procedureServiceLines.get(cptCodes(index))
+              (serviceLineCheck, updateCheck) = checkProcedure(cptLookup, gender)
+          }
+
+          serviceLines = serviceLineCheck
+          updated = updateCheck
+          index = index + 1
+        }
+
+        serviceLines
+
+    }
+  }
+
+  def checkProcedure(procMatch: Option[(Int, String, Int, String, Int, String, String)], gender: Option[String]): (Option[String], Boolean) = {
+    procMatch.isDefined match {
+      case true =>
+        val (procLevel1Code, procLevel1Desc, procLevel2Code, procLevel2Desc, procLevel3Code, procLevel3Desc, procGender) = procMatch.get
+
+        procGender match {
+          case "" =>
+            (Some(procLevel1Code.toString + ";81," + procLevel2Code.toString + ";82," + procLevel3Code.toString + ";83"), true)
+          case _ => gender.isDefined match {
+            case true if gender.get.equals(procGender) =>
+              (Some(procLevel1Code.toString + ";81," + procLevel2Code.toString + ";82," + procLevel3Code.toString + ";83"), true)
+            case _ => (None, false)
+          }
+        }
+    }
+  }
+
+  def getMsDrgServiceLines(msDrg: List[(String, Int)], gender: Option[String]): Option[String] = {
+    msDrg.isEmpty match {
+      case true => None
+      case false =>
+        val drg: String = msDrg.head._1
+
+        val drgLookup = drgServiceLines.get(drg)
+
+        drgLookup.isDefined match {
+          case false => None
+          case true =>
+            val (drgLevel1Code, drgLevel1Desc, drgLevel2Code, drgLevel2Desc, drgLevel3Code, drgLevel3Desc, drgGender) = drgLookup.get
+
+            drgGender match {
+              case "" => Some(drgLevel1Code.toString + ";52," + drgLevel2Code + ";53")
+              case _ => gender.isDefined match {
+                case true if gender.get.equals(drgGender) => Some(drgLevel1Code.toString + ";52," + drgLevel2Code + ";53")
+                case _ => None
+              }
+            }
+        }
+    }
+  }
+
+  def getDiagServiceLines(diagCodes: List[(String, Int)], gender: Option[String]): Option[String] = {
+    diagCodes.isEmpty match {
+      case true => None
+      case false =>
+        val primaryDiag: (String, Int) = diagCodes.head
+
+        val diagLookup = diagnosisServiceLines.get(primaryDiag)
+
+        diagLookup.isDefined match {
+          case false => None
+          case true =>
+            val (diagLevel1Code, diagLevel1Desc, diagLevel2Code, drgLevel2Desc, diagGender) = diagLookup.get
+
+            diagGender match {
+              case "" => Some(diagLevel1Code.toString + ";21," + diagLevel2Code + ";22")
+              case _ => gender.isDefined match {
+                case true if gender.get.equals(diagGender) => Some(diagLevel1Code.toString + ";21," + diagLevel2Code + ";22")
+                case _ => None
+              }
+            }
+        }
+    }
+  }
+
   def getCodeGroups(codes: Option[List[String]]): Option[Set[Int]] = {
 
     val codeGrps: Option[Set[Int]] = codes.isEmpty match {
