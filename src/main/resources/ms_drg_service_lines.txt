@@ -1,0 +1,842 @@
+MX_CODE|LEVEL1_CODE|LEVEL1_DESC|LEVEL2_CODE|LEVEL2_DESC|LEVEL3_CODE|LEVEL3_DESC|GENDER
+572|1060|general surgery|10470|surgery trauma (general surgical)|103016|572 - skin debridement w/o cc/mcc|
+864|1050|general medicine|10200|infectious disease|101500|864 - fever of unknown origin|
+865|1050|general medicine|10200|infectious disease|101510|865 - viral illness w mcc|
+866|1050|general medicine|10200|infectious disease|101520|866 - viral illness w/o mcc|
+867|1050|general medicine|10200|infectious disease|101530|867 - other infectious & parasitic diseases diagnoses w mcc|
+868|1050|general medicine|10200|infectious disease|101540|868 - other infectious & parasitic diseases diagnoses w cc|
+869|1050|general medicine|10200|infectious disease|101550|869 - other infectious & parasitic diseases diagnoses w/o cc/mcc|
+870|1050|general medicine|10200|infectious disease|101560|870 - septicemia w mv 96+ hours|
+811|1050|general medicine|10210|medical oncology|101570|811 - red blood cell disorders w mcc|
+812|1050|general medicine|10210|medical oncology|101580|812 - red blood cell disorders w/o mcc|
+813|1050|general medicine|10210|medical oncology|101590|813 - coagulation disorders|
+814|1050|general medicine|10210|medical oncology|101600|814 - reticuloendothelial & immunity disorders w mcc|
+815|1050|general medicine|10210|medical oncology|101610|815 - reticuloendothelial & immunity disorders w cc|
+816|1050|general medicine|10210|medical oncology|101620|816 - reticuloendothelial & immunity disorders w/o cc/mcc|
+207|1050|general medicine|10220|other general medicine|101630|207 - respiratory system diagnosis w ventilator support 96+ hours|
+208|1050|general medicine|10220|other general medicine|101640|208 - respiratory system diagnosis w ventilator support <96 hours|
+871|1050|general medicine|10220|other general medicine|101650|871 - septicemia w/o mv 96+ hours w mcc|
+872|1050|general medicine|10220|other general medicine|101660|872 - septicemia w/o mv 96+ hours w/o mcc|
+915|1050|general medicine|10220|other general medicine|101670|915 - allergic reactions w mcc|
+916|1050|general medicine|10220|other general medicine|101680|916 - allergic reactions w/o mcc|
+919|1050|general medicine|10220|other general medicine|101690|919 - complications of treatment w mcc|
+920|1050|general medicine|10220|other general medicine|101700|920 - complications of treatment w cc|
+921|1050|general medicine|10220|other general medicine|101710|921 - complications of treatment w/o cc/mcc|
+922|1050|general medicine|10220|other general medicine|101720|922 - other injury, poisoning & toxic effect diag w mcc|
+923|1050|general medicine|10220|other general medicine|101730|923 - other injury, poisoning & toxic effect diag w/o mcc|
+947|1050|general medicine|10220|other general medicine|101740|947 - signs & symptoms w mcc|
+948|1050|general medicine|10220|other general medicine|101750|948 - signs & symptoms w/o mcc|
+949|1050|general medicine|10220|other general medicine|101760|949 - aftercare w cc/mcc|
+950|1050|general medicine|10220|other general medicine|101770|950 - aftercare w/o cc/mcc|
+951|1050|general medicine|10220|other general medicine|101780|951 - other factors influencing health status|
+945|1050|general medicine|10230|rehabilitation|101790|945 - rehabilitation w cc/mcc|
+946|1050|general medicine|10230|rehabilitation|101800|946 - rehabilitation w/o cc/mcc|
+604|1060|general surgery|10240|body injuries|101810|604 - trauma to the skin, subcut tiss & breast w mcc|
+605|1060|general surgery|10240|body injuries|101820|605 - trauma to the skin, subcut tiss & breast w/o mcc|
+913|1060|general surgery|10240|body injuries|101830|913 - traumatic injury w mcc|
+914|1060|general surgery|10240|body injuries|101840|914 - traumatic injury w/o mcc|
+963|1060|general surgery|10240|body injuries|101850|963 - other multiple significant trauma w mcc|
+964|1060|general surgery|10240|body injuries|101860|964 - other multiple significant trauma w cc|
+965|1060|general surgery|10240|body injuries|101870|965 - other multiple significant trauma w/o cc/mcc|
+614|1060|general surgery|10250|brain|101880|614 - adrenal & pituitary procedures w cc/mcc|
+615|1060|general surgery|10250|brain|101890|615 - adrenal & pituitary procedures w/o cc/mcc|
+927|1060|general surgery|10260|burns|101900|927 - extensive burns or full thickness burns w mv 96+ hrs w skin graft|
+928|1060|general surgery|10260|burns|101910|928 - full thickness burn w skin graft or inhal inj w cc/mcc|
+929|1060|general surgery|10260|burns|101920|929 - full thickness burn w skin graft or inhal inj w/o cc/mcc|
+625|1060|general surgery|10270|head and neck surgery|101930|625 - thyroid, parathyroid & thyroglossal procedures w mcc|
+626|1060|general surgery|10270|head and neck surgery|101940|626 - thyroid, parathyroid & thyroglossal procedures w cc|
+627|1060|general surgery|10270|head and neck surgery|101950|627 - thyroid, parathyroid & thyroglossal procedures w/o cc/mcc|
+592|1060|general surgery|10280|medicine dermatology|101960|592 - skin ulcers w mcc|
+593|1060|general surgery|10280|medicine dermatology|101970|593 - skin ulcers w cc|
+594|1060|general surgery|10280|medicine dermatology|101980|594 - skin ulcers w/o cc/mcc|
+600|1060|general surgery|10290|medicine other general medicine|101990|600 - non-malignant breast disorders w cc/mcc|
+601|1060|general surgery|10290|medicine other general medicine|102000|601 - non-malignant breast disorders w/o cc/mcc|
+137|1060|general surgery|10300|oral and maxillofacial surgery|102010|137 - mouth procedures w cc/mcc|
+138|1060|general surgery|10300|oral and maxillofacial surgery|102020|138 - mouth procedures w/o cc/mcc|
+157|1060|general surgery|10300|oral and maxillofacial surgery|102030|157 - dental & oral diseases w mcc|
+158|1060|general surgery|10300|oral and maxillofacial surgery|102040|158 - dental & oral diseases w cc|
+159|1060|general surgery|10300|oral and maxillofacial surgery|102050|159 - dental & oral diseases w/o cc/mcc|
+876|1060|general surgery|10310|other general surgery|102060|876 - o.r. procedure w principal diagnoses of mental illness|
+984|1060|general surgery|10320|prostate|102070|984 - prostatic o.r. procedure unrelated to principal diagnosis w mcc|
+985|1060|general surgery|10320|prostate|102080|985 - prostatic o.r. procedure unrelated to principal diagnosis w cc|
+986|1060|general surgery|10320|prostate|102090|986 - prostatic o.r. procedure unrelated to principal diagnosis w/o cc/mcc|
+335|1060|general surgery|10330|surgery adhesions|102100|335 - peritoneal adhesiolysis w mcc|
+336|1060|general surgery|10330|surgery adhesions|102110|336 - peritoneal adhesiolysis w cc|
+337|1060|general surgery|10330|surgery adhesions|102120|337 - peritoneal adhesiolysis w/o cc/mcc|
+338|1060|general surgery|10340|surgery appendectomy|102130|338 - appendectomy w complicated principal diag w mcc|
+339|1060|general surgery|10340|surgery appendectomy|102140|339 - appendectomy w complicated principal diag w cc|
+340|1060|general surgery|10340|surgery appendectomy|102150|340 - appendectomy w complicated principal diag w/o cc/mcc|
+341|1060|general surgery|10340|surgery appendectomy|102160|341 - appendectomy w/o complicated principal diag w mcc|
+342|1060|general surgery|10340|surgery appendectomy|102170|342 - appendectomy w/o complicated principal diag w cc|
+343|1060|general surgery|10340|surgery appendectomy|102180|343 - appendectomy w/o complicated principal diag w/o cc/mcc|
+619|1060|general surgery|10350|surgery bariatric/obesity|102190|619 - o.r. procedures for obesity w mcc|
+620|1060|general surgery|10350|surgery bariatric/obesity|102200|620 - o.r. procedures for obesity w cc|
+621|1060|general surgery|10350|surgery bariatric/obesity|102210|621 - o.r. procedures for obesity w/o cc/mcc|
+581|1060|general surgery|10360|surgery breast|102220|581 - other skin, subcut tiss & breast proc w/o cc/mcc|
+411|1060|general surgery|10370|surgery cholecystectomy|102230|411 - cholecystectomy w c.d.e. w mcc|
+412|1060|general surgery|10370|surgery cholecystectomy|102240|412 - cholecystectomy w c.d.e. w cc|
+413|1060|general surgery|10370|surgery cholecystectomy|102250|413 - cholecystectomy w c.d.e. w/o cc/mcc|
+414|1060|general surgery|10370|surgery cholecystectomy|102260|414 - cholecystectomy except by laparoscope w/o c.d.e. w mcc|
+415|1060|general surgery|10370|surgery cholecystectomy|102270|415 - cholecystectomy except by laparoscope w/o c.d.e. w cc|
+416|1060|general surgery|10370|surgery cholecystectomy|102280|416 - cholecystectomy except by laparoscope w/o c.d.e. w/o cc/mcc|
+417|1060|general surgery|10370|surgery cholecystectomy|102290|417 - laparoscopic cholecystectomy w/o c.d.e. w mcc|
+418|1060|general surgery|10370|surgery cholecystectomy|102300|418 - laparoscopic cholecystectomy w/o c.d.e. w cc|
+419|1060|general surgery|10370|surgery cholecystectomy|102310|419 - laparoscopic cholecystectomy w/o c.d.e. w/o cc/mcc|
+329|1060|general surgery|10380|surgery colorectal/lower gi|102320|329 - major small & large bowel procedures w mcc|
+330|1060|general surgery|10380|surgery colorectal/lower gi|102330|330 - major small & large bowel procedures w cc|
+331|1060|general surgery|10380|surgery colorectal/lower gi|102340|331 - major small & large bowel procedures w/o cc/mcc|
+332|1060|general surgery|10380|surgery colorectal/lower gi|102350|332 - rectal resection w mcc|
+333|1060|general surgery|10380|surgery colorectal/lower gi|102360|333 - rectal resection w cc|
+334|1060|general surgery|10380|surgery colorectal/lower gi|102370|334 - rectal resection w/o cc/mcc|
+344|1060|general surgery|10380|surgery colorectal/lower gi|102380|344 - minor small & large bowel procedures w mcc|
+345|1060|general surgery|10380|surgery colorectal/lower gi|102390|345 - minor small & large bowel procedures w cc|
+346|1060|general surgery|10380|surgery colorectal/lower gi|102400|346 - minor small & large bowel procedures w/o cc/mcc|
+347|1060|general surgery|10380|surgery colorectal/lower gi|102410|347 - anal & stomal procedures w mcc|
+348|1060|general surgery|10380|surgery colorectal/lower gi|102420|348 - anal & stomal procedures w cc|
+349|1060|general surgery|10380|surgery colorectal/lower gi|102430|349 - anal & stomal procedures w/o cc/mcc|
+616|1060|general surgery|10390|surgery endocrine|102440|616 - amputat of lower limb for endocrine,nutrit,& metabol dis w mcc|
+617|1060|general surgery|10390|surgery endocrine|102450|617 - amputat of lower limb for endocrine,nutrit,& metabol dis w cc|
+618|1060|general surgery|10390|surgery endocrine|102460|618 - amputat of lower limb for endocrine,nutrit,& metabol dis w/o cc/mcc|
+622|1060|general surgery|10390|surgery endocrine|102470|622 - skin grafts & wound debrid for endoc, nutrit & metab dis w mcc|
+227|1010|cardiology|10040|cardiac electrophysiology|100270|227 - cardiac defibrillator implant w/o cardiac cath w/o mcc|
+242|1010|cardiology|10040|cardiac electrophysiology|100280|242 - permanent cardiac pacemaker implant w mcc|
+243|1010|cardiology|10040|cardiac electrophysiology|100290|243 - permanent cardiac pacemaker implant w cc|
+244|1010|cardiology|10040|cardiac electrophysiology|100300|244 - permanent cardiac pacemaker implant w/o cc/mcc|
+245|1010|cardiology|10040|cardiac electrophysiology|100310|245 - aicd lead & generator procedures|
+258|1010|cardiology|10040|cardiac electrophysiology|100320|258 - cardiac pacemaker device replacement w mcc|
+259|1010|cardiology|10040|cardiac electrophysiology|100330|259 - cardiac pacemaker device replacement w/o mcc|
+260|1010|cardiology|10040|cardiac electrophysiology|100340|260 - cardiac pacemaker revision except device replacement w mcc|
+261|1010|cardiology|10040|cardiac electrophysiology|100350|261 - cardiac pacemaker revision except device replacement w cc|
+262|1010|cardiology|10040|cardiac electrophysiology|100360|262 - cardiac pacemaker revision except device replacement w/o cc/mcc|
+280|1010|cardiology|10050|medical cardiology|100370|280 - acute myocardial infarction, discharged alive w mcc|
+281|1010|cardiology|10050|medical cardiology|100380|281 - acute myocardial infarction, discharged alive w cc|
+282|1010|cardiology|10050|medical cardiology|100390|282 - acute myocardial infarction, discharged alive w/o cc/mcc |
+283|1010|cardiology|10050|medical cardiology|100400|283 - acute myocardial infarction, expired w mcc|
+284|1010|cardiology|10050|medical cardiology|100410|284 - acute myocardial infarction, expired w cc|
+285|1010|cardiology|10050|medical cardiology|100420|285 - acute myocardial infarction, expired w/o cc/mcc|
+286|1010|cardiology|10050|medical cardiology|100430|286 - circulatory disorders except ami, w card cath w mcc|
+287|1010|cardiology|10050|medical cardiology|100440|287 - circulatory disorders except ami, w card cath w/o mcc|
+288|1010|cardiology|10050|medical cardiology|100450|288 - acute & subacute endocarditis w mcc|
+289|1010|cardiology|10050|medical cardiology|100460|289 - acute & subacute endocarditis w cc|
+290|1010|cardiology|10050|medical cardiology|100470|290 - acute & subacute endocarditis w/o cc/mcc|
+291|1010|cardiology|10050|medical cardiology|100480|291 - heart failure & shock w mcc|
+292|1010|cardiology|10050|medical cardiology|100490|292 - heart failure & shock w cc|
+293|1010|cardiology|10050|medical cardiology|100500|293 - heart failure & shock w/o cc/mcc|
+296|1010|cardiology|10050|medical cardiology|100510|296 - cardiac arrest, unexplained w mcc|
+297|1010|cardiology|10050|medical cardiology|100520|297 - cardiac arrest, unexplained w cc|
+298|1010|cardiology|10050|medical cardiology|100530|298 - cardiac arrest, unexplained w/o cc/mcc|
+302|1010|cardiology|10050|medical cardiology|100540|302 - atherosclerosis w mcc|
+880|1000|behavioral medicine|10000|psychiatry|100000|880 - acute adjustment reaction & psychosocial dysfunction|
+881|1000|behavioral medicine|10000|psychiatry|100010|881 - depressive neuroses|
+882|1000|behavioral medicine|10000|psychiatry|100020|882 - neuroses except depressive|
+883|1000|behavioral medicine|10000|psychiatry|100030|883 - disorders of personality & impulse control|
+884|1000|behavioral medicine|10000|psychiatry|100040|884 - organic disturbances & mental retardation|
+885|1000|behavioral medicine|10000|psychiatry|100050|885 - psychoses|
+886|1000|behavioral medicine|10000|psychiatry|100060|886 - behavioral & developmental disorders|
+887|1000|behavioral medicine|10000|psychiatry|100070|887 - other mental disorder diagnoses|
+894|1000|behavioral medicine|10000|psychiatry|100080|894 - alcohol/drug abuse or dependence, left ama|
+895|1000|behavioral medicine|10010|substance abuse|100090|895 - alcohol/drug abuse or dependence w rehabilitation therapy|
+896|1000|behavioral medicine|10010|substance abuse|100100|896 - alcohol/drug abuse or dependence w/o rehabilitation therapy w mcc|
+897|1000|behavioral medicine|10010|substance abuse|100110|897 - alcohol/drug abuse or dependence w/o rehabilitation therapy w/o mcc|
+917|1000|behavioral medicine|10010|substance abuse|100120|917 - poisoning & toxic effects of drugs w mcc|
+918|1000|behavioral medicine|10010|substance abuse|100130|918 - poisoning & toxic effects of drugs w/o mcc|
+237|1010|cardiology|10020|arterial disease|100140|237 - major cardiovascular procedures w mcc|
+238|1010|cardiology|10020|arterial disease|100150|238 - major cardiovascular procedures w/o mcc|
+246|1010|cardiology|10030|cardiac cath|100160|246 - percutaneous cardiovascular proc w drug-eluting stent w mcc|
+247|1010|cardiology|10030|cardiac cath|100170|247 - percutaneous cardiovascular proc w drug-eluting stent w/o mcc|
+248|1010|cardiology|10030|cardiac cath|100180|248 - percutaneous cardiovasc proc w non-drug-eluting stent w mcc|
+249|1010|cardiology|10030|cardiac cath|100190|249 - percutaneous cardiovasc proc w non-drug-eluting stent w/o mcc|
+250|1010|cardiology|10030|cardiac cath|100200|250 - perc cardiovasc proc w/o coronary artery stent or ami w mcc|
+251|1010|cardiology|10030|cardiac cath|100210|251 - perc cardiovasc proc w/o coronary artery stent or ami w/o mcc|
+222|1010|cardiology|10040|cardiac electrophysiology|100220|222 - cardiac defib implant w cardiac cath w ami/hf/shock w mcc|
+223|1010|cardiology|10040|cardiac electrophysiology|100230|223 - cardiac defib implant w cardiac cath w ami/hf/shock w/o mcc|
+224|1010|cardiology|10040|cardiac electrophysiology|100240|224 - cardiac defib implant w cardiac cath w/o ami/hf/shock w mcc|
+225|1010|cardiology|10040|cardiac electrophysiology|100250|225 - cardiac defib implant w cardiac cath w/o ami/hf/shock w/o mcc|
+226|1010|cardiology|10040|cardiac electrophysiology|100260|226 - cardiac defibrillator implant w/o cardiac cath w mcc|
+303|1010|cardiology|10050|medical cardiology|100550|303 - atherosclerosis w/o mcc|
+304|1010|cardiology|10050|medical cardiology|100560|304 - hypertension w mcc|
+305|1010|cardiology|10050|medical cardiology|100570|305 - hypertension w/o mcc|
+306|1010|cardiology|10050|medical cardiology|100580|306 - cardiac congenital & valvular disorders w mcc|
+307|1010|cardiology|10050|medical cardiology|100590|307 - cardiac congenital & valvular disorders w/o mcc|
+308|1010|cardiology|10050|medical cardiology|100600|308 - cardiac arrhythmia & conduction disorders w mcc|
+309|1010|cardiology|10050|medical cardiology|100610|309 - cardiac arrhythmia & conduction disorders w cc|
+310|1010|cardiology|10050|medical cardiology|100620|310 - cardiac arrhythmia & conduction disorders w/o cc/mcc|
+311|1010|cardiology|10050|medical cardiology|100630|311 - angina pectoris|
+312|1010|cardiology|10050|medical cardiology|100640|312 - syncope & collapse|
+313|1010|cardiology|10050|medical cardiology|100650|313 - chest pain|
+314|1010|cardiology|10050|medical cardiology|100660|314 - other circulatory system diagnoses w mcc|
+315|1010|cardiology|10050|medical cardiology|100670|315 - other circulatory system diagnoses w cc|
+316|1010|cardiology|10050|medical cardiology|100680|316 - other circulatory system diagnoses w/o cc/mcc|
+299|1010|cardiology|10060|other vascular|100690|299 - peripheral vascular disorders w mcc|
+300|1010|cardiology|10060|other vascular|100700|300 - peripheral vascular disorders w cc|
+301|1010|cardiology|10060|other vascular|100710|301 - peripheral vascular disorders w/o cc/mcc|
+294|1010|cardiology|10070|venous disease|100720|294 - deep vein thrombophlebitis w cc/mcc|
+295|1010|cardiology|10070|venous disease|100730|295 - deep vein thrombophlebitis w/o cc/mcc|
+637|1020|endocrinology|10080|medicine endocrinology|100740|637 - diabetes w mcc|
+638|1020|endocrinology|10080|medicine endocrinology|100750|638 - diabetes w cc|
+639|1020|endocrinology|10080|medicine endocrinology|100760|639 - diabetes w/o cc/mcc|
+640|1020|endocrinology|10080|medicine endocrinology|100770|640 - nutritional & misc metabolic disorders w mcc|
+641|1020|endocrinology|10080|medicine endocrinology|100780|641 - nutritional & misc metabolic disorders w/o mcc|
+642|1020|endocrinology|10080|medicine endocrinology|100790|642 - inborn errors of metabolism|
+643|1020|endocrinology|10080|medicine endocrinology|100800|643 - endocrine disorders w mcc|
+644|1020|endocrinology|10080|medicine endocrinology|100810|644 - endocrine disorders w cc|
+645|1020|endocrinology|10080|medicine endocrinology|100820|645 - endocrine disorders w/o cc/mcc|
+131|1030|ent|10090|facial plastic surgery|100830|131 - cranial/facial procedures w cc/mcc|
+133|1030|ent|10090|facial plastic surgery|100840|133 - other ear, nose, mouth & throat o.r. procedures w cc/mcc|
+129|1030|ent|10100|head and neck surgery|100850|129 - major head & neck procedures w cc/mcc or major device|
+130|1030|ent|10100|head and neck surgery|100860|130 - major head & neck procedures w/o cc/mcc|
+132|1030|ent|10110|laryngology|100870|132 - cranial/facial procedures w/o cc/mcc|
+134|1030|ent|10110|laryngology|100880|134 - other ear, nose, mouth & throat o.r. procedures w/o cc/mcc|
+152|1030|ent|10110|laryngology|100890|152 - otitis media & uri w mcc|
+155|1030|ent|10110|laryngology|100900|155 - nasal trauma & deformity w cc|
+156|1030|ent|10110|laryngology|100910|156 - nasal trauma & deformity w/o cc/mcc|
+139|1030|ent|10120|oral and maxillofacial surgery|100920|139 - salivary gland procedures|
+149|1030|ent|10130|otology|100930|149 - dysequilibrium|
+153|1030|ent|10130|otology|100940|153 - otitis media & uri w/o mcc|
+135|1030|ent|10140|rhinology|100950|135 - sinus & mastoid procedures w cc/mcc|
+136|1030|ent|10140|rhinology|100960|136 - sinus & mastoid procedures w/o cc/mcc|
+150|1030|ent|10140|rhinology|100970|150 - epistaxis w mcc|
+151|1030|ent|10140|rhinology|100980|151 - epistaxis w/o mcc|
+154|1030|ent|10140|rhinology|100990|154 - nasal trauma & deformity w mcc|
+368|1040|gastroenterology|10150|medicine gastroenterology|101000|368 - major esophageal disorders w mcc|
+369|1040|gastroenterology|10150|medicine gastroenterology|101010|369 - major esophageal disorders w cc|
+370|1040|gastroenterology|10150|medicine gastroenterology|101020|370 - major esophageal disorders w/o cc/mcc|
+371|1040|gastroenterology|10150|medicine gastroenterology|101030|371 - major gastrointestinal disorders & peritoneal infections w mcc|
+372|1040|gastroenterology|10150|medicine gastroenterology|101040|372 - major gastrointestinal disorders & peritoneal infections w cc|
+373|1040|gastroenterology|10150|medicine gastroenterology|101050|373 - major gastrointestinal disorders & peritoneal infections w/o cc/mcc|
+377|1040|gastroenterology|10150|medicine gastroenterology|101060|377 - g.i. hemorrhage w mcc|
+378|1040|gastroenterology|10150|medicine gastroenterology|101070|378 - g.i. hemorrhage w cc|
+379|1040|gastroenterology|10150|medicine gastroenterology|101080|379 - g.i. hemorrhage w/o cc/mcc|
+380|1040|gastroenterology|10150|medicine gastroenterology|101090|380 - complicated peptic ulcer w mcc|
+381|1040|gastroenterology|10150|medicine gastroenterology|101100|381 - complicated peptic ulcer w cc|
+382|1040|gastroenterology|10150|medicine gastroenterology|101110|382 - complicated peptic ulcer w/o cc/mcc|
+383|1040|gastroenterology|10150|medicine gastroenterology|101120|383 - uncomplicated peptic ulcer w mcc|
+384|1040|gastroenterology|10150|medicine gastroenterology|101130|384 - uncomplicated peptic ulcer w/o mcc|
+385|1040|gastroenterology|10150|medicine gastroenterology|101140|385 - inflammatory bowel disease w mcc|
+386|1040|gastroenterology|10150|medicine gastroenterology|101150|386 - inflammatory bowel disease w cc|
+387|1040|gastroenterology|10150|medicine gastroenterology|101160|387 - inflammatory bowel disease w/o cc/mcc|
+388|1040|gastroenterology|10150|medicine gastroenterology|101170|388 - g.i. obstruction w mcc|
+389|1040|gastroenterology|10150|medicine gastroenterology|101180|389 - g.i. obstruction w cc|
+390|1040|gastroenterology|10150|medicine gastroenterology|101190|390 - g.i. obstruction w/o cc/mcc|
+391|1040|gastroenterology|10150|medicine gastroenterology|101200|391 - esophagitis, gastroent & misc digest disorders w mcc|
+392|1040|gastroenterology|10150|medicine gastroenterology|101210|392 - esophagitis, gastroent & misc digest disorders w/o mcc|
+393|1040|gastroenterology|10150|medicine gastroenterology|101220|393 - other digestive system diagnoses w mcc|
+394|1040|gastroenterology|10150|medicine gastroenterology|101230|394 - other digestive system diagnoses w cc|
+395|1040|gastroenterology|10150|medicine gastroenterology|101240|395 - other digestive system diagnoses w/o cc/mcc|
+438|1040|gastroenterology|10150|medicine gastroenterology|101250|438 - disorders of pancreas except malignancy w mcc|
+439|1040|gastroenterology|10150|medicine gastroenterology|101260|439 - disorders of pancreas except malignancy w cc|
+440|1040|gastroenterology|10150|medicine gastroenterology|101270|440 - disorders of pancreas except malignancy w/o cc/mcc|
+441|1040|gastroenterology|10150|medicine gastroenterology|101280|441 - disorders of liver except malig,cirr,alc hepa w mcc|
+442|1040|gastroenterology|10150|medicine gastroenterology|101290|442 - disorders of liver except malig,cirr,alc hepa w cc|
+443|1040|gastroenterology|10150|medicine gastroenterology|101300|443 - disorders of liver except malig,cirr,alc hepa w/o cc/mcc|
+444|1040|gastroenterology|10150|medicine gastroenterology|101310|444 - disorders of the biliary tract w mcc|
+445|1040|gastroenterology|10150|medicine gastroenterology|101320|445 - disorders of the biliary tract w cc|
+446|1040|gastroenterology|10150|medicine gastroenterology|101330|446 - disorders of the biliary tract w/o cc/mcc|
+005|1040|gastroenterology|10160|surgery transplant|101340|005 - liver transplant w mcc or intestinal transplant|
+5|1040|gastroenterology|10160|surgery transplant|101340|005 - liver transplant w mcc or intestinal transplant|
+006|1040|gastroenterology|10160|surgery transplant|101350|006 - liver transplant w/o mcc|
+6|1040|gastroenterology|10160|surgery transplant|101350|006 - liver transplant w/o mcc|
+933|1050|general medicine|10170|burns|101360|933 - extensive burns or full thickness burns w mv 96+ hrs w/o skin graft|
+934|1050|general medicine|10170|burns|101370|934 - full thickness burn w/o skin grft or inhal inj|
+935|1050|general medicine|10170|burns|101380|935 - non-extensive burns|
+595|1050|general medicine|10180|dermatology|101390|595 - major skin disorders w mcc|
+596|1050|general medicine|10180|dermatology|101400|596 - major skin disorders w/o mcc|
+602|1050|general medicine|10180|dermatology|101410|602 - cellulitis w mcc|
+603|1050|general medicine|10180|dermatology|101420|603 - cellulitis w/o mcc|
+606|1050|general medicine|10180|dermatology|101430|606 - minor skin disorders w mcc|
+607|1050|general medicine|10180|dermatology|101440|607 - minor skin disorders w/o mcc|
+432|1050|general medicine|10190|gastroenterology|101450|432 - cirrhosis & alcoholic hepatitis w mcc|
+433|1050|general medicine|10190|gastroenterology|101460|433 - cirrhosis & alcoholic hepatitis w cc|
+434|1050|general medicine|10190|gastroenterology|101470|434 - cirrhosis & alcoholic hepatitis w/o cc/mcc|
+862|1050|general medicine|10200|infectious disease|101480|862 - postoperative & post-traumatic infections w mcc|
+863|1050|general medicine|10200|infectious disease|101490|863 - postoperative & post-traumatic infections w/o mcc|
+623|1060|general surgery|10390|surgery endocrine|102480|623 - skin grafts & wound debrid for endoc, nutrit & metab dis w cc|
+624|1060|general surgery|10390|surgery endocrine|102490|624 - skin grafts & wound debrid for endoc, nutrit & metab dis w/o cc/mcc|
+628|1060|general surgery|10390|surgery endocrine|102500|628 - other endocrine, nutrit & metab o.r. proc w mcc|
+629|1060|general surgery|10390|surgery endocrine|102510|629 - other endocrine, nutrit & metab o.r. proc w cc|
+630|1060|general surgery|10390|surgery endocrine|102520|630 - other endocrine, nutrit & metab o.r. proc w/o cc/mcc|
+405|1060|general surgery|10400|surgery hepatobiliary/pancreatic|102530|405 - pancreas, liver & shunt procedures w mcc|
+406|1060|general surgery|10400|surgery hepatobiliary/pancreatic|102540|406 - pancreas, liver & shunt procedures w cc|
+407|1060|general surgery|10400|surgery hepatobiliary/pancreatic|102550|407 - pancreas, liver & shunt procedures w/o cc/mcc|
+408|1060|general surgery|10400|surgery hepatobiliary/pancreatic|102560|408 - biliary tract proc except only cholecyst w or w/o c.d.e. w mcc|
+409|1060|general surgery|10400|surgery hepatobiliary/pancreatic|102570|409 - biliary tract proc except only cholecyst w or w/o c.d.e. w cc|
+410|1060|general surgery|10400|surgery hepatobiliary/pancreatic|102580|410 - biliary tract proc except only cholecyst w or w/o c.d.e. w/o cc/mcc|
+421|1060|general surgery|10400|surgery hepatobiliary/pancreatic|102590|421 - hepatobiliary diagnostic procedures w cc|
+422|1060|general surgery|10400|surgery hepatobiliary/pancreatic|102600|422 - hepatobiliary diagnostic procedures w/o cc/mcc|
+423|1060|general surgery|10400|surgery hepatobiliary/pancreatic|102610|423 - other hepatobiliary or pancreas o.r. procedures w mcc|
+424|1060|general surgery|10400|surgery hepatobiliary/pancreatic|102620|424 - other hepatobiliary or pancreas o.r. procedures w cc|
+425|1060|general surgery|10400|surgery hepatobiliary/pancreatic|102630|425 - other hepatobiliary or pancreas o.r. procedures w/o cc/mcc|
+350|1060|general surgery|10410|surgery hernia|102640|350 - inguinal & femoral hernia procedures w mcc|
+351|1060|general surgery|10410|surgery hernia|102650|351 - inguinal & femoral hernia procedures w cc|
+352|1060|general surgery|10410|surgery hernia|102660|352 - inguinal & femoral hernia procedures w/o cc/mcc|
+353|1060|general surgery|10410|surgery hernia|102670|353 - hernia procedures except inguinal & femoral w mcc|
+354|1060|general surgery|10410|surgery hernia|102680|354 - hernia procedures except inguinal & femoral w cc|
+355|1060|general surgery|10410|surgery hernia|102690|355 - hernia procedures except inguinal & femoral w/o cc/mcc|
+148|1140|oncology|10780|medical oncology|104650|148 - ear, nose, mouth & throat malignancy w/o cc/mcc|
+180|1140|oncology|10780|medical oncology|104660|180 - respiratory neoplasms w mcc|
+181|1140|oncology|10780|medical oncology|104670|181 - respiratory neoplasms w cc|
+182|1140|oncology|10780|medical oncology|104680|182 - respiratory neoplasms w/o cc/mcc|
+374|1140|oncology|10780|medical oncology|104690|374 - digestive malignancy w mcc|
+375|1140|oncology|10780|medical oncology|104700|375 - digestive malignancy w cc|
+376|1140|oncology|10780|medical oncology|104710|376 - digestive malignancy w/o cc/mcc|
+435|1140|oncology|10780|medical oncology|104720|435 - malignancy of hepatobiliary system or pancreas w mcc|
+436|1140|oncology|10780|medical oncology|104730|436 - malignancy of hepatobiliary system or pancreas w cc|
+437|1140|oncology|10780|medical oncology|104740|437 - malignancy of hepatobiliary system or pancreas w/o cc/mcc|
+542|1140|oncology|10780|medical oncology|104750|542 - pathological fractures & musculoskelet & conn tiss malig w mcc|
+543|1140|oncology|10780|medical oncology|104760|543 - pathological fractures & musculoskelet & conn tiss malig w cc|
+544|1140|oncology|10780|medical oncology|104770|544 - pathological fractures & musculoskelet & conn tiss malig w/o cc/mcc|
+597|1140|oncology|10780|medical oncology|104780|597 - malignant breast disorders w mcc|
+598|1140|oncology|10780|medical oncology|104790|598 - malignant breast disorders w cc|
+599|1140|oncology|10780|medical oncology|104800|599 - malignant breast disorders w/o cc/mcc|
+686|1140|oncology|10780|medical oncology|104810|686 - kidney & urinary tract neoplasms w mcc|
+687|1140|oncology|10780|medical oncology|104820|687 - kidney & urinary tract neoplasms w cc|
+688|1140|oncology|10780|medical oncology|104830|688 - kidney & urinary tract neoplasms w/o cc/mcc|
+722|1140|oncology|10780|medical oncology|104840|722 - malignancy, male reproductive system w mcc|
+723|1140|oncology|10780|medical oncology|104850|723 - malignancy, male reproductive system w cc|
+724|1140|oncology|10780|medical oncology|104860|724 - malignancy, male reproductive system w/o cc/mcc|
+754|1140|oncology|10780|medical oncology|104870|754 - malignancy, female reproductive system w mcc|
+755|1140|oncology|10780|medical oncology|104880|755 - malignancy, female reproductive system w cc|
+756|1140|oncology|10780|medical oncology|104890|756 - malignancy, female reproductive system w/o cc/mcc|
+808|1140|oncology|10780|medical oncology|104900|808 - major hematol/immun diag exc sickle cell crisis & coagul w mcc|
+809|1140|oncology|10780|medical oncology|104910|809 - major hematol/immun diag exc sickle cell crisis & coagul w cc|
+810|1140|oncology|10780|medical oncology|104920|810 - major hematol/immun diag exc sickle cell crisis & coagul w/o cc/mcc|
+834|1140|oncology|10780|medical oncology|104930|834 - acute leukemia w/o major o.r. procedure w mcc|
+835|1140|oncology|10780|medical oncology|104940|835 - acute leukemia w/o major o.r. procedure w cc|
+836|1140|oncology|10780|medical oncology|104950|836 - acute leukemia w/o major o.r. procedure w/o cc/mcc|
+837|1140|oncology|10780|medical oncology|104960|837 - chemo w acute leukemia as sdx or w  high dose chemo agent w mcc|
+838|1140|oncology|10780|medical oncology|104970|838 - chemo w acute leukemia as sdx or w high dose chemo agent w cc|
+839|1140|oncology|10780|medical oncology|104980|839 - chemo w acute leukemia as sdx or w high dose chemo agent w/o cc/mcc|
+840|1140|oncology|10780|medical oncology|104990|840 - lymphoma & non-acute leukemia w mcc|
+841|1140|oncology|10780|medical oncology|105000|841 - lymphoma & non-acute leukemia w cc|
+842|1140|oncology|10780|medical oncology|105010|842 - lymphoma & non-acute leukemia w/o cc/mcc|
+843|1140|oncology|10780|medical oncology|105020|843 - other myeloprolif dis or poorly diff neopl diag w mcc|
+844|1140|oncology|10780|medical oncology|105030|844 - other myeloprolif dis or poorly diff neopl diag w cc|
+845|1140|oncology|10780|medical oncology|105040|845 - other myeloprolif dis or poorly diff neopl diag w/o cc/mcc|
+846|1140|oncology|10780|medical oncology|105050|846 - chemotherapy w/o acute leukemia as secondary diagnosis w mcc|
+847|1140|oncology|10780|medical oncology|105060|847 - chemotherapy w/o acute leukemia as secondary diagnosis w cc|
+848|1140|oncology|10780|medical oncology|105070|848 - chemotherapy w/o acute leukemia as secondary diagnosis w/o cc/mcc|
+715|1140|oncology|10790|other male reproductive|105080|715 - other male reproductive system o.r. proc for malignancy w cc/mcc|
+716|1140|oncology|10790|other male reproductive|105090|716 - other male reproductive system o.r. proc for malignancy w/o cc/mcc|
+849|1140|oncology|10800|radiation oncology|105100|849 - radiotherapy|
+582|1140|oncology|10810|surgery breast|105110|582 - mastectomy for malignancy w cc/mcc|
+583|1140|oncology|10810|surgery breast|105120|583 - mastectomy for malignancy w/o cc/mcc|
+584|1140|oncology|10810|surgery breast|105130|584 - breast biopsy, local excision & other breast procedures w cc/mcc|
+585|1140|oncology|10810|surgery breast|105140|585 - breast biopsy, local excision & other breast procedures w/o cc/mcc|
+420|1140|oncology|10820|surgery hepatobiliary/pancreatic|105150|420 - hepatobiliary diagnostic procedures w mcc|
+820|1140|oncology|10830|surgery other general surgery|105160|820 - lymphoma & leukemia w major o.r. procedure w mcc|
+821|1140|oncology|10830|surgery other general surgery|105170|821 - lymphoma & leukemia w major o.r. procedure w cc|
+822|1140|oncology|10830|surgery other general surgery|105180|822 - lymphoma & leukemia w major o.r. procedure w/o cc/mcc|
+823|1140|oncology|10830|surgery other general surgery|105190|823 - lymphoma & non-acute leukemia w other o.r. proc w mcc|
+824|1140|oncology|10830|surgery other general surgery|105200|824 - lymphoma & non-acute leukemia w other o.r. proc w cc|
+825|1140|oncology|10830|surgery other general surgery|105210|825 - lymphoma & non-acute leukemia w other o.r. proc w/o cc/mcc|
+826|1140|oncology|10830|surgery other general surgery|105220|826 - myeloprolif disord or poorly diff neopl w maj o.r. proc w mcc|
+827|1140|oncology|10830|surgery other general surgery|105230|827 - myeloprolif disord or poorly diff neopl w maj o.r. proc w cc|
+828|1140|oncology|10830|surgery other general surgery|105240|828 - myeloprolif disord or poorly diff neopl w maj o.r. proc w/o cc/mcc|
+829|1140|oncology|10830|surgery other general surgery|105250|829 - myeloprolif disord or poorly diff neopl w other o.r. proc w cc/mcc|
+830|1140|oncology|10830|surgery other general surgery|105260|830 - myeloprolif disord or poorly diff neopl w other o.r. proc w/o cc/mcc|
+009|1140|oncology|10840|surgery transplant|105270|009 - bone marrow transplant|
+9|1140|oncology|10840|surgery transplant|105270|009 - bone marrow transplant|
+656|1140|oncology|10850|urinary system|105280|656 - kidney & ureter procedures for neoplasm w mcc|
+657|1140|oncology|10850|urinary system|105290|657 - kidney & ureter procedures for neoplasm w cc|
+658|1140|oncology|10850|urinary system|105300|658 - kidney & ureter procedures for neoplasm w/o cc/mcc|
+001|1150|open heart|10860|cardiac surgery|105310|001 - heart transplant or implant of heart assist system w mcc|
+1|1150|open heart|10860|cardiac surgery|105310|001 - heart transplant or implant of heart assist system w mcc|
+002|1150|open heart|10860|cardiac surgery|105320|002 - heart transplant or implant of heart assist system w/o mcc|
+2|1150|open heart|10860|cardiac surgery|105320|002 - heart transplant or implant of heart assist system w/o mcc|
+215|1150|open heart|10860|cardiac surgery|105330|215 - other heart assist system implant|
+216|1150|open heart|10860|cardiac surgery|105340|216 - cardiac valve & oth maj cardiothoracic proc w card cath w mcc|
+217|1150|open heart|10860|cardiac surgery|105350|217 - cardiac valve & oth maj cardiothoracic proc w card cath w cc|
+218|1150|open heart|10860|cardiac surgery|105360|218 - cardiac valve & oth maj cardiothoracic proc w card cath w/o cc/mcc|
+219|1150|open heart|10860|cardiac surgery|105370|219 - cardiac valve & oth maj cardiothoracic proc w/o card cath w mcc|
+220|1150|open heart|10860|cardiac surgery|105380|220 - cardiac valve & oth maj cardiothoracic proc w/o card cath w cc|
+221|1150|open heart|10860|cardiac surgery|105390|221 - cardiac valve & oth maj cardiothoracic proc w/o card cath w/o cc/mcc|
+228|1150|open heart|10860|cardiac surgery|105400|228 - other cardiothoracic procedures w mcc|
+229|1150|open heart|10860|cardiac surgery|105410|229 - other cardiothoracic procedures w cc|
+230|1150|open heart|10860|cardiac surgery|105420|230 - other cardiothoracic procedures w/o cc/mcc|
+231|1150|open heart|10860|cardiac surgery|105430|231 - coronary bypass w ptca w mcc|
+232|1150|open heart|10860|cardiac surgery|105440|232 - coronary bypass w ptca w/o mcc|
+233|1150|open heart|10860|cardiac surgery|105450|233 - coronary bypass w cardiac cath w mcc|
+234|1150|open heart|10860|cardiac surgery|105460|234 - coronary bypass w cardiac cath w/o mcc|
+235|1150|open heart|10860|cardiac surgery|105470|235 - coronary bypass w/o cardiac cath w mcc|
+236|1150|open heart|10860|cardiac surgery|105480|236 - coronary bypass w/o cardiac cath w/o mcc|
+121|1160|ophthalmology|10870|medical ophthalmology|105490|121 - acute major eye infections w cc/mcc|
+122|1160|ophthalmology|10870|medical ophthalmology|105500|122 - acute major eye infections w/o cc/mcc|
+123|1160|ophthalmology|10870|medical ophthalmology|105510|123 - neurological eye disorders|
+124|1160|ophthalmology|10870|medical ophthalmology|105520|124 - other disorders of the eye w  mcc|
+125|1160|ophthalmology|10870|medical ophthalmology|105530|125 - other disorders of the eye w/o  mcc|
+113|1160|ophthalmology|10880|surgical ophthalmology|105540|113 - orbital procedures w cc/mcc|
+114|1160|ophthalmology|10880|surgical ophthalmology|105550|114 - orbital procedures w/o cc/mcc|
+115|1160|ophthalmology|10880|surgical ophthalmology|105560|115 - extraocular procedures except orbit|
+116|1160|ophthalmology|10880|surgical ophthalmology|105570|116 - intraocular procedures w cc/mcc|
+117|1160|ophthalmology|10880|surgical ophthalmology|105580|117 - intraocular procedures w/o cc/mcc|
+503|1170|orthopedics|10890|foot|105590|503 - foot procedures w mcc|
+504|1170|orthopedics|10890|foot|105600|504 - foot procedures w cc|
+505|1170|orthopedics|10890|foot|105610|505 - foot procedures w/o cc/mcc|
+453|1170|orthopedics|10900|fusion|105620|453 - combined anterior/posterior spinal fusion w mcc|
+454|1170|orthopedics|10900|fusion|105630|454 - combined anterior/posterior spinal fusion w cc|
+455|1170|orthopedics|10900|fusion|105640|455 - combined anterior/posterior spinal fusion w/o cc/mcc|
+456|1170|orthopedics|10900|fusion|105650|456 - spinal fusion exc cerv w spinal curv, malig or 9+ fusions w mcc|
+457|1170|orthopedics|10900|fusion|105660|457 - spinal fusion exc cerv w spinal curv, malig or 9+ fusions w cc|
+458|1170|orthopedics|10900|fusion|105670|458 - spinal fusion exc cerv w spinal curv, malig or 9+ fusions w/o cc/mcc|
+459|1170|orthopedics|10900|fusion|105680|459 - spinal fusion except cervical w mcc|
+460|1170|orthopedics|10900|fusion|105690|460 - spinal fusion except cervical w/o mcc|
+477|1170|orthopedics|10910|general medical orthopedics|105700|477 - biopsies of musculoskeletal system & connective tissue w mcc|
+478|1170|orthopedics|10910|general medical orthopedics|105710|478 - biopsies of musculoskeletal system & connective tissue w cc|
+479|1170|orthopedics|10910|general medical orthopedics|105720|479 - biopsies of musculoskeletal system & connective tissue w/o cc/mcc|
+539|1170|orthopedics|10910|general medical orthopedics|105730|539 - osteomyelitis w mcc|
+540|1170|orthopedics|10910|general medical orthopedics|105740|540 - osteomyelitis w cc|
+541|1170|orthopedics|10910|general medical orthopedics|105750|541 - osteomyelitis w/o cc/mcc|
+557|1170|orthopedics|10910|general medical orthopedics|105760|557 - tendonitis, myositis & bursitis w mcc|
+558|1170|orthopedics|10910|general medical orthopedics|105770|558 - tendonitis, myositis & bursitis w/o mcc|
+559|1170|orthopedics|10910|general medical orthopedics|105780|559 - aftercare, musculoskeletal system & connective tissue w mcc|
+560|1170|orthopedics|10910|general medical orthopedics|105790|560 - aftercare, musculoskeletal system & connective tissue w cc|
+561|1170|orthopedics|10910|general medical orthopedics|105800|561 - aftercare, musculoskeletal system & connective tissue w/o cc/mcc|
+564|1170|orthopedics|10910|general medical orthopedics|105810|564 - other musculoskeletal sys & connective tissue diagnoses w mcc|
+565|1170|orthopedics|10910|general medical orthopedics|105820|565 - other musculoskeletal sys & connective tissue diagnoses w cc|
+566|1170|orthopedics|10910|general medical orthopedics|105830|566 - other musculoskeletal sys & connective tissue diagnoses w/o cc/mcc|
+040|1170|orthopedics|10920|hand|105840|040 - periph & cranial nerve & other nerv syst proc w mcc|
+40|1170|orthopedics|10920|hand|105840|040 - periph & cranial nerve & other nerv syst proc w mcc|
+506|1170|orthopedics|10920|hand|105850|506 - major thumb or joint procedures|
+513|1170|orthopedics|10920|hand|105860|513 - hand or wrist proc, except major thumb or joint proc w cc/mcc|
+514|1170|orthopedics|10920|hand|105870|514 - hand or wrist proc, except major thumb or joint proc w/o cc/mcc|
+461|1170|orthopedics|10930|joint replacement|105880|461 - bilateral or multiple major joint procs of lower extremity w mcc|
+462|1170|orthopedics|10930|joint replacement|105890|462 - bilateral or multiple major joint procs of lower extremity w/o mcc|
+466|1170|orthopedics|10930|joint replacement|105900|466 - revision of hip or knee replacement w mcc|
+467|1170|orthopedics|10930|joint replacement|105910|467 - revision of hip or knee replacement w cc|
+468|1170|orthopedics|10930|joint replacement|105920|468 - revision of hip or knee replacement w/o cc/mcc|
+469|1170|orthopedics|10930|joint replacement|105930|469 - major joint replacement or reattachment of lower extremity w mcc|
+470|1170|orthopedics|10930|joint replacement|105940|470 - major joint replacement or reattachment of lower extremity w/o mcc|
+483|1170|orthopedics|10930|joint replacement|105950|483 - major joint & limb reattachment proc of upper extremity w cc/mcc|
+484|1170|orthopedics|10930|joint replacement|105960|484 - major joint & limb reattachment proc of upper extremity w/o cc/mcc|
+551|1170|orthopedics|10940|medical spine|105970|551 - medical back problems w mcc|
+552|1170|orthopedics|10940|medical spine|105980|552 - medical back problems w/o mcc|
+533|1170|orthopedics|10950|medical trauma (orthopedics)|105990|533 - fractures of femur w mcc|
+534|1170|orthopedics|10950|medical trauma (orthopedics)|106000|534 - fractures of femur w/o mcc|
+535|1170|orthopedics|10950|medical trauma (orthopedics)|106010|535 - fractures of hip & pelvis w mcc|
+536|1170|orthopedics|10950|medical trauma (orthopedics)|106020|536 - fractures of hip & pelvis w/o mcc|
+537|1170|orthopedics|10950|medical trauma (orthopedics)|106030|537 - sprains, strains, & dislocations of hip, pelvis & thigh w cc/mcc|
+538|1170|orthopedics|10950|medical trauma (orthopedics)|106040|538 - sprains, strains, & dislocations of hip, pelvis & thigh w/o cc/mcc|
+562|1170|orthopedics|10950|medical trauma (orthopedics)|106050|562 - fx, sprn, strn & disl except femur, hip, pelvis & thigh w mcc|
+563|1170|orthopedics|10950|medical trauma (orthopedics)|106060|563 - fx, sprn, strn & disl except femur, hip, pelvis & thigh w/o mcc|
+545|1170|orthopedics|10960|medicine rheumatology|106070|545 - connective tissue disorders w mcc|
+546|1170|orthopedics|10960|medicine rheumatology|106080|546 - connective tissue disorders w cc|
+547|1170|orthopedics|10960|medicine rheumatology|106090|547 - connective tissue disorders w/o cc/mcc|
+548|1170|orthopedics|10960|medicine rheumatology|106100|548 - septic arthritis w mcc|
+549|1170|orthopedics|10960|medicine rheumatology|106110|549 - septic arthritis w cc|
+550|1170|orthopedics|10960|medicine rheumatology|106120|550 - septic arthritis w/o cc/mcc|
+553|1170|orthopedics|10960|medicine rheumatology|106130|553 - bone diseases & arthropathies w mcc|
+554|1170|orthopedics|10960|medicine rheumatology|106140|554 - bone diseases & arthropathies w/o mcc|
+555|1170|orthopedics|10960|medicine rheumatology|106150|555 - signs & symptoms of musculoskeletal system & conn tissue w mcc|
+556|1170|orthopedics|10960|medicine rheumatology|106160|556 - signs & symptoms of musculoskeletal system & conn tissue w/o mcc|
+463|1170|orthopedics|10970|other surgical orthopedics|106170|463 - wnd debrid & skn grft exc hand, for musculo-conn tiss dis w mcc|
+464|1170|orthopedics|10970|other surgical orthopedics|106180|464 - wnd debrid & skn grft exc hand, for musculo-conn tiss dis w cc|
+465|1170|orthopedics|10970|other surgical orthopedics|106190|465 - wnd debrid & skn grft exc hand, for musculo-conn tiss dis w/o cc/mcc|
+474|1170|orthopedics|10970|other surgical orthopedics|106200|474 - amputation for musculoskeletal sys & conn tissue dis w mcc|
+475|1170|orthopedics|10970|other surgical orthopedics|106210|475 - amputation for musculoskeletal sys & conn tissue dis w cc|
+476|1170|orthopedics|10970|other surgical orthopedics|106220|476 - amputation for musculoskeletal sys & conn tissue dis w/o cc/mcc|
+515|1170|orthopedics|10970|other surgical orthopedics|106230|515 - other musculoskelet sys & conn tiss o.r. proc w mcc|
+516|1170|orthopedics|10970|other surgical orthopedics|106240|516 - other musculoskelet sys & conn tiss o.r. proc w cc|
+517|1170|orthopedics|10970|other surgical orthopedics|106250|517 - other musculoskelet sys & conn tiss o.r. proc w/o cc/mcc|
+490|1170|orthopedics|10980|other surgical spine|106260|490 - back & neck procedures except spinal fusion w cc/mcc or disc devices|
+491|1170|orthopedics|10980|other surgical spine|106270|491 - back & neck procedures except spinal fusion w/o cc/mcc|
+485|1170|orthopedics|10990|sports medicine|106280|485 - knee procedures w pdx of infection w mcc|
+486|1170|orthopedics|10990|sports medicine|106290|486 - knee procedures w pdx of infection w cc|
+487|1170|orthopedics|10990|sports medicine|106300|487 - knee procedures w pdx of infection w/o cc/mcc|
+488|1170|orthopedics|10990|sports medicine|106310|488 - knee procedures w/o pdx of infection w cc/mcc|
+489|1170|orthopedics|10990|sports medicine|106320|489 - knee procedures w/o pdx of infection w/o cc/mcc|
+500|1170|orthopedics|10990|sports medicine|106330|500 - soft tissue procedures w mcc|
+501|1170|orthopedics|10990|sports medicine|106340|501 - soft tissue procedures w cc|
+502|1170|orthopedics|10990|sports medicine|106350|502 - soft tissue procedures w/o cc/mcc|
+507|1170|orthopedics|10990|sports medicine|106360|507 - major shoulder or elbow joint procedures w cc/mcc|
+508|1170|orthopedics|10990|sports medicine|106370|508 - major shoulder or elbow joint procedures w/o cc/mcc|
+509|1170|orthopedics|10990|sports medicine|106380|509 - arthroscopy|
+510|1170|orthopedics|10990|sports medicine|106390|510 - shoulder,elbow or forearm proc,exc major joint proc w mcc|
+511|1170|orthopedics|10990|sports medicine|106400|511 - shoulder,elbow or forearm proc,exc major joint proc w cc|
+512|1170|orthopedics|10990|sports medicine|106410|512 - shoulder,elbow or forearm proc,exc major joint proc w/o cc/mcc|
+480|1170|orthopedics|11000|surgical trauma (orthopedics)|106420|480 - hip & femur procedures except major joint w mcc|
+481|1170|orthopedics|11000|surgical trauma (orthopedics)|106430|481 - hip & femur procedures except major joint w cc|
+482|1170|orthopedics|11000|surgical trauma (orthopedics)|106440|482 - hip & femur procedures except major joint w/o cc/mcc|
+492|1170|orthopedics|11000|surgical trauma (orthopedics)|106450|492 - lower extrem & humer proc except hip,foot,femur w mcc|
+493|1170|orthopedics|11000|surgical trauma (orthopedics)|106460|493 - lower extrem & humer proc except hip,foot,femur w cc|
+494|1170|orthopedics|11000|surgical trauma (orthopedics)|106470|494 - lower extrem & humer proc except hip,foot,femur w/o cc/mcc|
+495|1170|orthopedics|11000|surgical trauma (orthopedics)|106480|495 - local excision & removal int fix devices exc hip & femur w mcc|
+496|1170|orthopedics|11000|surgical trauma (orthopedics)|106490|496 - local excision & removal int fix devices exc hip & femur w cc|
+497|1170|orthopedics|11000|surgical trauma (orthopedics)|106500|497 - local excision & removal int fix devices exc hip & femur w/o cc/mcc|
+498|1170|orthopedics|11000|surgical trauma (orthopedics)|106510|498 - local excision & removal int fix devices of hip & femur w cc/mcc|
+499|1170|orthopedics|11000|surgical trauma (orthopedics)|106520|499 - local excision & removal int fix devices of hip & femur w/o cc/mcc|
+956|1170|orthopedics|11000|surgical trauma (orthopedics)|106530|956 - limb reattachment, hip & femur proc for multiple significant trauma|
+998|1180|other|11010|other|106540|998 - principal diagnosis invalid as discharge diagnosis|
+999|1180|other|11010|other|106550|999 - ungroupable|
+175|1190|pulmonary|11020|medicine pulmonology|106560|175 - pulmonary embolism w mcc|
+176|1190|pulmonary|11020|medicine pulmonology|106570|176 - pulmonary embolism w/o mcc|
+177|1190|pulmonary|11020|medicine pulmonology|106580|177 - respiratory infections & inflammations w mcc|
+178|1190|pulmonary|11020|medicine pulmonology|106590|178 - respiratory infections & inflammations w cc|
+179|1190|pulmonary|11020|medicine pulmonology|106600|179 - respiratory infections & inflammations w/o cc/mcc|
+186|1190|pulmonary|11020|medicine pulmonology|106610|186 - pleural effusion w mcc|
+187|1190|pulmonary|11020|medicine pulmonology|106620|187 - pleural effusion w cc|
+188|1190|pulmonary|11020|medicine pulmonology|106630|188 - pleural effusion w/o cc/mcc|
+189|1190|pulmonary|11020|medicine pulmonology|106640|189 - pulmonary edema & respiratory failure|
+190|1190|pulmonary|11020|medicine pulmonology|106650|190 - chronic obstructive pulmonary disease w mcc|
+191|1190|pulmonary|11020|medicine pulmonology|106660|191 - chronic obstructive pulmonary disease w cc|
+192|1190|pulmonary|11020|medicine pulmonology|106670|192 - chronic obstructive pulmonary disease w/o cc/mcc|
+193|1190|pulmonary|11020|medicine pulmonology|106680|193 - simple pneumonia & pleurisy w mcc|
+194|1190|pulmonary|11020|medicine pulmonology|106690|194 - simple pneumonia & pleurisy w cc|
+195|1190|pulmonary|11020|medicine pulmonology|106700|195 - simple pneumonia & pleurisy w/o cc/mcc|
+196|1190|pulmonary|11020|medicine pulmonology|106710|196 - interstitial lung disease w mcc|
+197|1190|pulmonary|11020|medicine pulmonology|106720|197 - interstitial lung disease w cc|
+198|1190|pulmonary|11020|medicine pulmonology|106730|198 - interstitial lung disease w/o cc/mcc|
+202|1190|pulmonary|11020|medicine pulmonology|106740|202 - bronchitis & asthma w cc/mcc|
+203|1190|pulmonary|11020|medicine pulmonology|106750|203 - bronchitis & asthma w/o cc/mcc|
+204|1190|pulmonary|11020|medicine pulmonology|106760|204 - respiratory signs & symptoms|
+205|1190|pulmonary|11020|medicine pulmonology|106770|205 - other respiratory system diagnoses w mcc|
+206|1190|pulmonary|11020|medicine pulmonology|106780|206 - other respiratory system diagnoses w/o mcc|
+199|1190|pulmonary|11030|pneumothorax|106790|199 - pneumothorax w mcc|
+200|1190|pulmonary|11030|pneumothorax|106800|200 - pneumothorax w cc|
+201|1190|pulmonary|11030|pneumothorax|106810|201 - pneumothorax w/o cc/mcc|
+183|1200|thoracic surgery|11040|body injuries|106820|183 - major chest trauma w mcc|
+184|1200|thoracic surgery|11040|body injuries|106830|184 - major chest trauma w cc|
+185|1200|thoracic surgery|11040|body injuries|106840|185 - major chest trauma w/o cc/mcc|
+163|1200|thoracic surgery|11050|lung cancer|106850|163 - major chest procedures w mcc|
+164|1200|thoracic surgery|11050|lung cancer|106860|164 - major chest procedures w cc|
+165|1200|thoracic surgery|11050|lung cancer|106870|165 - major chest procedures w/o cc/mcc|
+166|1200|thoracic surgery|11050|lung cancer|106880|166 - other resp system o.r. procedures w mcc|
+167|1200|thoracic surgery|11050|lung cancer|106890|167 - other resp system o.r. procedures w cc|
+168|1200|thoracic surgery|11050|lung cancer|106900|168 - other resp system o.r. procedures w/o cc/mcc|
+007|1200|thoracic surgery|11060|lung transplant|106910|007 - lung transplant|
+7|1200|thoracic surgery|11060|lung transplant|106910|007 - lung transplant|
+003|1200|thoracic surgery|11070|surgery tracheostomy|106920|003 - ecmo or trach w mv 96+ hrs or pdx exc face, mouth & neck w maj o.r.|
+3|1200|thoracic surgery|11070|surgery tracheostomy|106920|003 - ecmo or trach w mv 96+ hrs or pdx exc face, mouth & neck w maj o.r.|
+004|1200|thoracic surgery|11070|surgery tracheostomy|106930|004 - trach w mv 96+ hrs or pdx exc face, mouth & neck w/o maj o.r.|
+4|1200|thoracic surgery|11070|surgery tracheostomy|106930|004 - trach w mv 96+ hrs or pdx exc face, mouth & neck w/o maj o.r.|
+011|1200|thoracic surgery|11080|tracheostomy (ent only)|106940|011 - tracheostomy for face,mouth & neck diagnoses w mcc|
+11|1200|thoracic surgery|11080|tracheostomy (ent only)|106940|011 - tracheostomy for face,mouth & neck diagnoses w mcc|
+012|1200|thoracic surgery|11080|tracheostomy (ent only)|106950|012 - tracheostomy for face,mouth & neck diagnoses w cc|
+12|1200|thoracic surgery|11080|tracheostomy (ent only)|106950|012 - tracheostomy for face,mouth & neck diagnoses w cc|
+013|1200|thoracic surgery|11080|tracheostomy (ent only)|106960|013 - tracheostomy for face,mouth & neck diagnoses w/o cc/mcc|
+13|1200|thoracic surgery|11080|tracheostomy (ent only)|106960|013 - tracheostomy for face,mouth & neck diagnoses w/o cc/mcc|
+709|1210|urology|11090|other male reproductive|106970|709 - penis procedures w cc/mcc|m
+710|1210|urology|11090|other male reproductive|106980|710 - penis procedures w/o cc/mcc|m
+711|1210|urology|11090|other male reproductive|106990|711 - testes procedures w cc/mcc|m
+712|1210|urology|11090|other male reproductive|107000|712 - testes procedures w/o cc/mcc|m
+717|1210|urology|11090|other male reproductive|107010|717 - other male reproductive system o.r. proc exc malignancy w cc/mcc|m
+718|1210|urology|11090|other male reproductive|107020|718 - other male reproductive system o.r. proc exc malignancy w/o cc/mcc|m
+727|1210|urology|11090|other male reproductive|107030|727 - inflammation of the male reproductive system w mcc|m
+728|1210|urology|11090|other male reproductive|107040|728 - inflammation of the male reproductive system w/o mcc|m
+729|1210|urology|11090|other male reproductive|107050|729 - other male reproductive system diagnoses w cc/mcc|m
+730|1210|urology|11090|other male reproductive|107060|730 - other male reproductive system diagnoses w/o cc/mcc|m
+665|1210|urology|11100|prostate|107070|665 - prostatectomy w mcc|m
+666|1210|urology|11100|prostate|107080|666 - prostatectomy w cc|m
+667|1210|urology|11100|prostate|107090|667 - prostatectomy w/o cc/mcc|m
+707|1210|urology|11100|prostate|107100|707 - major male pelvic procedures w cc/mcc|m
+708|1210|urology|11100|prostate|107110|708 - major male pelvic procedures w/o cc/mcc|m
+713|1210|urology|11100|prostate|107120|713 - transurethral prostatectomy w cc/mcc|m
+714|1210|urology|11100|prostate|107130|714 - transurethral prostatectomy w/o cc/mcc|m
+725|1210|urology|11100|prostate|107140|725 - benign prostatic hypertrophy w mcc|m
+726|1210|urology|11100|prostate|107150|726 - benign prostatic hypertrophy w/o mcc|m
+653|1210|urology|11110|urinary system|107160|653 - major bladder procedures w mcc|
+654|1210|urology|11110|urinary system|107170|654 - major bladder procedures w cc|
+655|1210|urology|11110|urinary system|107180|655 - major bladder procedures w/o cc/mcc|
+659|1210|urology|11110|urinary system|107190|659 - kidney & ureter procedures for non-neoplasm w mcc|
+660|1210|urology|11110|urinary system|107200|660 - kidney & ureter procedures for non-neoplasm w cc|
+661|1210|urology|11110|urinary system|107210|661 - kidney & ureter procedures for non-neoplasm w/o cc/mcc|
+662|1210|urology|11110|urinary system|107220|662 - minor bladder procedures w mcc|
+663|1210|urology|11110|urinary system|107230|663 - minor bladder procedures w cc|
+664|1210|urology|11110|urinary system|107240|664 - minor bladder procedures w/o cc/mcc|
+668|1210|urology|11110|urinary system|107250|668 - transurethral procedures w mcc|
+669|1210|urology|11110|urinary system|107260|669 - transurethral procedures w cc|
+670|1210|urology|11110|urinary system|107270|670 - transurethral procedures w/o cc/mcc|
+671|1210|urology|11110|urinary system|107280|671 - urethral procedures w cc/mcc|
+579|1060|general surgery|10420|surgery other general surgery|102700|579 - other skin, subcut tiss & breast proc w mcc|
+802|1060|general surgery|10420|surgery other general surgery|102710|802 - other o.r. proc of the blood & blood forming organs w mcc|
+803|1060|general surgery|10420|surgery other general surgery|102720|803 - other o.r. proc of the blood & blood forming organs w cc|
+804|1060|general surgery|10420|surgery other general surgery|102730|804 - other o.r. proc of the blood & blood forming organs w/o cc/mcc|
+853|1060|general surgery|10420|surgery other general surgery|102740|853 - infectious & parasitic diseases w o.r. procedure w mcc|
+854|1060|general surgery|10420|surgery other general surgery|102750|854 - infectious & parasitic diseases w o.r. procedure w cc|
+855|1060|general surgery|10420|surgery other general surgery|102760|855 - infectious & parasitic diseases w o.r. procedure w/o cc/mcc|
+856|1060|general surgery|10420|surgery other general surgery|102770|856 - postoperative or post-traumatic infections w o.r. proc w mcc|
+857|1060|general surgery|10420|surgery other general surgery|102780|857 - postoperative or post-traumatic infections w o.r. proc w cc|
+858|1060|general surgery|10420|surgery other general surgery|102790|858 - postoperative or post-traumatic infections w o.r. proc w/o cc/mcc|
+939|1060|general surgery|10420|surgery other general surgery|102800|939 - o.r. proc w diagnoses of other contact w health services w mcc|
+940|1060|general surgery|10420|surgery other general surgery|102810|940 - o.r. proc w diagnoses of other contact w health services w cc|
+941|1060|general surgery|10420|surgery other general surgery|102820|941 - o.r. proc w diagnoses of other contact w health services w/o cc/mcc|
+981|1060|general surgery|10420|surgery other general surgery|102830|981 - extensive o.r. procedure unrelated to principal diagnosis w mcc|
+982|1060|general surgery|10420|surgery other general surgery|102840|982 - extensive o.r. procedure unrelated to principal diagnosis w cc|
+983|1060|general surgery|10420|surgery other general surgery|102850|983 - extensive o.r. procedure unrelated to principal diagnosis w/o cc/mcc|
+987|1060|general surgery|10420|surgery other general surgery|102860|987 - non-extensive o.r. proc unrelated to principal diagnosis w mcc|
+988|1060|general surgery|10420|surgery other general surgery|102870|988 - non-extensive o.r. proc unrelated to principal diagnosis w cc|
+989|1060|general surgery|10420|surgery other general surgery|102880|989 - non-extensive o.r. proc unrelated to principal diagnosis w/o cc/mcc|
+356|1060|general surgery|10430|surgery other gi|102890|356 - other digestive system o.r. procedures w mcc|
+357|1060|general surgery|10430|surgery other gi|102900|357 - other digestive system o.r. procedures w cc|
+358|1060|general surgery|10430|surgery other gi|102910|358 - other digestive system o.r. procedures w/o cc/mcc|
+580|1060|general surgery|10440|surgery plastic|102920|580 - other skin, subcut tiss & breast proc w cc|
+573|1060|general surgery|10450|surgery skin|102930|573 - skin graft &/or debrid for skn ulcer or cellulitis w mcc|
+574|1060|general surgery|10450|surgery skin|102940|574 - skin graft &/or debrid for skn ulcer or cellulitis w cc|
+575|1060|general surgery|10450|surgery skin|102950|575 - skin graft &/or debrid for skn ulcer or cellulitis w/o cc/mcc|
+576|1060|general surgery|10450|surgery skin|102960|576 - skin graft &/or debrid exc for skin ulcer or cellulitis w mcc|
+577|1060|general surgery|10450|surgery skin|102970|577 - skin graft &/or debrid exc for skin ulcer or cellulitis w cc|
+578|1060|general surgery|10450|surgery skin|102980|578 - skin graft &/or debrid exc for skin ulcer or cellulitis w/o cc/mcc|
+799|1060|general surgery|10460|surgery splenectomy|102990|799 - splenectomy w mcc|
+800|1060|general surgery|10460|surgery splenectomy|103000|800 - splenectomy w cc|
+801|1060|general surgery|10460|surgery splenectomy|103010|801 - splenectomy w/o cc/mcc|
+901|1060|general surgery|10470|surgery trauma (general surgical)|103020|901 - wound debridements for injuries w mcc|
+902|1060|general surgery|10470|surgery trauma (general surgical)|103030|902 - wound debridements for injuries w cc|
+903|1060|general surgery|10470|surgery trauma (general surgical)|103040|903 - wound debridements for injuries w/o cc/mcc|
+904|1060|general surgery|10470|surgery trauma (general surgical)|103050|904 - skin grafts for injuries w cc/mcc|
+905|1060|general surgery|10470|surgery trauma (general surgical)|103060|905 - skin grafts for injuries w/o cc/mcc|
+906|1060|general surgery|10470|surgery trauma (general surgical)|103070|906 - hand procedures for injuries|
+907|1060|general surgery|10470|surgery trauma (general surgical)|103080|907 - other o.r. procedures for injuries w mcc|
+908|1060|general surgery|10470|surgery trauma (general surgical)|103090|908 - other o.r. procedures for injuries w cc|
+909|1060|general surgery|10470|surgery trauma (general surgical)|103100|909 - other o.r. procedures for injuries w/o cc/mcc|
+957|1060|general surgery|10470|surgery trauma (general surgical)|103110|957 - other o.r. procedures for multiple significant trauma w mcc|
+958|1060|general surgery|10470|surgery trauma (general surgical)|103120|958 - other o.r. procedures for multiple significant trauma w cc|
+959|1060|general surgery|10470|surgery trauma (general surgical)|103130|959 - other o.r. procedures for multiple significant trauma w/o cc/mcc|
+326|1060|general surgery|10480|surgery upper gi|103140|326 - stomach, esophageal & duodenal proc w mcc|
+327|1060|general surgery|10480|surgery upper gi|103150|327 - stomach, esophageal & duodenal proc w cc|
+328|1060|general surgery|10480|surgery upper gi|103160|328 - stomach, esophageal & duodenal proc w/o cc/mcc|
+742|1070|gynecology|10490|general surgical gynecology|103170|742 - uterine & adnexa proc for non-malignancy w cc/mcc|f
+743|1070|gynecology|10490|general surgical gynecology|103180|743 - uterine & adnexa proc for non-malignancy w/o cc/mcc|f
+746|1070|gynecology|10490|general surgical gynecology|103190|746 - vagina, cervix & vulva procedures w cc/mcc|f
+747|1070|gynecology|10490|general surgical gynecology|103200|747 - vagina, cervix & vulva procedures w/o cc/mcc|f
+748|1070|gynecology|10490|general surgical gynecology|103210|748 - female reproductive system reconstructive procedures|f
+749|1070|gynecology|10490|general surgical gynecology|103220|749 - other female reproductive system o.r. procedures w cc/mcc|f
+750|1070|gynecology|10490|general surgical gynecology|103230|750 - other female reproductive system o.r. procedures w/o cc/mcc|f
+734|1070|gynecology|10500|gyn surgical oncology|103240|734 - pelvic evisceration, rad hysterectomy & rad vulvectomy w cc/mcc|f
+735|1070|gynecology|10500|gyn surgical oncology|103250|735 - pelvic evisceration, rad hysterectomy & rad vulvectomy w/o cc/mcc|f
+757|1070|gynecology|10510|medical gynecology|103260|757 - infections, female reproductive system w mcc|f
+758|1070|gynecology|10510|medical gynecology|103270|758 - infections, female reproductive system w cc|f
+759|1070|gynecology|10510|medical gynecology|103280|759 - infections, female reproductive system w/o cc/mcc|f
+760|1070|gynecology|10510|medical gynecology|103290|760 - menstrual & other female reproductive system disorders w cc/mcc|f
+761|1070|gynecology|10510|medical gynecology|103300|761 - menstrual & other female reproductive system disorders w/o cc/mcc|f
+744|1070|gynecology|10520|sterilization|103310|744 - d&c, conization, laparascopy & tubal interruption w cc/mcc|f
+745|1070|gynecology|10520|sterilization|103320|745 - d&c, conization, laparascopy & tubal interruption w/o cc/mcc|f
+969|1080|hiv|10530|hiv|103330|969 - hiv w extensive o.r. procedure w mcc|
+970|1080|hiv|10530|hiv|103340|970 - hiv w extensive o.r. procedure w/o mcc|
+974|1080|hiv|10530|hiv|103350|974 - hiv w major related condition w mcc|
+975|1080|hiv|10530|hiv|103360|975 - hiv w major related condition w cc|
+976|1080|hiv|10530|hiv|103370|976 - hiv w major related condition w/o cc/mcc|
+977|1080|hiv|10530|hiv|103380|977 - hiv w or w/o other related condition|
+789|1090|neonatology|10540|neonate with major problems|103390|789 - neonates, died or transferred to another acute care facility|
+790|1090|neonatology|10540|neonate with major problems|103400|790 - extreme immaturity or respiratory distress syndrome, neonate|
+791|1090|neonatology|10540|neonate with major problems|103410|791 - prematurity w major problems|
+792|1090|neonatology|10540|neonate with major problems|103420|792 - prematurity w/o major problems|
+793|1090|neonatology|10540|neonate with major problems|103430|793 - full term neonate w major problems|
+794|1090|neonatology|10540|neonate with major problems|103440|794 - neonate w other significant problems|
+682|1100|nephrology|10550|medicine nephrology|103450|682 - renal failure w mcc|
+683|1100|nephrology|10550|medicine nephrology|103460|683 - renal failure w cc|
+684|1100|nephrology|10550|medicine nephrology|103470|684 - renal failure w/o cc/mcc|
+685|1100|nephrology|10550|medicine nephrology|103480|685 - admit for renal dialysis|
+689|1100|nephrology|10550|medicine nephrology|103490|689 - kidney & urinary tract infections w mcc|
+690|1100|nephrology|10550|medicine nephrology|103500|690 - kidney & urinary tract infections w/o mcc|
+695|1100|nephrology|10550|medicine nephrology|103510|695 - kidney & urinary tract signs & symptoms w mcc|
+696|1100|nephrology|10550|medicine nephrology|103520|696 - kidney & urinary tract signs & symptoms w/o mcc|
+698|1100|nephrology|10550|medicine nephrology|103530|698 - other kidney & urinary tract diagnoses w mcc|
+699|1100|nephrology|10550|medicine nephrology|103540|699 - other kidney & urinary tract diagnoses w cc|
+700|1100|nephrology|10550|medicine nephrology|103550|700 - other kidney & urinary tract diagnoses w/o cc/mcc|
+008|1100|nephrology|10560|surgery transplant|103560|008 - simultaneous pancreas/kidney transplant|
+8|1100|nephrology|10560|surgery transplant|103560|008 - simultaneous pancreas/kidney transplant|
+010|1100|nephrology|10560|surgery transplant|103570|010 - pancreas transplant|
+10|1100|nephrology|10560|surgery transplant|103570|010 - pancreas transplant|
+652|1100|nephrology|10560|surgery transplant|103580|652 - kidney transplant|
+691|1100|nephrology|10570|urinary system|103590|691 - urinary stones w esw lithotripsy w cc/mcc|
+692|1100|nephrology|10570|urinary system|103600|692 - urinary stones w esw lithotripsy w/o cc/mcc|
+693|1100|nephrology|10570|urinary system|103610|693 - urinary stones w/o esw lithotripsy w mcc|
+694|1100|nephrology|10570|urinary system|103620|694 - urinary stones w/o esw lithotripsy w/o mcc|
+037|1110|neuroscience|10580|arterial disease|103630|037 - extracranial procedures w mcc|
+37|1110|neuroscience|10580|arterial disease|103630|037 - extracranial procedures w mcc|
+038|1110|neuroscience|10580|arterial disease|103640|038 - extracranial procedures w cc|
+38|1110|neuroscience|10580|arterial disease|103640|038 - extracranial procedures w cc|
+039|1110|neuroscience|10580|arterial disease|103650|039 - extracranial procedures w/o cc/mcc|
+39|1110|neuroscience|10580|arterial disease|103650|039 - extracranial procedures w/o cc/mcc|
+020|1110|neuroscience|10590|brain|103660|020 - intracranial vascular procedures w pdx hemorrhage w mcc|
+20|1110|neuroscience|10590|brain|103660|020 - intracranial vascular procedures w pdx hemorrhage w mcc|
+021|1110|neuroscience|10590|brain|103670|021 - intracranial vascular procedures w pdx hemorrhage w cc|
+21|1110|neuroscience|10590|brain|103670|021 - intracranial vascular procedures w pdx hemorrhage w cc|
+022|1110|neuroscience|10590|brain|103680|022 - intracranial vascular procedures w pdx hemorrhage w/o cc/mcc|
+22|1110|neuroscience|10590|brain|103680|022 - intracranial vascular procedures w pdx hemorrhage w/o cc/mcc|
+023|1110|neuroscience|10590|brain|103690|023 - craniotomy w major device implant or acute complex cns pdx w mcc|
+23|1110|neuroscience|10590|brain|103690|023 - craniotomy w major device implant or acute complex cns pdx w mcc|
+024|1110|neuroscience|10590|brain|103700|024 - craniotomy w major device implant or acute complex cns pdx w/o mcc|
+24|1110|neuroscience|10590|brain|103700|024 - craniotomy w major device implant or acute complex cns pdx w/o mcc|
+025|1110|neuroscience|10590|brain|103710|025 - craniotomy & endovascular intracranial procedures w mcc|
+25|1110|neuroscience|10590|brain|103710|025 - craniotomy & endovascular intracranial procedures w mcc|
+026|1110|neuroscience|10590|brain|103720|026 - craniotomy & endovascular intracranial procedures w cc|
+26|1110|neuroscience|10590|brain|103720|026 - craniotomy & endovascular intracranial procedures w cc|
+027|1110|neuroscience|10590|brain|103730|027 - craniotomy & endovascular intracranial procedures w/o cc/mcc|
+27|1110|neuroscience|10590|brain|103730|027 - craniotomy & endovascular intracranial procedures w/o cc/mcc|
+031|1110|neuroscience|10590|brain|103740|031 - ventricular shunt procedures w mcc|
+31|1110|neuroscience|10590|brain|103740|031 - ventricular shunt procedures w mcc|
+032|1110|neuroscience|10590|brain|103750|032 - ventricular shunt procedures w cc|
+32|1110|neuroscience|10590|brain|103750|032 - ventricular shunt procedures w cc|
+033|1110|neuroscience|10590|brain|103760|033 - ventricular shunt procedures w/o cc/mcc|
+33|1110|neuroscience|10590|brain|103760|033 - ventricular shunt procedures w/o cc/mcc|
+056|1110|neuroscience|10600|degenerative disorders|103770|056 - degenerative nervous system disorders w mcc|
+56|1110|neuroscience|10600|degenerative disorders|103770|056 - degenerative nervous system disorders w mcc|
+057|1110|neuroscience|10600|degenerative disorders|103780|057 - degenerative nervous system disorders w/o mcc|
+57|1110|neuroscience|10600|degenerative disorders|103780|057 - degenerative nervous system disorders w/o mcc|
+097|1110|neuroscience|10610|epilepsy|103790|097 - non-bacterial infect of nervous sys exc viral meningitis w mcc|
+97|1110|neuroscience|10610|epilepsy|103790|097 - non-bacterial infect of nervous sys exc viral meningitis w mcc|
+098|1110|neuroscience|10610|epilepsy|103800|098 - non-bacterial infect of nervous sys exc viral meningitis w cc|
+98|1110|neuroscience|10610|epilepsy|103800|098 - non-bacterial infect of nervous sys exc viral meningitis w cc|
+099|1110|neuroscience|10610|epilepsy|103810|099 - non-bacterial infect of nervous sys exc viral meningitis w/o cc/mcc|
+99|1110|neuroscience|10610|epilepsy|103810|099 - non-bacterial infect of nervous sys exc viral meningitis w/o cc/mcc|
+100|1110|neuroscience|10610|epilepsy|103820|100 - seizures w mcc|
+101|1110|neuroscience|10610|epilepsy|103830|101 - seizures w/o mcc|
+102|1110|neuroscience|10610|epilepsy|103840|102 - headaches w mcc|
+103|1110|neuroscience|10610|epilepsy|103850|103 - headaches w/o mcc|
+471|1110|neuroscience|10620|fusion|103860|471 - cervical spinal fusion w mcc|
+472|1110|neuroscience|10620|fusion|103870|472 - cervical spinal fusion w cc|
+473|1110|neuroscience|10620|fusion|103880|473 - cervical spinal fusion w/o cc/mcc|
+082|1110|neuroscience|10630|head injuries|103890|082 - traumatic stupor & coma, coma >1 hr w mcc|
+82|1110|neuroscience|10630|head injuries|103890|082 - traumatic stupor & coma, coma >1 hr w mcc|
+083|1110|neuroscience|10630|head injuries|103900|083 - traumatic stupor & coma, coma >1 hr w cc|
+83|1110|neuroscience|10630|head injuries|103900|083 - traumatic stupor & coma, coma >1 hr w cc|
+084|1110|neuroscience|10630|head injuries|103910|084 - traumatic stupor & coma, coma >1 hr w/o cc/mcc|
+84|1110|neuroscience|10630|head injuries|103910|084 - traumatic stupor & coma, coma >1 hr w/o cc/mcc|
+085|1110|neuroscience|10630|head injuries|103920|085 - traumatic stupor & coma, coma <1 hr w mcc|
+85|1110|neuroscience|10630|head injuries|103920|085 - traumatic stupor & coma, coma <1 hr w mcc|
+086|1110|neuroscience|10630|head injuries|103930|086 - traumatic stupor & coma, coma <1 hr w cc|
+86|1110|neuroscience|10630|head injuries|103930|086 - traumatic stupor & coma, coma <1 hr w cc|
+087|1110|neuroscience|10630|head injuries|103940|087 - traumatic stupor & coma, coma <1 hr w/o cc/mcc|
+87|1110|neuroscience|10630|head injuries|103940|087 - traumatic stupor & coma, coma <1 hr w/o cc/mcc|
+088|1110|neuroscience|10630|head injuries|103950|088 - concussion w mcc|
+88|1110|neuroscience|10630|head injuries|103950|088 - concussion w mcc|
+089|1110|neuroscience|10630|head injuries|103960|089 - concussion w cc|
+89|1110|neuroscience|10630|head injuries|103960|089 - concussion w cc|
+090|1110|neuroscience|10630|head injuries|103970|090 - concussion w/o cc/mcc|
+90|1110|neuroscience|10630|head injuries|103970|090 - concussion w/o cc/mcc|
+052|1110|neuroscience|10640|medical spine|103980|052 - spinal disorders & injuries w cc/mcc|
+52|1110|neuroscience|10640|medical spine|103980|052 - spinal disorders & injuries w cc/mcc|
+053|1110|neuroscience|10640|medical spine|103990|053 - spinal disorders & injuries w/o cc/mcc|
+53|1110|neuroscience|10640|medical spine|103990|053 - spinal disorders & injuries w/o cc/mcc|
+058|1110|neuroscience|10650|multiple sclerosis|104000|058 - multiple sclerosis & cerebellar ataxia w mcc|
+58|1110|neuroscience|10650|multiple sclerosis|104000|058 - multiple sclerosis & cerebellar ataxia w mcc|
+059|1110|neuroscience|10650|multiple sclerosis|104010|059 - multiple sclerosis & cerebellar ataxia w cc|
+59|1110|neuroscience|10650|multiple sclerosis|104010|059 - multiple sclerosis & cerebellar ataxia w cc|
+060|1110|neuroscience|10650|multiple sclerosis|104020|060 - multiple sclerosis & cerebellar ataxia w/o cc/mcc|
+60|1110|neuroscience|10650|multiple sclerosis|104020|060 - multiple sclerosis & cerebellar ataxia w/o cc/mcc|
+075|1110|neuroscience|10660|nervous system infection|104030|075 - viral meningitis w cc/mcc|
+75|1110|neuroscience|10660|nervous system infection|104030|075 - viral meningitis w cc/mcc|
+076|1110|neuroscience|10660|nervous system infection|104040|076 - viral meningitis w/o cc/mcc|
+76|1110|neuroscience|10660|nervous system infection|104040|076 - viral meningitis w/o cc/mcc|
+070|1110|neuroscience|10670|other neurology|104050|070 - nonspecific cerebrovascular disorders w mcc|
+70|1110|neuroscience|10670|other neurology|104050|070 - nonspecific cerebrovascular disorders w mcc|
+071|1110|neuroscience|10670|other neurology|104060|071 - nonspecific cerebrovascular disorders w cc|
+71|1110|neuroscience|10670|other neurology|104060|071 - nonspecific cerebrovascular disorders w cc|
+072|1110|neuroscience|10670|other neurology|104070|072 - nonspecific cerebrovascular disorders w/o cc/mcc|
+72|1110|neuroscience|10670|other neurology|104070|072 - nonspecific cerebrovascular disorders w/o cc/mcc|
+073|1110|neuroscience|10670|other neurology|104080|073 - cranial & peripheral nerve disorders w mcc|
+73|1110|neuroscience|10670|other neurology|104080|073 - cranial & peripheral nerve disorders w mcc|
+074|1110|neuroscience|10670|other neurology|104090|074 - cranial & peripheral nerve disorders w/o mcc|
+74|1110|neuroscience|10670|other neurology|104090|074 - cranial & peripheral nerve disorders w/o mcc|
+077|1110|neuroscience|10670|other neurology|104100|077 - hypertensive encephalopathy w mcc|
+77|1110|neuroscience|10670|other neurology|104100|077 - hypertensive encephalopathy w mcc|
+078|1110|neuroscience|10670|other neurology|104110|078 - hypertensive encephalopathy w cc|
+78|1110|neuroscience|10670|other neurology|104110|078 - hypertensive encephalopathy w cc|
+079|1110|neuroscience|10670|other neurology|104120|079 - hypertensive encephalopathy w/o cc/mcc|
+79|1110|neuroscience|10670|other neurology|104120|079 - hypertensive encephalopathy w/o cc/mcc|
+080|1110|neuroscience|10670|other neurology|104130|080 - nontraumatic stupor & coma w mcc|
+80|1110|neuroscience|10670|other neurology|104130|080 - nontraumatic stupor & coma w mcc|
+081|1110|neuroscience|10670|other neurology|104140|081 - nontraumatic stupor & coma w/o mcc|
+81|1110|neuroscience|10670|other neurology|104140|081 - nontraumatic stupor & coma w/o mcc|
+091|1110|neuroscience|10670|other neurology|104150|091 - other disorders of nervous system w mcc|
+91|1110|neuroscience|10670|other neurology|104150|091 - other disorders of nervous system w mcc|
+092|1110|neuroscience|10670|other neurology|104160|092 - other disorders of nervous system w cc|
+92|1110|neuroscience|10670|other neurology|104160|092 - other disorders of nervous system w cc|
+093|1110|neuroscience|10670|other neurology|104170|093 - other disorders of nervous system w/o cc/mcc|
+93|1110|neuroscience|10670|other neurology|104170|093 - other disorders of nervous system w/o cc/mcc|
+094|1110|neuroscience|10670|other neurology|104180|094 - bacterial & tuberculous infections of nervous system w mcc|
+94|1110|neuroscience|10670|other neurology|104180|094 - bacterial & tuberculous infections of nervous system w mcc|
+095|1110|neuroscience|10670|other neurology|104190|095 - bacterial & tuberculous infections of nervous system w cc|
+95|1110|neuroscience|10670|other neurology|104190|095 - bacterial & tuberculous infections of nervous system w cc|
+096|1110|neuroscience|10670|other neurology|104200|096 - bacterial & tuberculous infections of nervous system w/o cc/mcc|
+96|1110|neuroscience|10670|other neurology|104200|096 - bacterial & tuberculous infections of nervous system w/o cc/mcc|
+028|1110|neuroscience|10680|other surgical spine|104210|028 - spinal procedures w mcc|
+28|1110|neuroscience|10680|other surgical spine|104210|028 - spinal procedures w mcc|
+029|1110|neuroscience|10680|other surgical spine|104220|029 - spinal procedures w cc|
+29|1110|neuroscience|10680|other surgical spine|104220|029 - spinal procedures w cc|
+030|1110|neuroscience|10680|other surgical spine|104230|030 - spinal procedures w/o cc/mcc|
+30|1110|neuroscience|10680|other surgical spine|104230|030 - spinal procedures w/o cc/mcc|
+041|1110|neuroscience|10690|peripheral and cranial diseases|104240|041 - periph & cranial nerve & other nerv syst proc w cc|
+41|1110|neuroscience|10690|peripheral and cranial diseases|104240|041 - periph & cranial nerve & other nerv syst proc w cc|
+042|1110|neuroscience|10690|peripheral and cranial diseases|104250|042 - periph & cranial nerve & other nerv syst proc w/o cc/mcc|
+42|1110|neuroscience|10690|peripheral and cranial diseases|104250|042 - periph & cranial nerve & other nerv syst proc w/o cc/mcc|
+034|1110|neuroscience|10700|stroke and transient ischemic attack|104260|034 - carotid artery stent procedure w mcc|
+34|1110|neuroscience|10700|stroke and transient ischemic attack|104260|034 - carotid artery stent procedure w mcc|
+035|1110|neuroscience|10700|stroke and transient ischemic attack|104270|035 - carotid artery stent procedure w cc|
+35|1110|neuroscience|10700|stroke and transient ischemic attack|104270|035 - carotid artery stent procedure w cc|
+036|1110|neuroscience|10700|stroke and transient ischemic attack|104280|036 - carotid artery stent procedure w/o cc/mcc|
+36|1110|neuroscience|10700|stroke and transient ischemic attack|104280|036 - carotid artery stent procedure w/o cc/mcc|
+061|1110|neuroscience|10700|stroke and transient ischemic attack|104290|061 - acute ischemic stroke w use of thrombolytic agent w mcc|
+61|1110|neuroscience|10700|stroke and transient ischemic attack|104290|061 - acute ischemic stroke w use of thrombolytic agent w mcc|
+062|1110|neuroscience|10700|stroke and transient ischemic attack|104300|062 - acute ischemic stroke w use of thrombolytic agent w cc|
+62|1110|neuroscience|10700|stroke and transient ischemic attack|104300|062 - acute ischemic stroke w use of thrombolytic agent w cc|
+063|1110|neuroscience|10700|stroke and transient ischemic attack|104310|063 - acute ischemic stroke w use of thrombolytic agent w/o cc/mcc|
+63|1110|neuroscience|10700|stroke and transient ischemic attack|104310|063 - acute ischemic stroke w use of thrombolytic agent w/o cc/mcc|
+064|1110|neuroscience|10700|stroke and transient ischemic attack|104320|064 - intracranial hemorrhage or cerebral infarction w mcc|
+64|1110|neuroscience|10700|stroke and transient ischemic attack|104320|064 - intracranial hemorrhage or cerebral infarction w mcc|
+065|1110|neuroscience|10700|stroke and transient ischemic attack|104330|065 - intracranial hemorrhage or cerebral infarction w cc|
+65|1110|neuroscience|10700|stroke and transient ischemic attack|104330|065 - intracranial hemorrhage or cerebral infarction w cc|
+066|1110|neuroscience|10700|stroke and transient ischemic attack|104340|066 - intracranial hemorrhage or cerebral infarction w/o cc/mcc|
+66|1110|neuroscience|10700|stroke and transient ischemic attack|104340|066 - intracranial hemorrhage or cerebral infarction w/o cc/mcc|
+067|1110|neuroscience|10700|stroke and transient ischemic attack|104350|067 - nonspecific cva & precerebral occlusion w/o infarct w mcc|
+67|1110|neuroscience|10700|stroke and transient ischemic attack|104350|067 - nonspecific cva & precerebral occlusion w/o infarct w mcc|
+068|1110|neuroscience|10700|stroke and transient ischemic attack|104360|068 - nonspecific cva & precerebral occlusion w/o infarct w/o mcc|
+68|1110|neuroscience|10700|stroke and transient ischemic attack|104360|068 - nonspecific cva & precerebral occlusion w/o infarct w/o mcc|
+069|1110|neuroscience|10700|stroke and transient ischemic attack|104370|069 - transient ischemia|
+69|1110|neuroscience|10700|stroke and transient ischemic attack|104370|069 - transient ischemia|
+955|1110|neuroscience|10710|trauma (neurosurgery)|104380|955 - craniotomy for multiple significant trauma|
+795|1120|normal newborn|10720|normal newborn|104390|795 - normal newborn|
+770|1130|obstetrics|10730|abortion/miscarriage|104400|770 - abortion w d&c, aspiration curettage or hysterotomy|f
+779|1130|obstetrics|10730|abortion/miscarriage|104410|779 - abortion w/o d&c|f
+777|1130|obstetrics|10740|antepartum care/high risk pregnancies|104420|777 - ectopic pregnancy|f
+778|1130|obstetrics|10740|antepartum care/high risk pregnancies|104430|778 - threatened abortion|f
+780|1130|obstetrics|10740|antepartum care/high risk pregnancies|104440|780 - false labor|f
+781|1130|obstetrics|10740|antepartum care/high risk pregnancies|104450|781 - other antepartum diagnoses w medical complications|f
+782|1130|obstetrics|10740|antepartum care/high risk pregnancies|104460|782 - other antepartum diagnoses w/o medical complications|f
+765|1130|obstetrics|10750|delivery|104470|765 - cesarean section w cc/mcc|f
+766|1130|obstetrics|10750|delivery|104480|766 - cesarean section w/o cc/mcc|f
+767|1130|obstetrics|10750|delivery|104490|767 - vaginal delivery w sterilization &/or d&c|f
+768|1130|obstetrics|10750|delivery|104500|768 - vaginal delivery w o.r. proc except steril &/or d&c|f
+774|1130|obstetrics|10750|delivery|104510|774 - vaginal delivery w complicating diagnoses|f
+775|1130|obstetrics|10750|delivery|104520|775 - vaginal delivery w/o complicating diagnoses|f
+769|1130|obstetrics|10760|post-partum|104530|769 - postpartum & post abortion diagnoses w o.r. procedure|f
+776|1130|obstetrics|10760|post-partum|104540|776 - postpartum & post abortion diagnoses w/o o.r. procedure|f
+736|1140|oncology|10770|gyn surgical oncology|104550|736 - uterine & adnexa proc for ovarian or adnexal malignancy w mcc|
+737|1140|oncology|10770|gyn surgical oncology|104560|737 - uterine & adnexa proc for ovarian or adnexal malignancy w cc|
+738|1140|oncology|10770|gyn surgical oncology|104570|738 - uterine & adnexa proc for ovarian or adnexal malignancy w/o cc/mcc|
+739|1140|oncology|10770|gyn surgical oncology|104580|739 - uterine,adnexa proc for non-ovarian/adnexal malig w mcc|
+740|1140|oncology|10770|gyn surgical oncology|104590|740 - uterine,adnexa proc for non-ovarian/adnexal malig w cc|
+741|1140|oncology|10770|gyn surgical oncology|104600|741 - uterine,adnexa proc for non-ovarian/adnexal malig w/o cc/mcc|
+054|1140|oncology|10780|medical oncology|104610|054 - nervous system neoplasms w mcc|
+54|1140|oncology|10780|medical oncology|104610|054 - nervous system neoplasms w mcc|
+055|1140|oncology|10780|medical oncology|104620|055 - nervous system neoplasms w/o mcc|
+55|1140|oncology|10780|medical oncology|104620|055 - nervous system neoplasms w/o mcc|
+146|1140|oncology|10780|medical oncology|104630|146 - ear, nose, mouth & throat malignancy w mcc|
+147|1140|oncology|10780|medical oncology|104640|147 - ear, nose, mouth & throat malignancy w cc|
+672|1210|urology|11110|urinary system|107290|672 - urethral procedures w/o cc/mcc|
+673|1210|urology|11110|urinary system|107300|673 - other kidney & urinary tract procedures w mcc|
+674|1210|urology|11110|urinary system|107310|674 - other kidney & urinary tract procedures w cc|
+675|1210|urology|11110|urinary system|107320|675 - other kidney & urinary tract procedures w/o cc/mcc|
+697|1210|urology|11110|urinary system|107330|697 - urethral stricture|
+239|1220|vascular surgery|11120|amputation|107340|239 - amputation for circ sys disorders exc upper limb & toe w mcc|
+240|1220|vascular surgery|11120|amputation|107350|240 - amputation for circ sys disorders exc upper limb & toe w cc|
+241|1220|vascular surgery|11120|amputation|107360|241 - amputation for circ sys disorders exc upper limb & toe w/o cc/mcc|
+255|1220|vascular surgery|11120|amputation|107370|255 - upper limb & toe amputation for circ system disorders w mcc|
+256|1220|vascular surgery|11120|amputation|107380|256 - upper limb & toe amputation for circ system disorders w cc|
+257|1220|vascular surgery|11120|amputation|107390|257 - upper limb & toe amputation for circ system disorders w/o cc/mcc|
+252|1220|vascular surgery|11130|arterial disease|107400|252 - other vascular procedures w mcc|
+253|1220|vascular surgery|11130|arterial disease|107410|253 - other vascular procedures w cc|
+254|1220|vascular surgery|11130|arterial disease|107420|254 - other vascular procedures w/o cc/mcc|
+264|1220|vascular surgery|11140|other vascular|107430|264 - other circulatory system o.r. procedures|
+263|1220|vascular surgery|11150|venous disease|107440|263 - vein ligation & stripping|
+265|1010|cardiology|10040|cardiac electrophysiology|100310|265 - aicd lead procedures|
+266|1150|open heart|10860|cardiac surgery|105482|266 - endovascular cardiac valve replacement w mcc|
+267|1150|open heart|10860|cardiac surgery|105484|267 - endovascular cardiac valve replacement w/o mcc|
+518|1170|orthopedics|10980|other surgical spine|106272|518 - back & neck proc exc spinal fusion w mcc or disc device/neurostim|
+519|1170|orthopedics|10980|other surgical spine|106274|519 - back & neck proc exc spinal fusion w cc|
+520|1170|orthopedics|10980|other surgical spine|106276|520 - back & neck proc exc spinal fusion w/o cc/mcc|
+571|1060|general surgery|10470|surgery trauma (general surgical)|103014|571 - skin debridement w cc|
+014|1140|oncology|10840|surgery transplant|105272|014 - allogeneic bone marrow transplant|
+016|1140|oncology|10840|surgery transplant|105274|016 - autologous bone marrow transplant w cc/mcc|
+017|1140|oncology|10840|surgery transplant|105276|017 - autologous bone marrow transplant w/o cc/mcc|
+570|1060|general surgery|10470|surgery trauma (general surgical)|103012|570 - skin debridement w mcc|

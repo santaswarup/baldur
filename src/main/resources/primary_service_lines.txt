@@ -1,0 +1,56 @@
+SERVICE_LINE_TYPE|SERVICE_LINE_CODE|SERVICE_LINE_ORIG_DESC|PRIMARY_SERVICE_LINE|PRIMARY_SERVICE_LINE_DESC
+52|1000|behavioral medicine|5005|behavioral medicine
+52|1010|cardiology|5010|cardiology
+52|1150|open heart|5010|cardiology
+81|4000|cardiology|5010|cardiology
+53|10180|dermatology|5020|dermatology
+82|40380|dermatology - acne & warts|5020|dermatology
+82|40390|dermatology - eczema & psoriasis|5020|dermatology
+82|40400|dermatology - other procedures|5020|dermatology
+82|40410|dermatology - other skin lesions|5020|dermatology
+82|40420|dermatology - skin cancer|5020|dermatology
+52|1020|endocrinology|5030|endocrinology
+81|4020|endocrinology|5030|endocrinology
+52|1030|ent|5040|ent
+81|4030|ent|5040|ent
+52|1040|gastroenterology|5050|gastroenterology
+81|4040|gastroenterology|5050|gastroenterology
+52|1050|general medicine|5060|general medicine
+81|4050|general medicine|5060|general medicine
+52|1060|general surgery|5070|general surgery
+81|4060|general surgery|5070|general surgery
+52|1070|gynecology|5080|gynecology
+81|4070|gynecology|5080|gynecology
+81|4080|lab|5085|lab
+52|1090|neonatology|5087|neonatology
+52|1100|nephrology|5090|nephrology
+81|4090|nephrology|5090|nephrology
+52|1110|neuroscience|5100|neuroscience
+81|4100|neuroscience|5100|neuroscience
+81|4160|pain management|5100|neuroscience
+52|1120|normal newborn|5105|normal newborn
+52|1130|obstetrics|5110|obstetrics
+81|4110|obstetrics|5110|obstetrics
+52|1140|oncology|5120|oncology
+81|4120|oncology|5120|oncology
+52|1160|ophthalmology|5130|ophthalmology
+81|4130|ophthalmology|5130|ophthalmology
+52|1170|orthopedics|5140|orthopedics
+81|4140|orthopedics|5140|orthopedics
+53|10440|surgery plastic|5145|plastic surgery
+53|10450|surgery skin|5145|plastic surgery
+81|4010|cosmetic procedures|5145|plastic surgery
+82|40430|dermatology - skin grafts and transfers|5145|plastic surgery
+52|1190|pulmonary|5150|pulmonary
+81|4170|pulmonology|5150|pulmonary
+81|4180|radiology|5155|radiology
+53|10230|rehabilitation|5160|rehabilitation
+81|4190|rehabilitation|5160|rehabilitation
+52|1200|thoracic surgery|5170|thoracic surgery
+81|4200|thoracic surgery|5170|thoracic surgery
+52|1210|urology|5180|urology
+81|4220|urology|5180|urology
+52|1220|vascular surgery|5190|vascular surgery
+81|4230|vascular surgery|5190|vascular surgery
+52|1080|hiv|5060|general medicine
+81|4150|other|5200|other
