@@ -33,6 +33,38 @@ object FileInputSupport {
           (codeGroup, newSet)  }
 
 
+  val diagnosisServiceLines: Map[(String, Int), (Int, String, Int, String, String)] =
+    Source.fromURL(getClass.getResource("/diagnosis_service_lines.txt"))
+      .getLines()
+      .drop(1)
+      .map(line => line.split("\\|"))
+      .map{ case line => ((line(0),line(1).toInt),(line(2).toInt,line(3),line(4).toInt,line(5),line(6)))}
+      .toMap
+
+  val procedureServiceLines: Map[(String, Int), (Int, String, Int, String, Int, String, String)] =
+    Source.fromURL(getClass.getResource("/procedure_service_lines.txt"))
+      .getLines()
+      .drop(1)
+      .map(line => line.split("\\|"))
+      .map{ case line => ((line(0),line(1).toInt),(line(2).toInt,line(3),line(4).toInt,line(5),line(6).toInt, line(7), line(8)))}
+      .toMap
+
+  val drgServiceLines: Map[String, (Int, String, Int, String, Int, String, String)] =
+    Source.fromURL(getClass.getResource("/ms_drg_service_lines.txt"))
+      .getLines()
+      .drop(1)
+      .map(line => line.split("\\|"))
+      .map{ case line => (line(0),(line(1).toInt,line(2),line(3).toInt,line(4),line(5).toInt, line(6), line(7)))}
+      .toMap
+
+  val primaryServiceLines: Map[(Int, Int, String), (Int, String)] =
+    Source.fromURL(getClass.getResource("/primary_service_lines.txt"))
+      .getLines()
+      .drop(1)
+      .map(line => line.split("\\|"))
+      .map{ case line => ((line(0).toInt, line(1).toInt, line(2)),(line(3).toInt, line(4)))}
+      .toMap
+
   def getCodeGroups(codes: Option[List[String]]): Option[Set[Int]] = {
 
     val codeGrps: Option[Set[Int]] = codes.isEmpty match {
