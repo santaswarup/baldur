@@ -104,6 +104,8 @@ object FileInputSupport {
         serviceLineStringToSet(msDrgServiceLines) ++
         serviceLineStringToSet(procServiceLines) ++
         serviceLineStringToSet(diagServiceLines)
+        .mkString(",")
+        .split(",")
 
     concatenated.isEmpty match {
       case true => None
