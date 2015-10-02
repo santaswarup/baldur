@@ -57,12 +57,12 @@ object FileInputSupport {
       .map{ case line => (line(0),(line(1).toInt,line(2),line(3).toInt,line(4),line(5).toInt, line(6), line(7)))}
       .toMap
 
-  val primaryServiceLines: Map[(Int, Int, String), (Int, String)] =
+  val primaryServiceLines: Map[(Int, Int), Int] =
     Source.fromURL(getClass.getResource("/primary_service_lines.txt"))
       .getLines()
       .drop(1)
       .map(line => line.split("\\|"))
-      .map{ case line => ((line(0).toInt, line(1).toInt, line(2)),(line(3).toInt, line(4)))}
+      .map{ case line => ((line(0).toInt, line(1).toInt),line(3).toInt)}
       .toMap
 
   def getServiceLines(codes: Option[List[String]], gender: Option[String]): Option[Set[String]] = {
@@ -92,53 +92,138 @@ object FileInputSupport {
     val msDrgServiceLines: Option[String] = getMsDrgServiceLines(msDrg, gender)
     val diagServiceLines: Option[String] = getDiagServiceLines(diagCodes, gender)
     val procServiceLines: Option[String] = getProcServiceLines(procCodes, cptCodes, gender, 5)
+    val primaryServiceLine: Option[String] = getPrimaryServiceLine(msDrgServiceLines, procServiceLines)
+
+    serviceLinesToSet(msDrgServiceLines, diagServiceLines, procServiceLines, primaryServiceLine)
 
   }
 
-  def getProcServiceLines(procCodes: List[(String, Int)], cptCodes: List[(String, Int)], gender: Option[String], maxIndexToSearch: Int): Option[String] = {
-    procCodes.isEmpty match {
+  def serviceLinesToSet(msDrgServiceLines: Option[String], diagServiceLines: Option[String], procServiceLines: Option[String], primaryServiceLine: Option[String]): Option[Set[String]] = {
+    val concatenated: Set[String] =
+      serviceLineStringToSet(primaryServiceLine) ++
+        serviceLineStringToSet(msDrgServiceLines) ++
+        serviceLineStringToSet(procServiceLines) ++
+        serviceLineStringToSet(diagServiceLines)
+
+    concatenated.isEmpty match {
       case true => None
-      case false =>
-
-        var index: Int = 0
-        var serviceLines: Option[String] = None
-        var updated: Boolean = false
-
-        while(index <= maxIndexToSearch || updated.equals(true)) {
-
-          val procLookup = procedureServiceLines.get(procCodes(index))
-
-          val (serviceLineCheck, updateCheck) = checkProcedure(procLookup, gender)
-
-          if(updateCheck.equals(false)) {
-              val cptLookup = procedureServiceLines.get(cptCodes(index))
-              (serviceLineCheck, updateCheck) = checkProcedure(cptLookup, gender)
-          }
-
-          serviceLines = serviceLineCheck
-          updated = updateCheck
-          index = index + 1
-        }
-
-        serviceLines
-
+      case false => Some(concatenated)
     }
   }
 
-  def checkProcedure(procMatch: Option[(Int, String, Int, String, Int, String, String)], gender: Option[String]): (Option[String], Boolean) = {
+  def serviceLineStringToSet(strOpt: Option[String]): Set[String] = {
+    strOpt.isDefined match {
+      case false => Set()
+      case true => Set(strOpt.get)
+    }
+  }
+
+  def checkPrimaryServiceLine(serviceLineToCheck: Array[(Int, Int)]): Option[String] = {
+    serviceLineToCheck.isEmpty match {
+      case true => None
+      case false =>
+        val checked = primaryServiceLines.get(serviceLineToCheck.head)
+
+        checked.isDefined match {
+          case false => None
+          case true => Some(checked.get.toString + ";0")
+        }
+    }
+  }
+
+  def getPrimaryServiceLine(msDrgServiceLines: Option[String], procServiceLines: Option[String]): Option[String] = {
+    val msDrgServiceLinesSplit: Array[(Int, Int)] = msDrgServiceLines.isDefined match {
+      case false => Array()
+      case true => msDrgServiceLines.get.split(",").map{ case line =>
+        val newLine = line.split(";")
+        (newLine(0).toInt, newLine(1).toInt)
+      }
+    }
+
+    val procServiceLinesSplit: Array[(Int, Int)] = procServiceLines.isDefined match {
+      case false => Array()
+      case true => procServiceLines.get.split(",").map { case line =>
+        val newLine = line.split(";")
+        (newLine(0).toInt, newLine(1).toInt)
+      }
+    }
+
+    val msDrgServiceLineLevel1 = msDrgServiceLinesSplit.filter{ case (code, codeType) => codeType.equals(52) }
+    val msDrgServiceLineLevel2 = msDrgServiceLinesSplit.filter{ case (code, codeType) => codeType.equals(53) }
+    val procServiceLineLevel1 = procServiceLinesSplit.filter{ case (code, codeType) => codeType.equals(81) }
+    val procServiceLineLevel2 = procServiceLinesSplit.filter{ case (code, codeType) => codeType.equals(82) }
+
+    // Check in the following order: Drg Service Line 2, Drg Service Line 1, Proc Service Line 2, Proc Service Line 1
+    var primaryServiceLine: Option[String] = checkPrimaryServiceLine(msDrgServiceLineLevel2)
+
+    primaryServiceLine.isDefined match {
+      case true => primaryServiceLine
+      case false =>
+        primaryServiceLine = checkPrimaryServiceLine(msDrgServiceLineLevel1)
+
+        primaryServiceLine.isDefined match {
+          case true => primaryServiceLine
+          case false =>
+            primaryServiceLine = checkPrimaryServiceLine(procServiceLineLevel2)
+
+            primaryServiceLine.isDefined match {
+              case true => primaryServiceLine
+              case false =>
+                checkPrimaryServiceLine(procServiceLineLevel1)
+
+            }
+        }
+    }
+
+  }
+
+  def getProcServiceLines(procCodes: List[(String, Int)], cptCodes: List[(String, Int)], gender: Option[String], numOfCodesToSearch: Int): Option[String] = {
+
+    // Check procedure1, then cpt1, then procedure2, then cpt2, etc.
+    var index: Int = 0
+    var serviceLines: Option[String] = None
+
+    // Loops for the defined number of codes to search (e.g. 5 procs/cpts) or until the serviceLines value is defined
+    // TODO: Redesign this as a recursive function
+    while(index < numOfCodesToSearch || serviceLines.isDefined) {
+
+      val procLookup = procCodes.isDefinedAt(index) match {
+        case false => None
+        case true => procedureServiceLines.get(procCodes(index))
+      }
+
+      serviceLines = checkProcedure(procLookup, gender)
+
+      if(serviceLines.isEmpty) {
+          val cptLookup = cptCodes.isDefinedAt(index) match{
+            case false => None
+            case true => procedureServiceLines.get(cptCodes(index))
+          }
+
+          serviceLines = checkProcedure(cptLookup, gender)
+      }
+
+      index = index + 1
+    }
+
+    serviceLines
+  }
+
+  def checkProcedure(procMatch: Option[(Int, String, Int, String, Int, String, String)], gender: Option[String]): Option[String] = {
     procMatch.isDefined match {
       case true =>
         val (procLevel1Code, procLevel1Desc, procLevel2Code, procLevel2Desc, procLevel3Code, procLevel3Desc, procGender) = procMatch.get
 
         procGender match {
           case "" =>
-            (Some(procLevel1Code.toString + ";81," + procLevel2Code.toString + ";82," + procLevel3Code.toString + ";83"), true)
+            Some(procLevel1Code.toString + ";81," + procLevel2Code.toString + ";82," + procLevel3Code.toString + ";83")
           case _ => gender.isDefined match {
-            case true if gender.get.equals(procGender) =>
-              (Some(procLevel1Code.toString + ";81," + procLevel2Code.toString + ";82," + procLevel3Code.toString + ";83"), true)
-            case _ => (None, false)
+            case true if gender.get.equalsIgnoreCase(procGender) =>
+              Some(procLevel1Code.toString + ";81," + procLevel2Code.toString + ";82," + procLevel3Code.toString + ";83")
+            case _ => None
           }
         }
+      case false => None
     }
   }
 
@@ -158,7 +243,7 @@ object FileInputSupport {
             drgGender match {
               case "" => Some(drgLevel1Code.toString + ";52," + drgLevel2Code + ";53")
               case _ => gender.isDefined match {
-                case true if gender.get.equals(drgGender) => Some(drgLevel1Code.toString + ";52," + drgLevel2Code + ";53")
+                case true if gender.get.equalsIgnoreCase(drgGender) => Some(drgLevel1Code.toString + ";52," + drgLevel2Code + ";53")
                 case _ => None
               }
             }
@@ -182,7 +267,7 @@ object FileInputSupport {
             diagGender match {
               case "" => Some(diagLevel1Code.toString + ";21," + diagLevel2Code + ";22")
               case _ => gender.isDefined match {
-                case true if gender.get.equals(diagGender) => Some(diagLevel1Code.toString + ";21," + diagLevel2Code + ";22")
+                case true if gender.get.equalsIgnoreCase(diagGender) => Some(diagLevel1Code.toString + ";21," + diagLevel2Code + ";22")
                 case _ => None
               }
             }
