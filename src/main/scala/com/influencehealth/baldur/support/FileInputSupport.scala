@@ -156,23 +156,13 @@ object FileInputSupport {
     val procServiceLineLevel2 = procServiceLinesSplit.filter{ case (code, codeType) => codeType.equals(82) }
 
     // Check in the following order: Drg Service Line 2, Drg Service Line 1, Proc Service Line 2, Proc Service Line 1
-    var primaryServiceLine: Option[String] = checkPrimaryServiceLine(msDrgServiceLineLevel2)
-
-    primaryServiceLine.isDefined match {
-      case true => primaryServiceLine
-      case false =>
-        primaryServiceLine = checkPrimaryServiceLine(msDrgServiceLineLevel1)
-
-        primaryServiceLine.isDefined match {
-          case true => primaryServiceLine
-          case false =>
-            primaryServiceLine = checkPrimaryServiceLine(procServiceLineLevel2)
-
-            primaryServiceLine.isDefined match {
-              case true => primaryServiceLine
-              case false =>
-                checkPrimaryServiceLine(procServiceLineLevel1)
-
+    checkPrimaryServiceLine(msDrgServiceLineLevel2).isDefined match {
+      case true => checkPrimaryServiceLine(msDrgServiceLineLevel2)
+      case false => checkPrimaryServiceLine(msDrgServiceLineLevel1).isDefined match {
+          case true => checkPrimaryServiceLine(msDrgServiceLineLevel1)
+          case false => checkPrimaryServiceLine(procServiceLineLevel2).isDefined match {
+              case true => checkPrimaryServiceLine(procServiceLineLevel2)
+              case false => checkPrimaryServiceLine(procServiceLineLevel1)
             }
         }
     }
