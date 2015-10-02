@@ -209,6 +209,9 @@ object BaldurSchema extends FileInputMeta with Serializable {
       case _ => FileInputSupport.getStringValue(input, "sourceRecordId")
     }
 
+    val mxCodes = FileInputSupport.getListOptValue(input, "mxCodes")
+    val sex = FileInputSupport.getStringOptValue(input, "sex")
+
     ActivityOutput(
       personId = FileInputSupport.getUUIDOptValue(input, "personId"),
       customerId = customerId,
@@ -300,13 +303,13 @@ object BaldurSchema extends FileInputMeta with Serializable {
       servicedOn = FileInputSupport.getDateOptValue(input, "servicedOn"),
       locationId = FileInputSupport.getIntOptValue(input, "locationId"),
       activityType = FileInputSupport.getStringOptValue(input, "activityType"),
-      mxCodes = FileInputSupport.getListOptValue(input, "mxCodes"),
+      mxCodes = mxCodes,
       mxGroups = FileInputSupport.getIntSetOptValue(input, "mxGroups"),
       providers = FileInputSupport.getSetOptValue(input, "providers"),
       erPatient = FileInputSupport.getBoolOptValue(input, "erPatient"),
       financialClassId = FileInputSupport.getIntOptValue(input, "financialClassId"),
       financialClass = FileInputSupport.getStringOptValue(input, "financialClass"),
-      serviceLines = FileInputSupport.getSetOptValue(input, "serviceLines"),
+      serviceLines = FileInputSupport.getServiceLines(mxCodes, sex),
       patientType = FileInputSupport.getStringOptValue(input, "patientType"),
       dischargeStatus = FileInputSupport.getIntOptValue(input, "dischargeStatus"),
       admittedAt = FileInputSupport.getDateOptValue(input, "admittedAt"),
