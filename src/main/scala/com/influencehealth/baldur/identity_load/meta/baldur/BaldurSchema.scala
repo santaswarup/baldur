@@ -232,7 +232,7 @@ object BaldurSchema extends FileInputMeta with Serializable {
       dob = FileInputSupport.getDateOptValue(input, "dob"),
       age = FileInputSupport.getIntOptValue(input, "age"),
       ageGroup = FileInputSupport.getStringOptValue(input, "ageGroup"),
-      sex = FileInputSupport.getStringOptValue(input, "sex"),
+      sex = sex,
       payerType = FileInputSupport.getStringOptValue(input, "payerType"),
       maritalStatus = FileInputSupport.getStringOptValue(input, "maritalStatus"),
       ethnicInsight = FileInputSupport.getStringOptValue(input, "ethnicInsight"),
