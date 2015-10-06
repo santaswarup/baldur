@@ -137,13 +137,20 @@ object Hospital extends ClientInputMeta with Piedmont with Serializable {
                               otherCpts: Option[String],
                               primaryDxId: Option[String],
                               otherDxIds: Option[String]): Option[List[String]] ={
-    Some(Seq(msDrg, primaryCpt, otherCpts, primaryDxId, otherDxIds)
+    val sequence = Seq(msDrg, primaryCpt, otherCpts, primaryDxId, otherDxIds)
       .filter(_.nonEmpty)
       .map(_.get)
-      .mkString(",")
-      .split(",")
-      .map(FileInputSupport.cleanseMedicalCodes)
-      .toList)
+
+    sequence.isEmpty match{
+      case true => None
+      case false =>
+        Some(
+          sequence
+            .mkString(",")
+            .split(",")
+            .map(FileInputSupport.cleanseMedicalCodes)
+            .toList)
+    }
   }
 
   def getPatientType(map: Map[String, Any]): Option[String] ={
