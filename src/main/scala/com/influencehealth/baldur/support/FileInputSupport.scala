@@ -469,7 +469,10 @@ object FileInputSupport {
 
     newMap.nonEmpty match {
       case false => None
-      case true => newMap.head
+      case true => newMap.head match {
+        case Some("") => None
+        case _ => newMap.head
+      }
     }
   }
 
