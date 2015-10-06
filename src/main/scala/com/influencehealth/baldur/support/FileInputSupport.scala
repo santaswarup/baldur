@@ -482,20 +482,25 @@ object FileInputSupport {
   }
 
   def cleanseMedicalCodes(codeAndType: String): String = {
-    val split = codeAndType.split(";")
-    val code: String = split(0)
-    val codeType: String = split(1)
 
-    val cleansedCode = codeType match{
-      case "11" => Clean.cpt(code)
-      case "31" => Clean.icdDiag(code, 9)
-      case "32" => Clean.icdDiag(code, 10)
-      case "41" => Clean.icdProc(code, 9)
-      case "42" => Clean.icdProc(code, 10)
-      case "51" => Clean.msDrg(code)
+    try {
+      val split = codeAndType.split(";")
+      val code: String = split(0)
+      val codeType: String = split(1)
+
+      val cleansedCode = codeType match {
+        case "11" => Clean.cpt(code)
+        case "31" => Clean.icdDiag(code, 9)
+        case "32" => Clean.icdDiag(code, 10)
+        case "41" => Clean.icdProc(code, 9)
+        case "42" => Clean.icdProc(code, 10)
+        case "51" => Clean.msDrg(code)
+      }
+
+      cleansedCode + ";" + codeType
+    } catch {
+      case err: Throwable => throw new Error(f"issue splitting $codeAndType",err)
     }
-
-    cleansedCode + ";" + codeType
   }
 
   def getStringValue(map: Map[String, Any], columnName: String): String = {
