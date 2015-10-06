@@ -38,7 +38,13 @@ object FileInputSupport {
       .getLines()
       .drop(1)
       .map(line => line.split("\\|"))
-      .map{ case line => ((line(0),line(1).toInt),(line(2).toInt,line(3),line(4).toInt,line(5),line(6)))}
+      .map{
+        case line =>
+          val list = line.toList
+          list.isDefinedAt(6) match {
+            case true => ((line(0),line(1).toInt),(line(2).toInt,line(3),line(4).toInt,line(5),line(6)))
+            case false => ((line(0),line(1).toInt),(line(2).toInt,line(3),line(4).toInt,line(5),""))
+          } }
       .toMap
 
   val procedureServiceLines: Map[(String, Int), (Int, String, Int, String, Int, String, String)] =
@@ -46,7 +52,13 @@ object FileInputSupport {
       .getLines()
       .drop(1)
       .map(line => line.split("\\|"))
-      .map{ case line => ((line(0),line(1).toInt),(line(2).toInt,line(3),line(4).toInt,line(5),line(6).toInt, line(7), line(8)))}
+      .map {
+        case line =>
+          val list = line.toList
+          list.isDefinedAt(8) match {
+            case true => ((line(0), line(1).toInt), (line(2).toInt, line(3), line(4).toInt, line(5), line(6).toInt, line(7), line(8)))
+            case false => ((line(0), line(1).toInt), (line(2).toInt, line(3), line(4).toInt, line(5), line(6).toInt, line(7), ""))
+          } }
       .toMap
 
   val drgServiceLines: Map[String, (Int, String, Int, String, Int, String, String)] =
@@ -54,7 +66,13 @@ object FileInputSupport {
       .getLines()
       .drop(1)
       .map(line => line.split("\\|"))
-      .map{ case line => (line(0),(line(1).toInt,line(2),line(3).toInt,line(4),line(5).toInt, line(6), line(7)))}
+      .map{
+        case line =>
+          val list = line.toList
+          list.isDefinedAt(7) match {
+            case true => (line(0),(line(1).toInt,line(2),line(3).toInt,line(4),line(5).toInt, line(6), line(7)))
+            case false => (line(0),(line(1).toInt,line(2),line(3).toInt,line(4),line(5).toInt, line(6), ""))
+        } }
       .toMap
 
   val primaryServiceLines: Map[(Int, Int), Int] =
