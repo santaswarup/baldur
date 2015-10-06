@@ -127,7 +127,11 @@ object PhysicianOffice extends ClientInputMeta with Piedmont with Serializable {
     val dx5: Option[String] = FileInputSupport.getMedicalCodeString(map, "dxFiveId", "icd9_diag", "|")
     val dx6: Option[String] = FileInputSupport.getMedicalCodeString(map, "dxSixId", "icd9_diag", "|")
 
-    concatonateMedicalCodes(primaryDxId, dx2, dx3, dx4, dx5, dx6)
+    try {
+      concatonateMedicalCodes(primaryDxId, dx2, dx3, dx4, dx5, dx6)
+    } catch {
+      case err: Throwable => throw new Error(f"issue concatenating: Dx1: $primaryDxId, Dx2: $dx2, Dx3: $dx3, Dx4: $dx4, Dx5: $dx5, Dx6: $dx6",err)
+    }
 
   }
 
