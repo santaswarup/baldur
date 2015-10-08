@@ -1,6 +1,7 @@
 package com.influencehealth.baldur.support
 
 import java.util.UUID
+import org.joda.time.format.DateTimeFormat
 import org.joda.time.{PeriodType, Period, DateTime}
 
 import scala.io.Source
@@ -416,6 +417,25 @@ object FileInputSupport {
         }
       }
     }
+  }
+
+  def stringifyDate(dateOpt: Option[DateTime], format: String): String = {
+    dateOpt match {
+      case None => ""
+      case Some(value) => DateTimeFormat.forPattern(format).print(value)
+    }
+  }
+
+  def stringify(option: Option[_]): String = {
+    option match {
+      case None => ""
+      case Some(value) => value.toString
+    }
+
+  }
+
+  def mkString(delimiter: String, options: Seq[Option[_]]): String = {
+    options.filter(_.isDefined).map(_.get).mkString(delimiter)
   }
 
   def getValidAddressFlag(ncoaActionCode: Option[String]): Option[Boolean] = {
