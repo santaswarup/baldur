@@ -12,7 +12,8 @@ object IntakeConfig {
     interval: Int=30,
     source: String="",
     sourceType: String="",
-    delimiter: Option[String]=None)
+    delimiter: Option[String]=None,
+    processDrg: Boolean=false)
 
   def getConfig(args: Array[String]) : Config = {
     //Define options
@@ -23,6 +24,10 @@ object IntakeConfig {
 
       opt[java.net.URI]('o', "out") required() valueName "<output_directory>" action { (x, c) =>
         c.copy(out = x)
+      }
+
+      opt[Boolean]('d', "drg") required() valueName "<process_drg_grouper>" action { (x, c) =>
+        c.copy(processDrg = x)
       }
 
       opt[String]('c', "client") required() valueName "<client_key>" action { (x, c) =>

@@ -42,6 +42,8 @@ object IntakeApp {
       case (fieldName: String, fieldType, format) => fieldName
     }
 
+    val processDrg: Boolean = config.processDrg
+
     val today: String = ISODateTimeFormat.basicDateTime().print(DateTime.now())
 
     val outputPath = config.out.getPath.last match {
@@ -104,17 +106,26 @@ object IntakeApp {
               clientInputMeta.mapping(mappedLine) // creates an ActivityOutput object
        }
 
-    //Creates the Input for the Drg Software
-    val drgInput: RDD[String] = activityOutput.map(Drg.createDrgInput)
+    val finalOutput = processDrg match{
 
-    drgInput.saveAsTextFile(drgTempPath)
+      case true =>
+        //Creates the Input for the Drg Software
+        val drgInput: RDD[String] = activityOutput.map(Drg.createDrgInput)
+        drgInput.saveAsTextFile(drgTempPath)
 
-    merge(drgTempPath, outputPath)
-    FileUtil.fullyDelete(new File(drgTempPath))
-    new File(drgInputCrc).delete()
+        merge(drgTempPath, outputPath)
+        FileUtil.fullyDelete(new File(drgTempPath))
+        new File(drgInputCrc).delete()
+
+        //TODO: join Drg output file back, update Drg records
+        activityOutput
+
+      case false => activityOutput
+
+    }
 
     // Saves to multiple files in a directory. We use the tempPath as a storage area for this
-   activityOutput
+   finalOutput
      .map { case activity =>
      activity.productIterator // maps all values from the ActivityOutput object to an iterator ordered by the class's definition
        .map(ActivityOutput.toStringFromActivity) // takes all values, makes them a string
