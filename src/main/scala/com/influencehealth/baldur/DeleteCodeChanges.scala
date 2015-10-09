@@ -4,14 +4,10 @@ import java.util.UUID
 
 import com.datastax.spark.connector.cql.CassandraConnector
 import com.influencehealth.baldur.identity_load.person_identity.change_capture.support.ChangeCaptureConfig
-import com.influencehealth.baldur.identity_load.person_identity.identity.support.PersonIdentityConfig
-import com.influencehealth.location_scoring.support._
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.spark._
 import com.datastax.spark.connector._
 import org.apache.spark.rdd.RDD
-import org.apache.spark.broadcast.Broadcast
-import scala.io.Source
 
 /**
  * Location scoring - batch. Scores all persons in the person master
