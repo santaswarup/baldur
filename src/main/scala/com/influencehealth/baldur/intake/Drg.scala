@@ -79,8 +79,12 @@ object Drg {
     val secondaryDiagnosis: String = FileInputSupport.createFixedString(FileInputSupport.stringifyListElements(diagCodesWithPoa, 1, 24, ""), "left", 192, ' ')
     val principalProcedure: String = FileInputSupport.createFixedString(FileInputSupport.stringifyListElements(procCodes, 0, 1, ""), "left", 7, ' ')
     val secondaryProcedures: String = FileInputSupport.createFixedString(FileInputSupport.stringifyListElements(procCodes, 1, 24, ""), "left", 168, ' ')
-
-    val procedureDate: String = FileInputSupport.createFixedString(FileInputSupport.stringifyDate(activityOutput.servicedOn, "MM/dd/yyyy"), "left", 10, ' ')
+    val procedureDate: String = FileInputSupport.stringifyDate(activityOutput.servicedOn, "MM/dd/yyyy")
+    val procDateSeq: Option[Seq[String]] = procedureDate match {
+      case "" => None
+      case _ => Some(Seq.fill(25)(procedureDate))
+    }
+    val procDates: String = FileInputSupport.createFixedString(FileInputSupport.stringifySeqElements(procDateSeq, 0, 25, ""), "left", 250, ' ')
     val applyHacLogic: String = "X"
     val unused: String = " "
     val sourceRecord: String = activityOutput.source + "|" + activityOutput.sourceType + "|" + activityOutput.sourceRecordId
@@ -104,7 +108,7 @@ object Drg {
       secondaryDiagnosis,
       principalProcedure,
       secondaryProcedures,
-      procedureDate,
+      procDates,
       applyHacLogic,
       unused,
       optionalInformation,

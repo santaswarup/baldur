@@ -441,6 +441,14 @@ object FileInputSupport {
     }
   }
 
+  def stringifySeqElements(listOpt: Option[Seq[_]], sliceStart: Int, sliceEnd: Int, delimiter: String): String = {
+    listOpt match {
+      case None => ""
+      case Some(value) =>
+        listOpt.get.slice(sliceStart, sliceEnd).mkString(delimiter)
+    }
+  }
+
   def stringify(option: Option[_]): String = {
     option match {
       case None => ""
