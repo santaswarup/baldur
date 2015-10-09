@@ -22,7 +22,7 @@ case class DrgInput (
   secondaryDiagnoses: String, //position: 120 length: 8 occurrances: 24 (total length of 192)
   principalProcedure: String, //position: 312 length: 7
   secondaryProcedures: String, //position: 319 length: 7 occurrances: 24 (total length of 168)
-  procedureDate: String, //position: 487 length: 10 occurrances: 25 format: mm/dd/yyyy (total length of 250)
+  procedureDates: String, //position: 487 length: 10 occurrances: 25 format: mm/dd/yyyy (total length of 250)
   applyHacLogic: String, //position: 737 length: 1
   unused: String, //position: 738 length: 1
   optionalInformation: String, //position: 739 length: 72. We're actually going to use this field as the holder for sourceRecordId, source and sourceType due to the long length allowed
@@ -46,7 +46,7 @@ case class DrgOutput (
   secondaryDiagnoses: String, //position: 120 length: 8 occurrances: 24 (total length of 192)
   principalProcedure: String, //position: 312 length: 7
   secondaryProcedures: String, //position: 319 length: 7 occurrances: 24 (total length of 168)
-  procedureDate: String, //position: 487 length: 10 occurrances: 25 format: mm/dd/yyyy (total length of 250)
+  procedureDates: String, //position: 487 length: 10 occurrances: 25 format: mm/dd/yyyy (total length of 250)
   applyHacLogic: String, //position: 737 length: 1
   unused: String, //position: 738 length: 1
   optionalInformation: String, //position: 739 length: 72. We're actually going to use this field as the holder for sourceRecordId, source and sourceType due to the long length allowed
@@ -72,10 +72,10 @@ case class DrgOutput (
   principalDiagnosisHospitalAcquiredConditionUsage3: String, //position: 879 length: 1
   principalDiagnosisHospitalAcquiredConditionUsage4: String, //position: 880 length: 1
   principalDiagnosisHospitalAcquiredConditionUsage5: String, //position: 881 length: 1
-  secondaryDiagnosisReturnFlag: String, //position: 882 length: 8 occurrances: 24 total length: 192
+  secondaryDiagnosisReturnFlags: String, //position: 882 length: 8 occurrances: 24 total length: 192
   secondaryDiagnosisHospitalAcquiredConditionAssignments: String, //position: 1074 length: 10 occurrances: 24 total length: 240
   secondaryDiagnosisHospitalAcquiredConditionUsages: String, //position: 1314 length: 5 occurrances: 24 total length: 120
-  procedureEditReturnFlag: String, //position: 1434 length: 8 occurrances: 25 total length: 200
+  procedureEditReturnFlags: String, //position: 1434 length: 8 occurrances: 25 total length: 200
   procedureHospitalAcquiredConditionAssignments: String, //position: 1634 length: 10 occurances: 25 total length: 250
   initial4DigitDrg: String, //position: 1884 length: 4
   final4DigitDrg: String, //position: 1888 length: 4
@@ -176,7 +176,62 @@ object Drg {
   }
 
   def createDrgOutput(line: String): DrgOutput = {
-
+    DrgOutput(
+      patientName = line.slice(0,31),
+      medicalRecordNumber = line.slice(31,44),
+      accountNumber = line.slice(44,61),
+      admitDate = line.slice(61,71),
+      dischargeDate = line.slice(71,81),
+      dischargeStatus = line.slice(81,83),
+      primaryPayer = line.slice(83,85),
+      los = line.slice(85,90),
+      birthDate = line.slice(90,100),
+      age = line.slice(100,103),
+      sex = line.slice(103,104),
+      admitDiagnosis = line.slice(104,111),
+      principalDiagnosis = line.slice(111,119),
+      secondaryDiagnoses = line.slice(119,311),
+      principalProcedure = line.slice(311,318),
+      secondaryProcedures = line.slice(318,486),
+      procedureDates = line.slice(486,736),
+      applyHacLogic = line.slice(736,737),
+      unused = line.slice(737,738),
+      optionalInformation = line.slice(738,810),
+      filler = line.slice(810,835),
+      msgMceVersionUsed = line.slice(835,838),
+      initialDrg = line.slice(838,841),
+      initialMsIndicator = line.slice(841,842),
+      finalMdc = line.slice(842,844),
+      finalDrg = line.slice(844,847),
+      finalMsIndicator = line.slice(847,848),
+      drgReturnCode = line.slice(848,850),
+      msgMceEditReturnCode = line.slice(850,854),
+      diagnosisCodeCount = line.slice(854,856),
+      procedureCodeCount = line.slice(856,858),
+      principalDiagnosisEditReturnFlag = line.slice(858,866),
+      principalDiagnosisHospitalAcquiredConditionAassignment1 = line.slice(866,868),
+      principalDiagnosisHospitalAcquiredConditionAassignment2 = line.slice(868,870),
+      principalDiagnosisHospitalAcquiredConditionAassignment3 = line.slice(870,872),
+      principalDiagnosisHospitalAcquiredConditionAassignment4 = line.slice(872,874),
+      principalDiagnosisHospitalAcquiredConditionAassignment5 = line.slice(874,876),
+      principalDiagnosisHospitalAcquiredConditionUsage1 = line.slice(876,877),
+      principalDiagnosisHospitalAcquiredConditionUsage2 = line.slice(877,878),
+      principalDiagnosisHospitalAcquiredConditionUsage3 = line.slice(878,879),
+      principalDiagnosisHospitalAcquiredConditionUsage4 = line.slice(879,880),
+      principalDiagnosisHospitalAcquiredConditionUsage5 = line.slice(880,881),
+      secondaryDiagnosisReturnFlags = line.slice(881,1073),
+      secondaryDiagnosisHospitalAcquiredConditionAssignments = line.slice(1073,1313),
+      secondaryDiagnosisHospitalAcquiredConditionUsages = line.slice(1313,1433),
+      procedureEditReturnFlags = line.slice(1433,1633),
+      procedureHospitalAcquiredConditionAssignments = line.slice(1633,1883),
+      initial4DigitDrg = line.slice(1883,1887),
+      final4DigitDrg = line.slice(1887,1891),
+      finalDrgCcMccUsage = line.slice(1891,1892),
+      initialDrgCcMccUsage = line.slice(1892,1893),
+      numberUniqueHospitalAcquiredConditionsMet = line.slice(1893,1895),
+      hospitalAcquiredConditionStatus = line.slice(1895,1896),
+      costWeight = line.slice(1896,1903)
+    )
   }
 
   def getDiagCodes(mxCodes: Option[List[String]], addPoaIndicator: Boolean, length: Int): Option[List[String]] = {
