@@ -59,6 +59,26 @@ object IntakeApp {
       case _ => config.out.getPath + "/temp/baldurToAnchor_" + today + ".txt"
     }
 
+    val drgInputPath = config.out.getPath.last match {
+      case '/' => config.out.getPath + "msDrg/input/baldur_drg_input_" + today + ".txt"
+      case _ => config.out.getPath + "/msDrg/input/baldur_drg_input_" + today + ".txt"
+    }
+
+    val drgInputCrc = config.out.getPath.last match {
+      case '/' => config.out.getPath + "msDrg/input/.baldur_drg_input_" + today + ".txt.crc"
+      case _ => config.out.getPath + "/msDrg/input/.baldur_drg_input_" + today + ".txt.crc"
+    }
+
+    val drgTempPath = config.out.getPath.last match {
+      case '/' => config.out.getPath + "msDrg/temp/baldur_drg_input_" + today + ".txt"
+      case _ => config.out.getPath + "/msDrg/temp/baldur_drg_input_" + today + ".txt"
+    }
+
+    val drgOutputPath = config.out.getPath.last match {
+      case '/' => config.out.getPath + "msDrg/output/baldur_drg_output_" + today + ".txt"
+      case _ => config.out.getPath + "/msDrg/output/baldur_drg_output_" + today + ".txt"
+    }
+
     // First cleanse the original input values
     val cleansedLines: RDD[Array[Any]] = sc
       .textFile(config.in.getPath)
@@ -77,21 +97,29 @@ object IntakeApp {
       }).persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     // Next map them to the field names
-    cleansedLines
+    val activityOutput: RDD[ActivityOutput] = cleansedLines
       .map(fieldNames.zip(_)) // Now loop through the mapped lines, map to the ActivityOutput class, make an RDD of strings
       .map {case line =>
-              val mappedLine =
-                line
-                .map(x => (x._1, x._2))
-                .toMap[String, Any]
+              val mappedLine = line.map(x => (x._1, x._2)).toMap[String, Any]
+              clientInputMeta.mapping(mappedLine) // creates an ActivityOutput object
+       }
 
-                clientInputMeta.mapping(mappedLine) // creates an ActivityOutput object
-                .productIterator // maps all values from the ActivityOutput object to an iterator ordered by the class's definition
-                .map(ActivityOutput.toStringFromActivity) // takes all values, makes them a string
-                .mkString("|") + "\r" // coalesce all values in iterator, separated by pipes. added return carriage for Anchr
-      }
+    //Creates the Input for the Drg Software
+    val drgInput: RDD[String] = activityOutput.map(Drg.createDrgInput)
+
+    drgInput.saveAsTextFile(drgTempPath)
+
+    merge(drgTempPath, outputPath)
+    FileUtil.fullyDelete(new File(drgTempPath))
+    new File(drgInputCrc).delete()
+
     // Saves to multiple files in a directory. We use the tempPath as a storage area for this
-    .saveAsTextFile(tempPath)
+   activityOutput
+     .map { case activity =>
+     activity.productIterator // maps all values from the ActivityOutput object to an iterator ordered by the class's definition
+       .map(ActivityOutput.toStringFromActivity) // takes all values, makes them a string
+       .mkString("|") + "\r" // coalesce all values in iterator, separated by pipes. added return carriage for Anchr}
+   }.saveAsTextFile(tempPath)
 
     // Merge the results into the desired output path
     merge(tempPath, outputPath)
