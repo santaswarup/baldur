@@ -419,10 +419,25 @@ object FileInputSupport {
     }
   }
 
+  def createFixedString(str: String, rightOrLeft: String, length: Int, padValue: Char): String = {
+    rightOrLeft match {
+      case "left" => str.take(length).padTo(padValue, length).mkString
+      case "right" => str.take(length).reverse.padTo(padValue, length).mkString.reverse
+    }
+  }
+
   def stringifyDate(dateOpt: Option[DateTime], format: String): String = {
     dateOpt match {
       case None => ""
       case Some(value) => DateTimeFormat.forPattern(format).print(value)
+    }
+  }
+
+  def stringifyListElements(listOpt: Option[List[_]], sliceStart: Int, sliceEnd: Int, delimiter: String): String = {
+    listOpt match {
+      case None => ""
+      case Some(value) =>
+        listOpt.get.slice(sliceStart, sliceEnd).mkString(delimiter)
     }
   }
 

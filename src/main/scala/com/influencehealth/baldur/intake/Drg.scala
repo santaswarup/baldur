@@ -1,6 +1,7 @@
 package com.influencehealth.baldur.intake
 
 import com.influencehealth.baldur.support.{FileInputSupport, ActivityOutput}
+import org.joda.time.{PeriodType, Period}
 
 abstract class Drg
 
@@ -31,7 +32,7 @@ case class DrgInput (
 object Drg {
 
   val financialClassToDrgPayer: Map[Option[Int], String] = Map(
-    Some(9010)-> "06",
+    Some(9010) -> "06",
     Some(9020) -> "07",
     Some(9030) -> "07",
     Some(9100) -> "02",
@@ -47,21 +48,107 @@ object Drg {
     None -> "00"
   )
 
+  val sexToCode: Map[Option[String], Int] = Map(
+    Some("M") -> 1,
+    Some("m") -> 1,
+    Some("F") -> 2,
+    Some("f") -> 2,
+    None -> 0
+  )
+
   def createDrgInput(activityOutput: ActivityOutput): String = {
-    val patientName: String = FileInputSupport.mkString(" ", Seq(activityOutput.firstName, activityOutput.lastName, activityOutput.middleName))
-    val medicalRecordNumber: String = activityOutput.sourcePersonId
-    val accountNumber: String = "" // optionalInformation will actually be source, sourceType and sourceRecordId
-    val admitDate: String = FileInputSupport.stringifyDate(activityOutput.admittedAt, "MM/dd/yyyy")
-    val dischargeDate: String = FileInputSupport.stringifyDate(activityOutput.dischargedAt, "MM/dd/yyyy")
-    val dischargeStatus: String = FileInputSupport.stringify(activityOutput.dischargeStatus)
-    val primaryPayer: String = financialClassToDrgPayer.get(activityOutput.financialClassId).get
+    val patientName: String = FileInputSupport.createFixedString(FileInputSupport.mkString(" ", Seq(activityOutput.firstName, activityOutput.lastName, activityOutput.middleName)), "left", 31, ' ')
+    val medicalRecordNumber: String = FileInputSupport.createFixedString(activityOutput.sourcePersonId, "left", 13, ' ')
+    val accountNumber: String = FileInputSupport.createFixedString("","left", 10, ' ') // optionalInformation will actually be source, sourceType and sourceRecordId
+    val admitDate: String = FileInputSupport.createFixedString(FileInputSupport.stringifyDate(activityOutput.admittedAt, "MM/dd/yyyy"), "left", 10, ' ')
+    val dischargeDate: String = FileInputSupport.createFixedString(FileInputSupport.stringifyDate(activityOutput.dischargedAt, "MM/dd/yyyy"), "left", 10, ' ')
+    val dischargeStatus: String = FileInputSupport.createFixedString(FileInputSupport.stringify(activityOutput.dischargeStatus), "right", 2, '0')
+    val primaryPayer: String = financialClassToDrgPayer.getOrElse(activityOutput.financialClassId,"00")
+    val los: String = FileInputSupport.createFixedString(activityOutput.admittedAt.isDefined && activityOutput.dischargedAt.isDefined match {
+      case false => ""
+      case true => new Period(activityOutput.admittedAt.get, activityOutput.dischargedAt.get, PeriodType.yearMonthDay).getDays.toString
+    }, "right", 5, '0')
+    val birthdate: String = FileInputSupport.createFixedString(FileInputSupport.stringifyDate(activityOutput.dob, "MM/dd/yyyy"), "left", 10, ' ')
+    val age: String= FileInputSupport.createFixedString(FileInputSupport.stringify(activityOutput.age), "right", 3, '0')
+    val sex: String = sexToCode.getOrElse(activityOutput.sex, 0).toString
+    val diagCodesWithPoa: Option[List[String]] = getDiagCodes(activityOutput.mxCodes, addPoaIndicator = true, 8)
+    val diagCodes: Option[List[String]] = getDiagCodes(activityOutput.mxCodes, addPoaIndicator = false, 7)
+    val procCodes: Option[List[String]] = getProcCodes(activityOutput.mxCodes, 7)
+    val admitDiagnosis: String = FileInputSupport.createFixedString(FileInputSupport.stringifyListElements(diagCodes, 0, 1, ""), "left", 7, ' ')
+    val principalDiagnosis: String = FileInputSupport.createFixedString(FileInputSupport.stringifyListElements(diagCodesWithPoa, 0, 1, ""), "left", 8, ' ')
+    val secondaryDiagnosis: String = FileInputSupport.createFixedString(FileInputSupport.stringifyListElements(diagCodesWithPoa, 1, 24, ""), "left", 192, ' ')
+    val principalProcedure: String = FileInputSupport.createFixedString(FileInputSupport.stringifyListElements(procCodes, 0, 1, ""), "left", 7, ' ')
+    val secondaryProcedures: String = FileInputSupport.createFixedString(FileInputSupport.stringifyListElements(procCodes, 1, 24, ""), "left", 168, ' ')
 
+    val procedureDate: String = FileInputSupport.createFixedString(FileInputSupport.stringifyDate(activityOutput.servicedOn, "MM/dd/yyyy"), "left", 10, ' ')
+    val applyHacLogic: String = "X"
+    val unused: String = " "
+    val sourceRecord: String = activityOutput.source + "|" + activityOutput.sourceType + "|" + activityOutput.sourceRecordId
+    val optionalInformation: String = FileInputSupport.createFixedString(sourceRecord, "left", 72, ' ')
+    val filler: String = FileInputSupport.createFixedString(" ", "left", 25, ' ')
 
-    ""
+    val drgInput = DrgInput(
+      patientName,
+      medicalRecordNumber,
+      accountNumber,
+      admitDate,
+      dischargeDate,
+      dischargeStatus,
+      primaryPayer,
+      los,
+      birthdate,
+      age,
+      sex,
+      admitDiagnosis,
+      principalDiagnosis,
+      secondaryDiagnosis,
+      principalProcedure,
+      secondaryProcedures,
+      procedureDate,
+      applyHacLogic,
+      unused,
+      optionalInformation,
+      filler
+      )
+
+    drgInputToFixedWidth(drgInput)
+  }
+
+  def getDiagCodes(mxCodes: Option[List[String]], addPoaIndicator: Boolean, length: Int): Option[List[String]] = {
+    mxCodes match {
+      case None => None
+      case Some(value) =>
+        Some(mxCodes.get
+          .map{
+          case codeAndType =>
+            val split = codeAndType.split(";")
+            (split(0),split(1).toInt) }
+          .filter{ case (code, mxType) => Set(31,32).contains(mxType) }
+          .map{ case (code, mxType) =>
+          addPoaIndicator match {
+            case true => FileInputSupport.createFixedString(code + "U", "left", length, ' ')
+            case false => FileInputSupport.createFixedString(code, "left", length, ' ')
+          }
+        })
+    }
+  }
+
+  def getProcCodes(mxCodes: Option[List[String]], length: Int): Option[List[String]] = {
+    mxCodes match {
+      case None => None
+      case Some(value) =>
+        Some(mxCodes.get
+          .map{
+          case codeAndType =>
+            val split = codeAndType.split(";")
+            (split(0),split(1).toInt) }
+          .filter{ case (code, mxType) => Set(41,42).contains(mxType) }
+          .map{ case (code, mxType) => FileInputSupport.createFixedString(code, "left", length, ' ') } )
+    }
   }
 
   def drgInputToFixedWidth(drgInput: DrgInput): String = {
-    ""
+    drgInput.productIterator.mkString("")
   }
 
 
