@@ -255,7 +255,7 @@ object ChangeCaptureSupport {
     ("locationId", "int"),
     ("activityType", "string"),
     ("mxCodes", "list"),
-    ("mxGroups", "int"),
+    ("mxGroups", "set"),
     ("providers", "set"),
     ("erPatient", "boolean"),
     ("financialClassId", "int"),
