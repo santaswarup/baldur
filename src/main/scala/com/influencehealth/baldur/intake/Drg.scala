@@ -29,6 +29,63 @@ case class DrgInput (
   filler: String //position: 811 length: 25
 ) extends Drg with Serializable
 
+case class DrgOutput (
+  patientName: String, //position: 1 length: 31
+  medicalRecordNumber: String, //position: 32 length: 13
+  accountNumber: String, //position: 45 length: 17
+  admitDate: String, //position: 62 length: 10 format: mm/dd/yyyy
+  dischargeDate: String, //position: 72 length: 10 format: mm/dd/yyyy
+  dischargeStatus: String, //position: 82 length: 2
+  primaryPayer: String, //position: 84 length: 2
+  los: String, //position: 86 length: 5
+  birthDate: String, //position: 91 length: 10 format: mm/dd/yyyy
+  age: String, //position: 101 length: 3
+  sex: String, //position: 104 length: 1 0=unknown, 1=male, 2=female
+  admitDiagnosis: String, //position: 105 length: 7
+  principalDiagnosis: String, //position: 112 length: 8
+  secondaryDiagnoses: String, //position: 120 length: 8 occurrances: 24 (total length of 192)
+  principalProcedure: String, //position: 312 length: 7
+  secondaryProcedures: String, //position: 319 length: 7 occurrances: 24 (total length of 168)
+  procedureDate: String, //position: 487 length: 10 occurrances: 25 format: mm/dd/yyyy (total length of 250)
+  applyHacLogic: String, //position: 737 length: 1
+  unused: String, //position: 738 length: 1
+  optionalInformation: String, //position: 739 length: 72. We're actually going to use this field as the holder for sourceRecordId, source and sourceType due to the long length allowed
+  filler: String, //position: 811 length: 25
+  msgMceVersionUsed: String, //position: 836 length: 3
+  initialDrg: String, //position: 839 length: 3
+  initialMsIndicator: String, //position: 842 length: 1
+  finalMdc: String, //position: 843 length: 2
+  finalDrg: String, //position: 845 length: 3
+  finalMsIndicator: String, //position: 848 length: 1
+  drgReturnCode: String, //position: 849 length: 2
+  msgMceEditReturnCode: String, //position: 851 length: 4
+  diagnosisCodeCount: String, //position: 855 length: 2
+  procedureCodeCount: String,  //position: 857 length: 2
+  principalDiagnosisEditReturnFlag: String, //position: 859 length: 8
+  principalDiagnosisHospitalAcquiredConditionAassignment1: String, //position: 867 length: 2
+  principalDiagnosisHospitalAcquiredConditionAassignment2: String, //position: 869 length: 2
+  principalDiagnosisHospitalAcquiredConditionAassignment3: String, //position: 871 length: 2
+  principalDiagnosisHospitalAcquiredConditionAassignment4: String, //position: 873 length: 2
+  principalDiagnosisHospitalAcquiredConditionAassignment5: String, //position: 875 length: 2
+  principalDiagnosisHospitalAcquiredConditionUsage1: String, //position: 877 length: 1
+  principalDiagnosisHospitalAcquiredConditionUsage2: String, //position: 878 length: 1
+  principalDiagnosisHospitalAcquiredConditionUsage3: String, //position: 879 length: 1
+  principalDiagnosisHospitalAcquiredConditionUsage4: String, //position: 880 length: 1
+  principalDiagnosisHospitalAcquiredConditionUsage5: String, //position: 881 length: 1
+  secondaryDiagnosisReturnFlag: String, //position: 882 length: 8 occurrances: 24 total length: 192
+  secondaryDiagnosisHospitalAcquiredConditionAssignments: String, //position: 1074 length: 10 occurrances: 24 total length: 240
+  secondaryDiagnosisHospitalAcquiredConditionUsages: String, //position: 1314 length: 5 occurrances: 24 total length: 120
+  procedureEditReturnFlag: String, //position: 1434 length: 8 occurrances: 25 total length: 200
+  procedureHospitalAcquiredConditionAssignments: String, //position: 1634 length: 10 occurances: 25 total length: 250
+  initial4DigitDrg: String, //position: 1884 length: 4
+  final4DigitDrg: String, //position: 1888 length: 4
+  finalDrgCcMccUsage: String, //position: 1892 length: 1
+  initialDrgCcMccUsage: String, //position: 1893 length: 1
+  numberUniqueHospitalAcquiredConditionsMet: String, //position: 1894 length: 2
+  hospitalAcquiredConditionStatus: String, //position: 1896 length: 1
+  costWeight: String //position: 1897 length: 7
+  ) extends Drg with Serializable
+
 object Drg {
 
   val financialClassToDrgPayer: Map[Option[Int], String] = Map(
@@ -116,6 +173,10 @@ object Drg {
       )
 
     drgInputToFixedWidth(drgInput)
+  }
+
+  def createDrgOutput(line: String): DrgOutput = {
+
   }
 
   def getDiagCodes(mxCodes: Option[List[String]], addPoaIndicator: Boolean, length: Int): Option[List[String]] = {
