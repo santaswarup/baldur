@@ -11,4 +11,4 @@ $SPARK_HOME/bin/spark-submit \
   -c piedmont \
   --source-type "hospital" \
   --source epic \
-  --metadata.broker.list "az-kafka-01.ecosmart.local:9092,az-kafka-02.ecosmart.local:9092"
+  --metadata.broker.list "az-kafka-01.ecosmart.local:9092"
