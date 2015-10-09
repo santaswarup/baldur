@@ -26,7 +26,7 @@ object IntakeConfig {
         c.copy(out = x)
       }
 
-      opt[Boolean]('d', "drg") required() valueName "<process_drg_grouper>" action { (x, c) =>
+      opt[Boolean]('d', "drg") valueName "<process_drg_grouper>" action { (x, c) =>
         c.copy(processDrg = x)
       }
 
